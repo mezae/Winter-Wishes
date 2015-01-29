@@ -1,0 +1,292 @@
+.undecorated-link:hover {
+	text-decoration: none;
+}
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+	display: none !important;
+}
+
+.ng-invalid.ng-dirty {
+	border-color: #FA787E;
+}
+
+.navbar {
+  margin-bottom: 5px;
+}
+
+.navbar-image {
+  height: 40px;
+  width: auto;
+}
+
+.navbar-brand {
+  padding: 2px 15px;
+}
+
+h2 {
+  margin-top: 5px;
+}
+
+td {
+  cursor: pointer;
+}
+
+/*login page
+.login{
+  background: url(christmas-snow-background.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: absolute;
+  overflow: hidden;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}*/
+
+#mainRow {
+  padding-top: 28%;
+}
+
+#mainLegend {
+  text-align: center;
+  font-size: 2em;
+  color: #d9534f;
+}
+
+.vcenter {
+  line-height: 78px;
+  vertical-align: middle;
+}
+
+.evcenter {
+  line-height: 10em;
+  vertical-align: middle;
+}
+
+.emailnail {
+  height: 10em;
+}
+
+#deleteAgency {
+  position: absolute;
+  top: 0.3em;
+  right: 1.5em;
+}
+
+#editAgency {
+  position: absolute;
+  top: 5.2em;
+  right: 1.5em;
+}
+
+.editEtemplate {
+  position: absolute;
+  top: 10.2em;
+  right: 1.5em;
+}
+
+.pselect {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/*all pages #5cb85c #d9534f*/
+#footer {
+  text-align: center;
+  color: #d1d1d1;
+  position: fixed;
+  bottom: 1em;
+  line-height: inherit;
+  margin-left: auto;
+  margin-right: auto;
+  left: 5%;
+  right: 5%;
+  border-top: 1px solid #e5e5e5;
+  padding-top: 0.5em
+}
+
+/*command center*/
+
+#command {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.btn-lg, .btn-group-lg>.btn {
+  padding: 8px 5px;
+}
+
+/*tracking forms*/
+@media screen and (min-width: 992px) {
+  .makeScroll {
+    height: 450px;
+    width: auto; 
+  }
+
+  .scrollContent {
+    overflow:auto;
+  }
+}
+
+.nav-tabs {
+  border-bottom: 0;
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+  border-bottom: 2px solid white;
+}
+
+.ttseparator {
+  border-bottom: 1px solid #ddd;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.tabs {
+  padding-left: 0;
+}
+
+.icons {
+  padding-right: 0;
+}
+
+/*modals*/
+#closeModal {
+  position: absolute;
+  top: 1em;
+  right: 0.5em;
+}
+
+.modal-body {
+  min-height: 25em;
+}
+
+.modal-footer {
+  text-align: center;
+  padding: 0;
+}
+
+/*tables*/
+.table-stripes>tbody>tr:nth-child(even) {
+  background-color: #f2faf2;
+}
+
+.table tbody>tr>td{
+  vertical-align: middle;
+  text-align: center;
+}
+
+th {
+  text-align: center;
+}
+
+.cap {
+  text-transform: capitalize;
+}
+
+.goodflag.btn-link {
+  color: #5cb85c;
+}
+
+.badflag.btn-link {
+  color: #d9534f;
+}
+
+/*File upload button*/
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+/*sidebar*/
+.sideb {
+  padding-left: 0;
+  padding-top: 4px;
+}
+
+textarea {
+  resize: vertical;
+  overflow: auto;
+}
+
+@media screen and (orientation: landscape) {
+  #mainRow {
+    padding-top: 18%;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .sideb {
+    padding-left: 15px;
+  }
+}
+
+@media screen and (max-width: 457px) {
+  #command {
+    font-size: 1.7em;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  #command {
+    font-size: 1.42em;
+  }
+  .btn-lg, .btn-group-lg>.btn {
+    padding: 2px 5px;
+  }
+  .nav>li>a {
+    position: relative;
+    display: block;
+    padding: 8px 8px;
+  }
+  .tabs {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .icons {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/*graphs*/
+
+.bar {
+  fill: steelblue;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.btext {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}

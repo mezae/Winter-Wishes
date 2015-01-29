@@ -1,0 +1,103 @@
+<div class="modal-header">
+	<h3 class="modal-title" ng-hide="currentPage > 1">Welcome!</h3>
+	<h3 class="modal-title" ng-show="currentPage === 2">Creating the tracking forms</h3>
+	<h3 class="modal-title" ng-show="currentPage === 3">Editing a tracking form</h3>
+	<h3 class="modal-title" ng-show="currentPage === 4">Deleting a tracking form</h3>
+	<h3 class="modal-title" ng-show="currentPage === 5">Viewing a tracking form</h3>
+	<h3 class="modal-title" ng-show="currentPage === 6">Ready, Go!</h3>
+	
+	<button type="button" class="btn btn-sm btn-link pull-right" id="closeModal" ng-click="exit()">
+		<i class="glyphicon glyphicon-remove"></i></button>
+</div>
+
+<div class="modal-body">
+	<div ng-hide="currentPage > 1">
+		<p>This page will help you easily create and manage tracking forms for each agency accepted into the Winter Wishes program this year. <strong>Let's get started!</strong> </p>
+		
+		<p>
+			<div class="form-inline">
+				First, let's set the due date for the tracking forms: 
+				<div class="input-group col-xs-4 col-sm-4 col-md-4">
+					<input type="text" class="form-control input-sm" datepicker-popup="MM/dd/yy" ng-model="dueDate" ng-change="saveDueDate()" is-open="opened" min-date="minDate" datepicker-options="dateOptions" show-button-bar="false"/>
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-primary btn-sm" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+					</span>
+				</div>
+			</div>
+		</p>
+
+		<p>In order to proceed, all Winter Wishes applications in salesforce should be processed, and you should have the following information for each accepted agency: </p>
+		<div class="row">
+			<div class="col-md-6">
+				<ul>
+					<li>Agency Code</li>
+					<li>Agency Name</li>
+					<li>Contact Name</li>
+					<li>Contact E-mail</li>
+				</ul>
+			</div>
+			<div class="col-md-6">
+				<ul>
+					<li>Accepted Children</li>
+					<li>Accepted Teens</li>
+					<li>Accepted Seniors</li>
+				</ul>
+			</div>
+		</div>
+
+		<p>Download a salesforce report with these fields, and save it as a <strong>csv</strong> file. </p>
+	
+	</div>
+
+	<div ng-show="currentPage == 2">
+		Click <button type="button" class="btn btn-xs btn-link"><i class="glyphicon glyphicon-plus"></i></button> to begin. Then, click <input type="button" class="btn btn-primary btn-xs" value="Browse"/> and find the csv file saved on your computer. Finally, click <input type="button" class="btn btn-primary btn-xs" value="Upload"/> and the accepted agencies should appear onscreen. Each agency will be represented like this:<br/><br/>
+		<div class="row">
+			<div class="col-md-4 col-md-offset-4 col-sm-4 col-sm-offset-4 col-xs-6 col-xs-offset-3">
+				<div class="thumbnail">
+					<div class="caption">
+						<div class="text-center">
+							<button type="button" class="btn btn-sm btn-danger"><strong>ELM</strong></button>
+						</div>
+						<p class="text-center">100 Letters</p>
+						<button type="button" class="btn btn-xs btn-link pull-right" id="deleteAgency">
+							<i class="glyphicon glyphicon-remove"></i></button>
+						<button type="button" class="btn btn-xs btn-link pull-right" id="editAgency">
+							<i class="glyphicon glyphicon-pencil"></i></button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<p class="text-center">The <button type="button" class="btn btn-xs btn-link"><i class="glyphicon glyphicon-remove"></i></button> and <button type="button" class="btn btn-xs btn-link"><i class="glyphicon glyphicon-pencil"></i></button> only appear when you hover over an agency.</p>
+	</div>
+
+	<div ng-show="currentPage == 3">
+		<p>Click <button type="button" class="btn btn-xs btn-link"><i class="glyphicon glyphicon-pencil"></i></button> in the box of the tracking form you wish to edit. A form will appear populated with the current information for the agency you selected. Once you have made the necessary modifications, click <input type="button" class="btn btn-success btn-xs" value="Save"> to safeguard your changes.</p>
+
+		<p>* If you forgot to add an agency, just click <button type="button" class="btn btn-xs btn-link"><i class="glyphicon glyphicon-plus"></i></button> for a blank form.</p>
+	</div>
+
+	<div ng-show="currentPage == 4">	
+		Click <button type="button" class="btn btn-xs btn-link"><i class="glyphicon glyphicon-remove"></i></button> in the box of the tracking form you wish to delete. This will delete everything associated with the agency. This cannot be undone. For this reason, you will be asked to confirm that you really want to delete the selected agency.
+	</div>
+
+	<div ng-show="currentPage == 5">
+		<p>Click <button type="button" class="btn btn-xs btn-danger"><strong>ELM</strong></button> in the box of the tracking form you wish to see. You can access an individual tracking form anytime to check how much progress a particular agency contact has made. However, this feature is more useful once an agency has submitted their form and you are ready to review it. The color of the button changes based on what stage of the process the tracking form is in.<p/>
+
+		<p><button type="button" class="btn btn-xs btn-danger"><strong>ELM</strong></button> means the community partner has not yet started working on it. </p>
+		<p><button type="button" class="btn btn-xs btn-warning"><strong>ELM</strong></button> means the community partner has begun entering data. </p>
+		<p><button type="button" class="btn btn-xs btn-success"><strong>ELM</strong></button> means the community partner has submitted it and it is ready for review. </p>
+		<p><button type="button" class="btn btn-xs btn-info"><strong>ELM</strong></button> means you have begun reviewing the tracking form.</p>
+		<p><button type="button" class="btn btn-xs btn-primary"><strong>ELM</strong></button> means you have finished reviewing the tracking form.</p>
+	</div>
+
+	<div ng-show="currentPage == 6">
+		<p>Once all the tracking forms have been created, you will need to e-mail all accepted agencies to let them know that they have been accepted into this year's Winter Wishes program and give them further instructions. For help with that, head over to the <i class="glyphicon glyphicon-envelope"></i> E-mail Templates in the main menu.</p>
+
+		<p>You can also access this <i class="glyphicon glyphicon-question-sign"></i> Tutorial through the main menu if you need to see it again.</p>
+	</div>
+
+</div>
+
+<div class="modal-footer">
+	<pagination class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" total-items="6" items-per-page="1" max-size="3" rotate="false" ng-model="currentPage"></pagination>
+</div>

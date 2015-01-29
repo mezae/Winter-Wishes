@@ -1,0 +1,110 @@
+<section data-ng-controller="ArticlesController" data-ng-init="find()">
+
+	<div class="row">
+
+		<div class="col-md-12">
+			<legend><h2>Command Center</h2></legend>
+		</div>
+
+		<div class="col-md-12">
+			<alert ng-show="activateAlert" type="{{alerts.type}}" ng-model="alerts" close="closeAlert()">{{alerts.msg}}</alert>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-3 pull-right sideb col-sm-12 col-xs-12" ng-show="needToUpdate">
+			<form role="form">
+				<div class="form-group">
+					<label class="sr-only" for="the_file">File input</label>
+					<div class="input-group">
+						<span class="input-group-btn">
+							<span class="btn btn-primary btn-file">
+								Browse <input type="file" id="the_file" accept=".csv">
+							</span>
+						</span>
+						<input type="text" class="form-control col-md-4" id="filename" readonly>
+						<span class="input-group-btn">
+						<input type="button" class="btn btn-primary" ng-click="handleFileSelect()" value="Upload"/>
+						</span>
+					</div>
+				</div>
+			</form>
+
+			<form role="form">
+				<div class="form-group">
+					<label>Agency Info</label>
+					<input type="text"  class="form-control" id="agency" ng-disabled="!isNewAgency" ng-model="article.username" placeholder="agency code">
+					<input type="text" class="form-control" ng-model="article.agency" min="0" placeholder="agency name">
+					<input type="text" class="form-control" ng-model="article.contact" min="0" placeholder="contact name">
+					<input type="email" class="form-control" ng-model="article.email" min="0" placeholder="contact email">
+				</div>
+
+				<div class="form-group">
+					<label>Accepted Letters</label>
+					<input type="number" class="form-control" ng-model="article.children" min="0" placeholder="children">
+					<input type="number" class="form-control" ng-model="article.teens" min="0" placeholder="teens">
+					<input type="number" class="form-control" ng-model="article.seniors" min="0" placeholder="seniors">
+				</div>
+				<input type="button" class="btn btn-danger col-md-4 col-sm-3 col-xs-3 pull-left" ng-click="hideSidebar()" value="Cancel">
+				<div class="form-group">
+					<input type="button" class="btn btn-success col-md-4 col-sm-3 col-xs-3 pull-right" ng-click="saveAgency()" value="Save">
+				</div>
+				<br/><br/>
+			</form>
+		</div>
+
+		<div ng-class="needToUpdate ? 'col-md-3 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
+			<div class="form-group">
+				<div class="input-group">
+					<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+					<input type="search" class="form-control" ng-model="query.username" placeholder="Search by Agency Code"/>
+				</div>
+			</div>
+		</div>
+
+		<div ng-class="needToUpdate ? 'col-md-3 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
+			<div class="form-group">
+				<select class="form-control pselect" ng-model="query.status">
+					<option value="">Filter by Status</option>
+					<option value="0">Not Yet Started</option>
+					<option value="1">In Progress</option>
+					<option value="3">Submitted</option>
+					<option value="4">Under Review</option>
+					<option value="5">Reviewed</option>
+				</select>
+			</div>
+		</div>
+
+	<div ng-class="needToUpdate ? 'col-md-9 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-12 col-sm-12 col-xs-12'">
+
+	  <div class="row">
+		<div class="col-xs-6 col-sm-3 col-md-2" ng-repeat="article in articles | orderBy: 'username' | filter:query as results" ng-if="article.username != 'AAA'">
+		  <div class="thumbnail" ng-mouseenter="turn = true" ng-mouseleave="turn = false">
+			<div class="caption">
+			  <div class="text-center">
+				<button type="button" class="btn btn-sm" ng-class="{'btn-primary': article.status == 5, 'btn-info': article.status == 4, 'btn-success': article.status == 3, 'btn-warning': article.status == 1, 'btn-danger': article.status == 0}" ng-click="viewAgency(article)"><strong>{{article.username}}</strong></button>
+
+			  </div>
+			  <p class="text-center">{{article.children + article.teens + article.seniors}} Letters</p>
+
+			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right" id="deleteAgency" ng-click="deleteAgency(article)">
+				<i class="glyphicon glyphicon-remove"></i></button>
+			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right" id="editAgency" ng-click="showSidebar(article)">
+				<i class="glyphicon glyphicon-pencil"></i></button>
+			</div>
+		  </div>
+		</div>
+		<div class="col-xs-6 col-sm-3 col-md-2">
+		  <div class="thumbnail">
+			<div class="vcenter text-center">
+			  <button type="button" class="btn btn-xs btn-link" ng-click="showSidebar()">
+				<i class="glyphicon glyphicon-plus"></i></button>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+
+  </div>
+
+</section>

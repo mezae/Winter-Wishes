@@ -1,0 +1,52 @@
+<div class="modal-header">
+  <h3 class="modal-title">Tracking Form Review</h3>
+  <button type="button" class="btn btn-sm btn-link pull-right" id="closeModal" ng-click="ok()">
+    <i class="glyphicon glyphicon-remove"></i></button>
+</div>
+<div class="modal-body">
+  <div ng-hide="currentPage > 1">
+    This page will help you easily review a tracking form once it has been submitted. <br/><br/>
+
+    Once the tracking form and letters have been submitted:
+    First, make sure the letters are organized by the number on the tracking label. This will make it easier for you to review the data.
+    Then, click <button type="button" class="btn btn-xs btn-link"><i class="glyphicon glyphicon-edit"></i></button> to begin reviewing.
+  </div>
+
+  <div ng-show="currentPage == 2">
+    <h4>Flagging a letter</h4>
+    Click <button type="button" class="btn btn-xs btn-link goodflag"><i class="glyphicon glyphicon-flag"></i></button> to mark a sub par letter. Click <button type="button" class="btn btn-xs btn-link badflag"><i class="glyphicon glyphicon-flag"></i></button> if you change your mind. <br/><br/>
+    Click <button type="button" class="btn btn-xs btn-link badflag"><i class="glyphicon glyphicon-exclamation-sign"></i></button> if the majority of the letters are unacceptable. This will allow the agency contact to edit the tracking form again. In these cases, you may want to send the letters back to be rewritten.
+  </div>
+
+  <div ng-show="currentPage == 3">
+    <h4>Editing a letter</h4>
+    <div class="form-inline">
+    Use <div class="input-group input-group-sm col-md-3 col-sm-3 col-xs-4"><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span><input type="search" class="form-control input-xs" placeholder="Search"/></div> to quickly find the letter you want to edit. Then, click <button type="button" class="btn btn-xs btn-link" ><i class="glyphicon glyphicon-pencil"></i></button> on the row of the letter you wish to edit. The form fields will populate with the details from the letter you selected. </div>
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <div class="input-group">
+          <input type="text" class="form-control input-sm" value="EXPC001 <--Tracking Label of letter you are currently editing" readonly>
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-sm btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
+          </span> 
+        </div>
+        <input type="text" class="form-control input-sm" placeholder="Elmer Meza <--Full Name of participant">
+        <input type="number" class="form-control input-sm" placeholder="5 <--Age of participant">
+        <input type="text" class="form-control input-sm" placeholder="M <--Gender of participant">
+        <textarea class="form-control input-sm" rows="1" placeholder="a patchwork elephant plushie ($10) <--Partcipant's gift request"></textarea>
+        <input type="submit" class="btn btn-success btn-sm btn-block" value="Save">
+      </div>
+    </div>
+    Correct any mistakes you caught, then press <input type="button" class="btn btn-success btn-xs" value="Save"> to update the entry and move on to the next letter.
+  </div>  
+
+  <div ng-show="currentPage == 4">
+  <h4>Review Complete</h4>
+  Click <button type="button" class="btn btn-xs btn-link"><i class="glyphicon glyphicon-ok-sign"></i></button> to complete the review. You will not be able to make any further changes. <br/><br/>
+
+  Once complete, click <button type="button" class="btn btn-xs btn-link" ><i class="glyphicon glyphicon-download"></i></button> to download a copy of the tracking form.
+  </div>
+</div>
+<div class="modal-footer">
+  <pagination class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" total-items="4" items-per-page="1" max-size="2" rotate="false" ng-model="currentPage"></pagination>
+</div>

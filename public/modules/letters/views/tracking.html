@@ -1,0 +1,97 @@
+<section data-ng-controller="AgencyController" data-ng-init="find()">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <div class="row">
+        <div class="col-md-12">
+          <ol class="breadcrumb" ng-show="adminView">
+            <li><a href="#!/admin"><i class="glyphicon glyphicon-home" tooltip="Back to Command Center" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></a></li>
+            <li class="active">Tracking Form for {{currentAgency.agency}}</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="row">
+       <div class="col-md-12">
+        <div class="col-md-12 col-sm-12 col-xs-12 ttseparator">
+          <div class="col-md-9 col-sm-9 col-xs-9 tabs">
+            <tabset>
+              <tab ng-repeat="tab in tabs" heading="{{tab.title}}" active="tab.active" ng-show="tab.content.length > 0" ng-click="activateTab(tab)">
+              </tab>
+            </tabset>
+          </div>
+          <div class="col-md-3 col-sm-3 col-xs-3 text-right icons">
+            <button type="button" class="btn btn-lg btn-link badflag" ng-show="currentAgency.status == 4 && adminView" ng-click="returnLetters()"><i class="glyphicon glyphicon-exclamation-sign" tooltip="Return" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></button>
+            <button type="button" class="btn btn-lg btn-link" ng-show="currentAgency.status == 3 && adminView" ng-click="startReview()"><i class="glyphicon glyphicon-edit" tooltip="Review" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></button>
+            <button type="button" class="btn btn-lg btn-link" ng-show="(!adminView && currentAgency.status < 3) || (adminView && currentAgency.status == 4)" ng-click="confirmCompletion()"><i class="glyphicon glyphicon-ok-sign" tooltip="Submit" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></button>
+            <a class="btn btn-lg btn-link" role="button" href="{{url}}" download="{{fileName}}" ng-show="(!adminView && currentAgency.status >= 3) || (adminView && currentAgency.status == 5)"><i class="glyphicon glyphicon-download" tooltip="Download" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <div class="row">
+    <div class="col-md-3 pull-right sideb col-sm-12 col-xs-12" ng-hide="(adminView && currentAgency.status != 4) || (!adminView && currentAgency.status >= 3)">
+      <alert ng-show="!adminView && activateAlert" type="{{alert.type}}" ng-model="alert" close="closeAlert()">{{alert.msg}}</alert>
+      <div class="input-group">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+        <input type="search" class="form-control" ng-model="query" placeholder="Search"/>
+      </div>
+      <br/>
+      <div class="input-group">
+        <input type="text" class="form-control" ng-model="current.track" value="{{current.track}}" readonly>
+        <span class="input-group-btn" tooltip="Remove recipient from this slot" tooltip-trigger="mouseenter" tooltip-append-to-body="false">
+          <button type="button" class="btn btn-danger" ng-click="clearForm()"><i class="glyphicon glyphicon-trash"></i></button>
+        </span> 
+      </div>
+      <form name="tform" >
+        <input type="text" class="form-control" ng-model="current.name" placeholder="full name" name="fname">
+        <span class="error" ng-show="blankName">Must include recipient's full name</span>
+        <input type="number" class="form-control" ng-model="current.age" placeholder="age - between {{minAge}} and {{maxAge}}" name="age">
+        <span class="error" ng-show="invalidAge">The value must be in range {{minAge}} to {{maxAge}}!</span>
+        <input type="text" class="form-control" ng-model="current.gender" placeholder="gender - enter F or M" name="gender">
+        <span class="error" ng-show="invalidGender">Enter F for female or M for male</span>
+        <textarea class="form-control" ng-model="current.gift" rows="3" placeholder="gift requested (if clothing, include size)  - must be under $40" name="gift"></textarea>
+      </form>
+      <input type="submit" class="btn btn-success btn-block" ng-click="goToNext(tform)" value="Save & Continue">
+    </div>
+
+    <div ng-class="(adminView && currentAgency.status != 4) || (!adminView && currentAgency.status >= 3) ? 'col-md-12' : 'col-md-9 pull-left col-sm-12 col-xs-12'">
+      <div class="table-responsive makeScroll">
+        <table class="table table-stripes scrollContent">
+          <thead>
+            <tr>
+              <th class="col-md-1">Label</th>
+              <th class="col-md-3">Name</th>
+              <th class="col-md-1">Age</th>
+              <th class="col-md-1">Gender</th>
+              <th class="col-md-5">Gift Requested</th>
+              <th ng-show="adminView && currentAgency.status >= 4">Flag</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="rec in recipients | filter:query as results" ng-click="goToSelected(rec, tform)">
+              <td colspan="1" ng-show="rec.track == current.track && !adminView && currentAgency.status < 3"><i class="glyphicon glyphicon-pencil">...</i></td>
+              <td colspan="4" ng-show="rec.track == current.track && !adminView && currentAgency.status < 3">you are currently editing this letter</td>
+              <td class="col-md-1" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.track}}</td>
+              <td class="col-md-3 cap" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.name}}</td>
+              <td class="col-md-1" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.age}}</td>
+              <td class="col-md-1 cap" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.gender}}</td>
+              <td class="col-md-5" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.gift}}</td>
+              <td ng-show="adminView && currentAgency.status >= 4">
+                <button type="button" class="btn btn-xs btn-link" ng-class="rec.flagged ? 'badflag' : 'goodflag'" ng-click="flagLetter(rec)" ng-disabled="currentAgency.status == 5"><i class="glyphicon glyphicon-flag"></i></button>
+              </td>
+            </tr>
+            <tr ng-if="letters.$resolved && results.length == 0">
+              <td colspan="6"><strong>No results found...</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+
+</section>
