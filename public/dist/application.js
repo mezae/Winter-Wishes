@@ -164,9 +164,12 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
 }])
 
 .controller('ModalInstanceCtrl', 
-  ['$scope', '$modalInstance', 'Authentication',
-  function($scope, $modalInstance, Authentication) {
-	$scope.dueDate = Authentication.user.due;
+  ['$scope', '$filter', '$modalInstance', 'Agencies',
+  function($scope, $filter, $modalInstance, Agencies) {
+  	Agencies.query(function(admin) {
+  		var admin = $filter('filter')(admin, {username: 'AAA'});
+		$scope.dueDate = $filter('date')(admin[0].due, 'fullDate');
+	});
 
 	$scope.ok = function () {
 	  $modalInstance.close();
@@ -621,8 +624,8 @@ angular.module('letters')
 'use strict';
 
 angular.module('letters').controller('AgencyController', 
-	['$scope', '$stateParams', '$location', '$filter' ,'$modal', 'Authentication', 'Articles', 'Agencies',
-	function($scope, $stateParams, $location, $filter, $modal, Authentication, Articles, Agencies) {
+	['$scope', '$stateParams', '$location', '$filter' ,'$modal', 'Authentication', 'Articles', 'Agencies', 'Users',
+	function($scope, $stateParams, $location, $filter, $modal, Authentication, Articles, Agencies, Users) {
 		$scope.authentication = Authentication;
 
 		if (!$scope.authentication.user) $location.path('/');
@@ -640,13 +643,29 @@ angular.module('letters').controller('AgencyController',
 		$scope.tabs = [];
 		var Recipients = null;
 		var blankRecords = null;
+		var due = null;
 
 		//Helps initialize page by finding the appropriate letters
 		$scope.find = function() {
 			$scope.letters = Articles.query(function() {
-				$scope.currentAgency = Agencies.get({agencyId: $stateParams.articleId}, function() {
+				if($scope.adminView) {
+					$scope.currentAgency = Agencies.get({agencyId: $stateParams.articleId}, function() {
+						due = $filter('date')(Authentication.user.due, 'MM/dd/yy');
+						init();
+					});
+				}
+				else {
+					$scope.currentAgency = $scope.authentication.user;
+					Agencies.query(function(admin) {
+						due = $filter('date')(admin[0].due, 'MM/dd/yy');
+						init();
+					});
+				}
+			});
+		};
 
-					Recipients = $filter('filter')($scope.letters, {track: $scope.currentAgency.username});
+		function init() {
+			Recipients = $filter('filter')($scope.letters, {track: $scope.currentAgency.username});
 					var myChildren = $filter('filter')(Recipients, {track: $scope.currentAgency.username + 'C'});
 					var myTeens = $filter('filter')(Recipients, {track: $scope.currentAgency.username + 'T'});
 					var mySeniors = $filter('filter')(Recipients, {track: $scope.currentAgency.username + 'S'});
@@ -660,10 +679,7 @@ angular.module('letters').controller('AgencyController',
 					$scope.activateTab(myChildren.length > 0 ? $scope.tabs[0] : (myTeens.length > 0 ? $scope.tabs[1] : $scope.tabs[2]));
 
 					if(!$scope.adminView && $scope.currentAgency.status >= 3) downloadCSV();
-					
-				});
-			});
-		};
+		}
 		
 		//Allows user to work on another tab
 		$scope.activateTab = function(clicked) {
@@ -768,7 +784,12 @@ angular.module('letters').controller('AgencyController',
 				if(!$scope.adminView) {
 					blankRecords = $filter('filter')(Recipients, {updated: ''});
 					$scope.currentAgency.status = blankRecords.length > 0 ? 1 : 2;
-					$scope.currentAgency.$update();
+					var user = new Users($scope.currentAgency);
+					user.$update(function(response) {
+						$scope.currentAgency = response;
+					}, function(response) {
+						$scope.error = response.data.message;
+					});
 				}
 
 				$scope.current.$update();
@@ -799,24 +820,42 @@ angular.module('letters').controller('AgencyController',
 				dblcheck = confirm('Click OK to confirm that you have reviewed this tracking form.');
 				if(dblcheck) {
 					$scope.currentAgency.status = 5;
-					$scope.currentAgency.$update();
-					downloadCSV();
+					var user = new Users($scope.currentAgency);
+					user.$update(function(response) {
+						console.log(response);
+						$scope.currentAgency = response;
+						downloadCSV();
+					}, function(response) {
+						$scope.error = response.data.message;
+					});
 				}
 			}
 			else {
 				dblcheck = confirm('Click OK to let the Winter Wishes Team know that your tracking form is ready. You will not be able to make any further changes.');
 				if(dblcheck) {
 					$scope.currentAgency.status = 3;
-					$scope.currentAgency.$update();
-					downloadCSV();
+					var user = new Users($scope.currentAgency);
+					user.$update(function(response) {
+						$scope.currentAgency = response;
+						downloadCSV();
+					}, function(response) {
+						$scope.error = response.data.message;
+					});
 				}
 			}
 		};
 
 		//Allows admin to start the review of a tracking form
 		$scope.startReview = function() {
+			console.log($scope.currentAgency);
 			$scope.currentAgency.status = 4;
-			$scope.currentAgency.$update();
+			var user = new Agencies($scope.currentAgency);
+			user.$update(function(response) {
+				$scope.currentAgency = response;
+				console.log($scope.currentAgency);
+			}, function(response) {
+				$scope.error = response.data.message;
+			});
 		};
 
 		//Allows admin to flag sub par letters during review
@@ -827,8 +866,16 @@ angular.module('letters').controller('AgencyController',
 
 		//Allows admin to reject a tracking form with many sub par letters
 		$scope.returnLetters = function() {
+			console.log($scope.currentAgency);
 			$scope.currentAgency.status = 1;
-			$scope.currentAgency.$update();
+			var user = new Users($scope.currentAgency);
+			user.$update(function(response) {
+				console.log(response);
+				$scope.currentAgency = response;
+				console.log($scope.currentAgency);
+			}, function(response) {
+				$scope.error = response.data.message;
+			});
 		};
 
 		//Helps create a downloadable csv version of the tracking form
@@ -858,8 +905,14 @@ angular.module('letters').controller('AgencyController',
 			$scope.url = window.URL.createObjectURL( blob );
 		}
 
+		//Allows partner to let WWT know whether a gift has been received
+		$scope.giftReceived = function(selected) {
+			selected.received = !selected.received;
+			selected.$update();
+		};
+
 /*
-		//var due = new Date(Articles[0].due).setHours(24);
+		//
 		//$scope.countdown = dateDiff(new Date(), new Date(due));
 
 		if($scope.countdown === 14) {

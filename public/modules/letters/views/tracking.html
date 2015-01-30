@@ -68,6 +68,7 @@
               <th class="col-md-1">Gender</th>
               <th class="col-md-5">Gift Requested</th>
               <th ng-show="adminView && currentAgency.status >= 4">Flag</th>
+              <th ng-show="currentAgency.status >= 5">Received</th>
             </tr>
           </thead>
           <tbody>
@@ -81,6 +82,9 @@
               <td class="col-md-5" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.gift}}</td>
               <td ng-show="adminView && currentAgency.status >= 4">
                 <button type="button" class="btn btn-xs btn-link" ng-class="rec.flagged ? 'badflag' : 'goodflag'" ng-click="flagLetter(rec)" ng-disabled="currentAgency.status == 5"><i class="glyphicon glyphicon-flag"></i></button>
+              </td>
+              <td ng-show="currentAgency.status >= 5">
+                <button type="button" class="btn btn-xs btn-link" ng-class="rec.received ? 'goodflag' : 'badflag'" ng-click="giftReceived(rec)"><i class="glyphicon glyphicon-ok"></i></button>
               </td>
             </tr>
             <tr ng-if="letters.$resolved && results.length == 0">

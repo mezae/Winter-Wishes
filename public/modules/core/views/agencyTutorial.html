@@ -1,50 +1,55 @@
 <div class="modal-header">
-  <h3 class="modal-title">Tracking Form Tutorial</h3>
+  <h3 class="modal-title" ng-hide="currentPage > 1">Welcome!</h3>
+  <h3 class="modal-title" ng-show="currentPage === 2">Adding a letter</h3>
+  <h3 class="modal-title" ng-show="currentPage === 3">Editing a letter</h3>
+  <h3 class="modal-title" ng-show="currentPage === 4">Submitting your Tracking Form</h3>
+  <h3 class="modal-title" ng-show="currentPage === 5">Tracking Gift Receipts</h3>
   <button type="button" class="btn btn-sm btn-link pull-right" id="closeModal" ng-click="ok()">
-    <i class="glyphicon glyphicon-remove"></i></button>
+	<i class="glyphicon glyphicon-remove"></i></button>
 </div>
 <div class="modal-body">
-  <div ng-hide="currentPage > 1">
-    This page will help you easily add winter wishes letters and submit the tracking form to the New York Cares Winter Wishes Team. <br/><br/>
+	<div ng-hide="currentPage > 1">
+	<p>This page will help you easily add winter wishes letters and submit the tracking form to the New York Cares Winter Wishes Team.</p>
 
-    Your tracking form is due on {{dueDate | date:'fullDate' }}. <br/><br/>
+	<p>Your tracking form is due on {{dueDate}}.</p>
 
-    Before you begin, organize your letters by the number on the tracking label. This will make it easier for you to enter the data.
-  </div>
+	<p>Before you begin, organize your letters by the number on the tracking label. This will make it easier for you to enter the data.</p>
+	</div>
 
-  <div ng-show="currentPage == 2">
-    <h4>Adding a letter</h4>
-    <div class="row">
-      <div class="col-md-8 col-md-offset-2">
-        <div class="input-group">
-          <input type="text" class="form-control input-sm" value="EXPC001 <--Tracking Label of letter you are currently editing" readonly>
-          <span class="input-group-btn">
-            <button type="button" class="btn btn-sm btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
-          </span> 
-        </div>
-        <input type="text" class="form-control input-sm" placeholder="Elmer Meza <--Full Name of participant">
-        <input type="number" class="form-control input-sm" placeholder="5 <--Age of participant">
-        <input type="text" class="form-control input-sm" placeholder="M <--Gender of participant">
-        <textarea class="form-control input-sm" rows="1" placeholder="a patchwork elephant plushie ($10) <--Partcipant's gift request"></textarea>
-        <input type="submit" class="btn btn-success btn-sm btn-block" value="Save">
-      </div>
-    </div>
-    Fill out the form according to the participant's letter, then press <input type="button" class="btn btn-success btn-xs" value="Save"> to save your progress and move on to the next letter. All fields are required. You will not be able to continue if a field is left blank or if the data you entered does not meet the requirements.
-  </div>
+	<div ng-show="currentPage == 2">
+	<div class="row">
+	  <div class="col-md-8 col-md-offset-2">
+		<div class="input-group">
+		  <input type="text" class="form-control input-sm" value="EXPC001 <--letter you are currently editing" readonly>
+		  <span class="input-group-btn">
+			<button type="button" class="btn btn-sm btn-danger"><i class="glyphicon glyphicon-trash"></i></button>
+		  </span> 
+		</div>
+		<input type="text" class="form-control input-sm" placeholder="Elmer Meza <--Full Name of participant">
+		<input type="number" class="form-control input-sm" placeholder="5 <--Age of participant">
+		<input type="text" class="form-control input-sm" placeholder="M <--Gender of participant">
+		<textarea class="form-control input-sm" rows="1" placeholder="a patchwork elephant plushie ($10) <--Partcipant's gift request"></textarea>
+		<input type="submit" class="btn btn-success btn-sm btn-block" value="Save & Continue">
+	  </div>
+	</div>
+	<p>Fill out the form according to the participant's letter, then press <input type="button" class="btn btn-success btn-xs" value="Save & Continue"> to save your progress and move on to the next letter. All fields are required. You will not be able to proceed if a field is left blank or if the data you entered does not meet the requirements.</p>
+	</div>
 
-  <div ng-show="currentPage == 3">
-    <h4>Editing a letter</h4>
-    <div class="form-inline">
-    Use <div class="input-group input-group-sm col-md-3 col-sm-4 col-xs-5"><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span><input type="search" class="form-control input-xs" placeholder="Search"/></div> to quickly find the letter you want to edit. Then, click <button type="button" class="btn btn-xs btn-link" ><i class="glyphicon glyphicon-pencil"></i></button> on the row of the letter you wish to edit. The form fields will populate with the details from the letter you selected. Make your changes, then press <input type="button" class="btn btn-success btn-xs" value="Save"> to proceed.</div>
-  </div>  
+	<div ng-show="currentPage == 3">
+	<div class="form-inline">
+	Use <div class="input-group input-group-sm col-md-3 col-sm-4 col-xs-5"><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span><input type="search" class="form-control input-xs" placeholder="Search"/></div> to quickly find the letter you want to edit. Then, click on the row of the letter you wish to edit. The form fields will populate with the details from the letter you selected. Make your changes, then press <input type="button" class="btn btn-success btn-xs" value="Save & Continue"> to proceed.</div>
+	</div>  
 
-  <div ng-show="currentPage == 4">
-  <h4>Submitting your Tracking Form</h4>
-  Click <button type="button" class="btn btn-xs btn-link"><i class="glyphicon glyphicon-ok-sign"></i></button> to notify the Winter Wishes Team that your tracking form is complete. You will not be able to make any further changes. <br/><br/>
+	<div ng-show="currentPage == 4">
+		<p>Click <button type="button" class="btn btn-xs btn-link"><i class="glyphicon glyphicon-ok-sign"></i></button> to notify the Winter Wishes Team that your tracking form is complete. You will not be able to make any further changes.</p>
 
-  Once submitted, click <button type="button" class="btn btn-xs btn-link" ><i class="glyphicon glyphicon-download"></i></button> to download a copy of your tracking form.
-  </div>
+		<p>Once submitted, click <button type="button" class="btn btn-xs btn-link" ><i class="glyphicon glyphicon-download"></i></button> to download a copy of your tracking form.</p>
+	</div>
+
+	<div ng-show="currentPage == 5">
+		<p>Once the gifts start arriving, click <button type="button" class="btn btn-xs btn-link badflag"><i class="glyphicon glyphicon-ok"></i></button> on the appropriate row to notify the Winter Wishes Team whether or not a gift has been received.</p>
+	</div>
 </div>
 <div class="modal-footer">
-  <pagination class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" total-items="4" items-per-page="1" max-size="2" rotate="false" ng-model="currentPage"></pagination>
+ 	<pagination class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" total-items="5" items-per-page="1" max-size="2" rotate="false" ng-model="currentPage"></pagination>
 </div>

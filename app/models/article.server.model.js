@@ -38,6 +38,10 @@ var ArticleSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
+	received: {
+		type: Boolean,
+		default: false
+	},
 	updated: {
 		type: Date,
 		default: null

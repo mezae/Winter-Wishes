@@ -48,7 +48,13 @@ exports.read = function(req, res) {
 
 exports.update = function(req, res) {
 	// Init Variables
-	var user = req.user;
+	var user = null;
+	if(req.user.username === 'AAA') {
+		User.findOne({username: req.body.username}).exec(function(err, agency) {
+			req.user = agency;
+		});
+	}
+	user = req.user;
 	var message = null;
 
 	// For security measurement we remove the roles from the req.body object
