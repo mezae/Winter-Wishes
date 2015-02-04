@@ -678,7 +678,7 @@ angular.module('letters').controller('AgencyController',
 
 					$scope.activateTab(myChildren.length > 0 ? $scope.tabs[0] : (myTeens.length > 0 ? $scope.tabs[1] : $scope.tabs[2]));
 
-					if(!$scope.adminView && $scope.currentAgency.status >= 3) downloadCSV();
+					if((!$scope.adminView && $scope.currentAgency.status >= 3) || ($scope.adminView && $scope.currentAgency.status == 5)) downloadCSV();
 		}
 		
 		//Allows user to work on another tab
