@@ -84,7 +84,7 @@
 								<button type="button" class="btn btn-xs btn-link" ng-class="rec.flagged ? 'badflag' : 'goodflag'" ng-click="flagLetter(rec)" ng-disabled="currentAgency.status == 5"><i class="glyphicon glyphicon-flag"></i></button>
 							</td>
 							<td ng-show="currentAgency.status >= 5">
-								<button type="button" class="btn btn-xs btn-link" ng-class="rec.received ? 'goodflag' : 'badflag'" ng-click="giftReceived(rec)"><i class="glyphicon glyphicon-ok"></i></button>
+								<button type="button" class="btn btn-xs btn-link" ng-class="rec.received ? 'goodflag' : 'badflag'" ng-click="giftReceived(rec)"><i class="glyphicon glyphicon-gift"></i></button>
 							</td>
 						</tr>
 						<tr ng-if="letters.$resolved && results.length == 0">

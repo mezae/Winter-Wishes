@@ -20,7 +20,7 @@ var _ = require('lodash'),
 					message: errorHandler.getErrorMessage(err)
 				});
 			} else {
-				if(req.body.target === "NYS") {
+				if(req.body.target === 'NYS') {
 					users = users.filter(function (user) {return user.status < 3;}) 
 				}
 				var smtpTransport = nodemailer.createTransport(config.mailer.options);

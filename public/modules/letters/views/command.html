@@ -8,8 +8,9 @@
 		</div>
 
 		<div class="col-md-12">
-			<alert ng-show="activateAlert" type="{{alerts.type}}" ng-model="alerts" close="closeAlert()">{{alerts.msg}}</alert>
+			<alert ng-show="alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false">{{alert.msg}}</alert>
 		</div>
+		
 	</div>
 
 	<div class="row">
@@ -34,17 +35,17 @@
 			<form role="form">
 				<div class="form-group">
 					<label>Agency Info</label>
-					<input type="text"  class="form-control" id="agency" ng-disabled="!isNewAgency" ng-model="article.username" placeholder="agency code">
-					<input type="text" class="form-control" ng-model="article.agency" min="0" placeholder="agency name">
-					<input type="text" class="form-control" ng-model="article.contact" min="0" placeholder="contact name">
-					<input type="email" class="form-control" ng-model="article.email" min="0" placeholder="contact email">
+					<input type="text"  class="form-control" id="agency" ng-disabled="!isNewAgency" ng-model="partner.username" placeholder="agency code">
+					<input type="text" class="form-control" ng-model="partner.agency" min="0" placeholder="agency name">
+					<input type="text" class="form-control" ng-model="partner.contact" min="0" placeholder="contact name">
+					<input type="email" class="form-control" ng-model="partner.email" min="0" placeholder="contact email">
 				</div>
 
 				<div class="form-group">
 					<label>Accepted Letters</label>
-					<input type="number" class="form-control" ng-model="article.children" min="0" placeholder="children">
-					<input type="number" class="form-control" ng-model="article.teens" min="0" placeholder="teens">
-					<input type="number" class="form-control" ng-model="article.seniors" min="0" placeholder="seniors">
+					<input type="number" class="form-control" ng-model="partner.children" min="0" placeholder="children">
+					<input type="number" class="form-control" ng-model="partner.teens" min="0" placeholder="teens">
+					<input type="number" class="form-control" ng-model="partner.seniors" min="0" placeholder="seniors">
 				</div>
 				<input type="button" class="btn btn-danger col-md-4 col-sm-3 col-xs-3 pull-left" ng-click="hideSidebar()" value="Cancel">
 				<div class="form-group">
@@ -65,7 +66,7 @@
 
 		<div ng-class="needToUpdate ? 'col-md-3 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
 			<div class="form-group">
-				<select class="form-control pselect" ng-model="query.status">
+				<select class="form-control" ng-model="query.status">
 					<option value="">Filter by Status</option>
 					<option value="0">Not Yet Started</option>
 					<option value="1">In Progress</option>
@@ -79,18 +80,18 @@
 	<div ng-class="needToUpdate ? 'col-md-9 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-12 col-sm-12 col-xs-12'">
 
 	  <div class="row">
-		<div class="col-xs-6 col-sm-3 col-md-2" ng-repeat="article in articles | orderBy: 'username' | filter:query as results" ng-if="article.username != 'AAA'">
+		<div class="col-xs-6 col-sm-3 col-md-2" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results" ng-if="partner.username != 'AAA'">
 		  <div class="thumbnail" ng-mouseenter="turn = true" ng-mouseleave="turn = false">
 			<div class="caption">
 			  <div class="text-center">
-				<button type="button" class="btn btn-sm" ng-class="{'btn-primary': article.status == 5, 'btn-info': article.status == 4, 'btn-success': article.status == 3, 'btn-warning': article.status == 1, 'btn-danger': article.status == 0}" ng-click="viewAgency(article)"><strong>{{article.username}}</strong></button>
+				<a href="/#!/admin/agency/{{partner._id}}" class="btn btn-sm" ng-class="{'btn-primary': partner.status == 5, 'btn-info': partner.status == 4, 'btn-success': partner.status == 3, 'btn-warning': partner.status == 1, 'btn-danger': partner.status == 0}"><strong>{{partner.username}}</strong></a>
 
 			  </div>
-			  <p class="text-center">{{article.children + article.teens + article.seniors}} Letters</p>
+			  <p class="text-center">{{partner.children + partner.teens + partner.seniors}} Letters</p>
 
-			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right" id="deleteAgency" ng-click="deleteAgency(article)">
+			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right" id="deleteAgency" ng-click="deleteAgency(partner)">
 				<i class="glyphicon glyphicon-remove"></i></button>
-			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right" id="editAgency" ng-click="showSidebar(article)">
+			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right" id="editAgency" ng-click="showSidebar(partner)">
 				<i class="glyphicon glyphicon-pencil"></i></button>
 			</div>
 		  </div>

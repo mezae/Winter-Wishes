@@ -10,7 +10,7 @@ var _ = require('lodash'),
 	User = mongoose.model('User'),
 	Article = mongoose.model('Article');
 
-
+//Allows admin access to all community partner accounts
 exports.list = function(req, res) {
 	User.find().exec(function(err, users) {
 		if (err) {
@@ -30,6 +30,7 @@ exports.list = function(req, res) {
 	});
 };
 
+//Allows admin access to individual community partner accounts
 exports.agencyByID = function(req, res, next, id) {
 	User.findOne({_id: id}).exec(function(err, agency) {
 		if (err) return next(err);
@@ -39,29 +40,29 @@ exports.agencyByID = function(req, res, next, id) {
 	});
 };
 
-/**
- * Show the current article
- */
+//Shows admin selected community partner account
 exports.read = function(req, res) {
 	res.json(req.user);
 };
 
+//Allows admin to update a community partner account;
+//Allows community partner to update their profile info
 exports.update = function(req, res) {
 	// Init Variables
-	var user = null;
+	var user = req.user;
+	var message = null;
+
 	if(req.user.username === 'AAA') {
-		User.findOne({username: req.body.username}).exec(function(err, agency) {
-			req.user = agency;
+		User.findOne({_id: req.body._id}).exec(function(err, agency) {
+			user = agency;
 		});
 	}
-	user = req.user;
-	var message = null;
 
 	// For security measurement we remove the roles from the req.body object
 	delete req.body.roles;
 
 	// Merge existing user
-	user = _.extend(user, req.body);
+	user = _.assign(user, req.body);
 	user.updated = Date.now();
 
 	user.save(function(err) {
@@ -71,18 +72,55 @@ exports.update = function(req, res) {
 			});
 		} else {
 			//Update letters collection if number accepted changed
-			//var letters = Articles.query();
-			//if($scope.article.children + $scope.article.teens + $scope.article.seniors > article.letters.length) {
-			//	article.letters = initRecs($scope.article.username, {'C': $scope.article.children, 'T': $scope.article.teens, 'S': $scope.article.seniors}, letters);
-			//}
+			if(req.user.username === 'AAA') {
+				Article.find({'track': { $regex: '^' + user.username}}).sort('track').exec(function(err, letters) {
+					updateRecords(user.username, {'C': user.children, 'T': user.teens, 'S': user.seniors}, letters);
+				});
+			}
 			res.json(user);
 		}
 	});
 };
 
-/**
- * Delete an article
- */
+
+//Make changes to the letters collection that the user requested; 
+//delete extras if accepted number of letters decreased
+//make new letter records otherwise
+function updateRecords(code, types, recs) {
+	for(var type in types) {
+		var letters = _.filter(recs, function(reco) { return reco.track.indexOf(code + type) > -1; });
+		var numAccepted = types[type];
+
+		if(numAccepted < letters.length) {
+			var extras = _.pluck(letters.slice(numAccepted), 'track');
+			Article.remove({track: {$in: extras}}, function() {
+				console.log('Deleted extra records');
+			});
+		}
+		else if(numAccepted > letters.length) {
+			for(var i=1; i<=numAccepted; i++) {
+				var newTrack = code + type + pad(i,3);
+				if(_.filter(letters, function(reco) { return reco.track === newTrack; }).length === 0) {
+					var letter = new Article({track: newTrack});
+					letter.save(function(err) {
+						if(err) {
+							console.log('Failed to create a letter. Stopping...');
+							return;
+						}
+					});
+				}
+			}
+			console.log('Created new records, avoided duplicates');
+		}
+	}
+};
+
+//Helps make all label numbers the same number of digits
+function pad(num, size) {
+	return ('00' + num).substr(-size); 
+};
+
+//Delete a community partner's account, including all associated letters
 exports.delete = function(req, res) {
 	var user = req.user;
 	if(user.username !== 'AAA') {
@@ -92,24 +130,8 @@ exports.delete = function(req, res) {
 					message: errorHandler.getErrorMessage(err)
 				});
 			} else {
-				Article.find({'track': { $regex: user.username + '...' }}).exec(function(error, letters) {
-					if (error) {
-						return res.status(400).send({
-							message: errorHandler.getErrorMessage(error)
-						});
-					} else {
-						for(var i=0; i < letters.length; i++) {
-							letters[i].remove(function(err) {
-								if (err) {
-									return res.status(400).send({
-										message: errorHandler.getErrorMessage(err)
-									});
-								} else {
-									res.json(letters[i]);
-								}
-							});
-						}
-					}
+				Article.remove({'track': { $regex: '^' + user.username }}, function() {
+					console.log('Deleted all of ' + user.agency + '\'s letters');
 				});
 				res.json(user);
 			}
@@ -117,54 +139,12 @@ exports.delete = function(req, res) {
 	}
 	else {
 		return res.status(400).send({
-					message: req.body
-				});
+			message: req.body
+		});
 	}
 };
 
-
-/*
-/**
- * Update user details
- *
-exports.update = function(req, res) {
-	// Init Variables
-	var user = req.user;
-	var message = null;
-
-	// For security measurement we remove the roles from the req.body object
-	delete req.body.roles;
-
-	if (user) {
-		// Merge existing user
-		user = _.extend(user, req.body);
-		user.updated = Date.now();
-
-		user.save(function(err) {
-			if (err) {
-				return res.status(400).send({
-					message: errorHandler.getErrorMessage(err)
-				});
-			} else {
-				req.login(user, function(err) {
-					if (err) {
-						res.status(400).send(err);
-					} else {
-						res.json(user);
-					}
-				});
-			}
-		});
-	} else {
-		res.status(400).send({
-			message: 'User is not signed in'
-		});
-	}
-};*/
-
-/**
- * Send User
- */
+//Send User
 exports.me = function(req, res) {
 	res.json(req.user || null);
 };

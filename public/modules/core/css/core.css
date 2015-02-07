@@ -52,18 +52,10 @@ td {
   text-align: center;
 }
 
+/*command center*/
 .vcenter {
   line-height: 78px;
   vertical-align: middle;
-}
-
-.evcenter {
-  line-height: 10em;
-  vertical-align: middle;
-}
-
-.emailnail {
-  height: 10em;
 }
 
 #deleteAgency {
@@ -78,48 +70,26 @@ td {
   right: 1.5em;
 }
 
+.evcenter {
+  line-height: 10em;
+  vertical-align: middle;
+}
+
+.emailnail {
+  height: 10em;
+}
+
 .editEtemplate {
   position: absolute;
   top: 10.2em;
   right: 1.5em;
 }
 
-.pselect {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-/*all pages #5cb85c #d9534f*/
-#footer {
-  text-align: center;
-  color: #d1d1d1;
-  position: fixed;
-  bottom: 1em;
-  line-height: inherit;
-  margin-left: auto;
-  margin-right: auto;
-  left: 5%;
-  right: 5%;
-  border-top: 1px solid #e5e5e5;
-  padding-top: 0.5em
-}
-
-/*command center*/
-
-#command {
-  font-size: 2em;
-  font-weight: bold;
-}
-
-.btn-lg, .btn-group-lg>.btn {
-  padding: 8px 5px;
-}
-
 /*tracking forms*/
 @media screen and (min-width: 992px) {
   .makeScroll {
-    height: 450px;
-    width: auto; 
+    height: 77vh;
+    width: auto;
   }
 
   .scrollContent {
@@ -139,6 +109,10 @@ td {
   border-bottom: 1px solid #ddd;
   padding-left: 0;
   padding-right: 0;
+}
+
+.btn-lg, .btn-group-lg>.btn {
+  padding: 8px 5px;
 }
 
 .tabs {
@@ -223,28 +197,13 @@ textarea {
   overflow: auto;
 }
 
-@media screen and (orientation: landscape) {
-  #mainRow {
-    padding-top: 18%;
-  }
-}
-
 @media screen and (max-width: 992px) {
   .sideb {
     padding-left: 15px;
   }
 }
 
-@media screen and (max-width: 457px) {
-  #command {
-    font-size: 1.7em;
-  }
-}
-
 @media screen and (max-width: 320px) {
-  #command {
-    font-size: 1.42em;
-  }
   .btn-lg, .btn-group-lg>.btn {
     padding: 2px 5px;
   }
@@ -289,4 +248,10 @@ textarea {
   fill: white;
   font: 10px sans-serif;
   text-anchor: end;
+}
+
+donut-chart {
+  width: 100%;
+  height: 100%;
+  display: block;
 }

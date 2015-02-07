@@ -197,9 +197,8 @@ angular.module('letters').controller('AgencyController',
 				dblcheck = confirm('Click OK to confirm that you have reviewed this tracking form.');
 				if(dblcheck) {
 					$scope.currentAgency.status = 5;
-					var user = new Users($scope.currentAgency);
+					var user = new Agencies($scope.currentAgency);
 					user.$update(function(response) {
-						console.log(response);
 						$scope.currentAgency = response;
 						downloadCSV();
 					}, function(response) {
@@ -224,12 +223,10 @@ angular.module('letters').controller('AgencyController',
 
 		//Allows admin to start the review of a tracking form
 		$scope.startReview = function() {
-			console.log($scope.currentAgency);
 			$scope.currentAgency.status = 4;
 			var user = new Agencies($scope.currentAgency);
 			user.$update(function(response) {
 				$scope.currentAgency = response;
-				console.log($scope.currentAgency);
 			}, function(response) {
 				$scope.error = response.data.message;
 			});
@@ -243,13 +240,10 @@ angular.module('letters').controller('AgencyController',
 
 		//Allows admin to reject a tracking form with many sub par letters
 		$scope.returnLetters = function() {
-			console.log($scope.currentAgency);
 			$scope.currentAgency.status = 1;
-			var user = new Users($scope.currentAgency);
+			var user = new Agencies($scope.currentAgency);
 			user.$update(function(response) {
-				console.log(response);
 				$scope.currentAgency = response;
-				console.log($scope.currentAgency);
 			}, function(response) {
 				$scope.error = response.data.message;
 			});

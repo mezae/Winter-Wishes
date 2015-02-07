@@ -2,11 +2,15 @@
 
 angular.module('letters')
 
-.controller('SummaryController', ['$scope', '$location', '$filter', 'Authentication', 'Agencies', 'Articles',
-	function($scope, $location, $filter, Authentication, Agencies, Articles) {
+.controller('SummaryController', ['$scope', '$window', '$location', '$filter', 'Authentication', 'Agencies', 'Articles',
+	function($scope, $window, $location, $filter, Authentication, Agencies, Articles) {
 		$scope.authentication = Authentication;
 
 		if (!$scope.authentication.user) $location.path('/');
+
+		angular.element($window).on('resize', function() {
+			$scope.$apply();
+		});
 
 		$scope.partners = Agencies.query(function() {
 
@@ -95,53 +99,12 @@ angular.module('letters')
 			sortable.sort(function(b, a) {return a[1] - b[1];});
 			var topTen = sortable.slice(0, 10);
 
-			var data = [];
+			$scope.gifts = [];
 			for(var i=0; i < topTen.length; i++) {
-				data.push({name: topTen[i][0], value: topTen[i][1]});
+				$scope.gifts.push({name: topTen[i][0], value: topTen[i][1]});
 			}
 
-			var margin = {top: 20, right: 30, bottom: 30, left: 55},
-			width = 550 - margin.left - margin.right,
-			height = 300 - margin.top - margin.bottom;
+		});
 
-			var y = d3.scale.ordinal()
-				.domain(data.map(function(d) { return d.name; }))
-				.rangeRoundBands([height, 0], 0.05);
-
-			var x = d3.scale.linear()
-				.domain([0, d3.max(data, function(d) { return d.value; })])
-				.range([0, width]);
-
-			var yAxis = d3.svg.axis()
-					.scale(y)
-					.orient('left');
-
-			var chart = d3.select('.common')
-				.attr('width', width + margin.left + margin.right)
-				.attr('height', height + margin.top + margin.bottom)
-				.append('g')
-				.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-			chart.append('g')
-					.attr('class', 'y axis')
-					.call(yAxis);
-
-			chart.selectAll('.bar')
-				.data(data)
-				.enter().append('rect')
-				.attr('class', 'bar')
-				.attr('y', function(d) { return y(d.name); })
-				.attr('width', function(d) { return x(d.value); })
-				.attr('height', y.rangeBand());
-			
-			chart.selectAll('.btext')
-					.data(data)
-					.enter().append('text')
-					.attr('class', 'btext')
-					.attr('x', function(d) { return x(d.value) - 3; })
-					.attr('y', function(d) { return y(d.name) + (y.rangeBand()/2); })
-					.attr('dy', '.35em')
-					.text(function(d) { return d.value; });
-			});
 
 }]);
