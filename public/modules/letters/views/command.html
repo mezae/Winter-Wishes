@@ -89,10 +89,8 @@
 			  </div>
 			  <p class="text-center">{{partner.children + partner.teens + partner.seniors}} Letters</p>
 
-			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right" id="deleteAgency" ng-click="deleteAgency(partner)">
-				<i class="glyphicon glyphicon-remove"></i></button>
-			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right" id="editAgency" ng-click="showSidebar(partner)">
-				<i class="glyphicon glyphicon-pencil"></i></button>
+			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right deleteAgency" ng-click="deleteAgency(partner)"><i class="glyphicon glyphicon-remove"></i></button>
+			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right editAgency" ng-click="showSidebar(partner)"><i class="glyphicon glyphicon-pencil"></i></button>
 			</div>
 		  </div>
 		</div>

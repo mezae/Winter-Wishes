@@ -58,13 +58,13 @@ td {
   vertical-align: middle;
 }
 
-#deleteAgency {
+.deleteAgency {
   position: absolute;
   top: 0.3em;
   right: 1.5em;
 }
 
-#editAgency {
+.editAgency {
   position: absolute;
   top: 5.2em;
   right: 1.5em;
@@ -124,7 +124,7 @@ td {
 }
 
 /*modals*/
-#closeModal {
+.closeModal {
   position: absolute;
   top: 1em;
   right: 0.5em;
@@ -170,6 +170,7 @@ th {
     position: relative;
     overflow: hidden;
 }
+
 .btn-file input[type=file] {
     position: absolute;
     top: 0;
@@ -180,7 +181,6 @@ th {
     text-align: right;
     filter: alpha(opacity=0);
     opacity: 0;
-    outline: none;
     background: white;
     cursor: inherit;
     display: block;
