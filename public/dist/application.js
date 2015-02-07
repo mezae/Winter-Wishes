@@ -234,29 +234,23 @@ angular.module('letters').config(['$stateProvider',
 'use strict';
 
 angular.module('letters').controller('ArticlesController', 
-	['$scope', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'Articles', 'Users',
-	function($scope, $modal, $http, $stateParams, $location, Authentication, Agencies, Articles, Users) {
+	['$scope', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
+	function($scope, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
 		$scope.user = Authentication.user;
 		if (!$scope.user) $location.path('/');
-
-		$scope.turn = false;
-		$scope.needToUpdate = false;           //helps hide sidebar when it's not needed
-		$scope.activateAlert = false;
-		$scope.alerts = {};
+		
+		$scope.needToUpdate = false;		//helps hide sidebar when it's not needed
+		$scope.alert = {active: false};
 
 		$scope.find = function() {
-			$scope.articles = Agencies.query();
+			$scope.partners = Agencies.query();
 			document.getElementById('the_file').addEventListener('change', fileInfo, false);
 		};
 
-		$scope.closeAlert = function() {
-			$scope.activateAlert = false;
-		};
-
-		$scope.signup = function(credentials) {
+		//Allows user to add create new accounts, consider moving to backend
+		function signup(credentials) {
 			$http.post('/auth/signup', credentials).success(function(response) {
-				$scope.articles.push(response);
-				console.log(credentials.username + ' created');
+				$scope.partners.push(response);
 			}).error(function(response) {
 				$scope.error = response.message;
 			});
@@ -295,8 +289,7 @@ angular.module('letters').controller('ArticlesController',
 				}
 
 				if(missing_fields.length > 0) {
-					$scope.alerts = {type: 'danger', msg: 'Your csv file could not be uploaded. It is missing the following columns: ' + missing_fields.join(', ') + '.'};
-					$scope.activateAlert = true;
+					$scope.alert = {active: true, type: 'danger', msg: 'Your csv file could not be uploaded. It is missing the following columns: ' + missing_fields.join(', ') + '.'};
 				}
 				else {
 					var code_col	= headers.indexOf('Agency Code');
@@ -309,7 +302,7 @@ angular.module('letters').controller('ArticlesController',
 				  
 					for(var i=1; i<rows.length; i++){
 						var record = rows[i].split(',');
-						if($scope.articles.filter(function (recs) {return recs.username === record[code_col];}).length === 0) {
+						if($filter('filter')($scope.partners, {username: record[code_col]}).length === 0) {
 							var newPartner = {
 								username: 	record[code_col],
 								agency: 	record[agency_col],
@@ -319,11 +312,10 @@ angular.module('letters').controller('ArticlesController',
 								teens: 		Number(record[teen_col]),
 								seniors: 	Number(record[seniors_col])
 							};
-							$scope.signup(newPartner);
+							signup(newPartner);
 						}
 					}
-					$scope.alerts = {type: 'success', msg: 'Your csv file was uploaded successfully.'};
-					$scope.activateAlert = true;
+					$scope.alert = {active: true, type: 'success', msg: 'Your csv file was uploaded successfully.'};
 				}
 			};
 			reader.readAsText(file);
@@ -332,17 +324,16 @@ angular.module('letters').controller('ArticlesController',
 		//Allows user to add/update a partner
 		$scope.saveAgency = function() {
 			if($scope.isNewAgency) {
-				if($scope.articles.filter(function (recs) {return recs.username === $scope.article.username;}).length === 0) {
-					$scope.signup($scope.article);
+				if($filter('filter')($scope.partners, {username: $scope.partner.username}).length === 0) {
+					signup($scope.partner);
 				}
 				else {
-					$scope.alerts = {type: 'danger', msg: $scope.article.username + ' already exists. Please edit the existing copy to avoid duplicates.'};
-			  		$scope.activateAlert = true;	
+					$scope.alert = {active: true, type: 'danger', msg: $scope.partner.username + ' already exists. Please edit the existing copy to avoid duplicates.'};
 				}
 			}
 			else {
-				$scope.article.$update(function(article) {
-					console.log(article.username + ' was updated');
+				$scope.partner.$update(function(partner) {
+					console.log(partner.username + ' was updated');
 				}, function(errorResponse) {
 					console.log(errorResponse.data.message);
 				});
@@ -353,46 +344,26 @@ angular.module('letters').controller('ArticlesController',
 
 		//Allow user to delete selected partner and all associated recipients
 		$scope.deleteAgency = function(selected) {
-			var confirmation = null;
-			if(selected.username === 'AAA') {
-				confirmation = prompt('Please type DELETE to remove all accounts.');
-				if(confirmation === 'DELETE') {
-					for(var i=1; i<$scope.articles.length; i++) {
-						$scope.articles[i].$remove();
-					}
-				}
-			}
-			else {
-				confirmation = prompt('Please type DELETE to remove ' + selected.username + '.');
-				if(confirmation === 'DELETE') {
-					selected.$remove(function() {
-						$scope.articles.splice($scope.articles.indexOf(selected), 1);
-					}, function(errorResponse) {
-						console.log('Failure to delete');
-					});
-				}
+			var confirmation = prompt('Please type DELETE to remove ' + selected.agency + '.');
+			if(confirmation === 'DELETE') {
+				selected.$remove(function() {
+					$scope.partners.splice($scope.partners.indexOf(selected), 1);
+				}, function(errorResponse) {
+					console.log('Remove Failed');
+				});
 			}
 		};
-
-		/* 
-		*	Helper Functions 
-		*/
 
 		//Show current state of partner that user wants to edit
 		$scope.showSidebar = function(selected) {
 			$scope.isNewAgency = selected ? false : true;
-			$scope.article = selected;
-			$scope.needToUpdate = true;
+			$scope.partner = selected;
+			$scope.needToUpdate = !$scope.needToUpdate;
 		};
 
 		$scope.hideSidebar = function() {
-			$scope.article = null;
+			$scope.partner = null;
 			$scope.needToUpdate = false;
-		};
-
-		//Show admin the selected partner's page
-		$scope.viewAgency = function(selected) {
-			$location.path('/admin/agency/' + selected._id);
 		};
 
 	}
@@ -478,11 +449,15 @@ angular.module('letters')
 
 angular.module('letters')
 
-.controller('SummaryController', ['$scope', '$location', '$filter', 'Authentication', 'Agencies', 'Articles',
-	function($scope, $location, $filter, Authentication, Agencies, Articles) {
+.controller('SummaryController', ['$scope', '$window', '$location', '$filter', 'Authentication', 'Agencies', 'Articles',
+	function($scope, $window, $location, $filter, Authentication, Agencies, Articles) {
 		$scope.authentication = Authentication;
 
 		if (!$scope.authentication.user) $location.path('/');
+
+		angular.element($window).on('resize', function() {
+			$scope.$apply();
+		});
 
 		$scope.partners = Agencies.query(function() {
 
@@ -571,54 +546,13 @@ angular.module('letters')
 			sortable.sort(function(b, a) {return a[1] - b[1];});
 			var topTen = sortable.slice(0, 10);
 
-			var data = [];
+			$scope.gifts = [];
 			for(var i=0; i < topTen.length; i++) {
-				data.push({name: topTen[i][0], value: topTen[i][1]});
+				$scope.gifts.push({name: topTen[i][0], value: topTen[i][1]});
 			}
 
-			var margin = {top: 20, right: 30, bottom: 30, left: 55},
-			width = 550 - margin.left - margin.right,
-			height = 300 - margin.top - margin.bottom;
+		});
 
-			var y = d3.scale.ordinal()
-				.domain(data.map(function(d) { return d.name; }))
-				.rangeRoundBands([height, 0], 0.05);
-
-			var x = d3.scale.linear()
-				.domain([0, d3.max(data, function(d) { return d.value; })])
-				.range([0, width]);
-
-			var yAxis = d3.svg.axis()
-					.scale(y)
-					.orient('left');
-
-			var chart = d3.select('.common')
-				.attr('width', width + margin.left + margin.right)
-				.attr('height', height + margin.top + margin.bottom)
-				.append('g')
-				.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-			chart.append('g')
-					.attr('class', 'y axis')
-					.call(yAxis);
-
-			chart.selectAll('.bar')
-				.data(data)
-				.enter().append('rect')
-				.attr('class', 'bar')
-				.attr('y', function(d) { return y(d.name); })
-				.attr('width', function(d) { return x(d.value); })
-				.attr('height', y.rangeBand());
-			
-			chart.selectAll('.btext')
-					.data(data)
-					.enter().append('text')
-					.attr('class', 'btext')
-					.attr('x', function(d) { return x(d.value) - 3; })
-					.attr('y', function(d) { return y(d.name) + (y.rangeBand()/2); })
-					.attr('dy', '.35em')
-					.text(function(d) { return d.value; });
-			});
 
 }]);
 'use strict';
@@ -820,9 +754,8 @@ angular.module('letters').controller('AgencyController',
 				dblcheck = confirm('Click OK to confirm that you have reviewed this tracking form.');
 				if(dblcheck) {
 					$scope.currentAgency.status = 5;
-					var user = new Users($scope.currentAgency);
+					var user = new Agencies($scope.currentAgency);
 					user.$update(function(response) {
-						console.log(response);
 						$scope.currentAgency = response;
 						downloadCSV();
 					}, function(response) {
@@ -847,12 +780,10 @@ angular.module('letters').controller('AgencyController',
 
 		//Allows admin to start the review of a tracking form
 		$scope.startReview = function() {
-			console.log($scope.currentAgency);
 			$scope.currentAgency.status = 4;
 			var user = new Agencies($scope.currentAgency);
 			user.$update(function(response) {
 				$scope.currentAgency = response;
-				console.log($scope.currentAgency);
 			}, function(response) {
 				$scope.error = response.data.message;
 			});
@@ -866,13 +797,10 @@ angular.module('letters').controller('AgencyController',
 
 		//Allows admin to reject a tracking form with many sub par letters
 		$scope.returnLetters = function() {
-			console.log($scope.currentAgency);
 			$scope.currentAgency.status = 1;
-			var user = new Users($scope.currentAgency);
+			var user = new Agencies($scope.currentAgency);
 			user.$update(function(response) {
-				console.log(response);
 				$scope.currentAgency = response;
-				console.log($scope.currentAgency);
 			}, function(response) {
 				$scope.error = response.data.message;
 			});
@@ -955,6 +883,61 @@ angular.module('letters').factory('Agencies', ['$resource',
 		});
 	}
 ]);
+angular.module('letters').directive('donutChart', function() {
+	return {
+		restrict: 'E',
+		scope: { data: '=' },
+		link: function(scope, element) {
+			var element = element[0];
+			var margin = {top: 20, right: 30, bottom: 30, left: 55},
+			width = element.clientWidth - margin.left - margin.right,
+			height = 300 - margin.top - margin.bottom;
+
+			scope.$watch('data', function(data) {
+				if(data) {
+					var y = d3.scale.ordinal()
+						.domain(data.map(function(d) { return d.name; }))
+						.rangeRoundBands([height, 0], 0.05);
+
+					var x = d3.scale.linear()
+						.domain([0, d3.max(data, function(d) { return d.value; })])
+						.range([0, width]);
+
+					var yAxis = d3.svg.axis()
+						.scale(y)
+						.orient('left');
+
+					var chart = d3.select(element).append('svg')
+						.attr('width', width + margin.left + margin.right)
+						.attr('height', height + margin.top + margin.bottom)
+						.append('g')
+						.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+					chart.append('g')
+						.attr('class', 'y axis')
+						.call(yAxis);
+
+					chart.selectAll('.bar')
+						.data(data)
+						.enter().append('rect')
+						.attr('class', 'bar')
+						.attr('y', function(d) { return y(d.name); })
+						.attr('width', function(d) { return x(d.value); })
+						.attr('height', y.rangeBand());
+					
+					chart.selectAll('.btext')
+						.data(data)
+						.enter().append('text')
+						.attr('class', 'btext')
+						.attr('x', function(d) { return x(d.value) - 3; })
+						.attr('y', function(d) { return y(d.name) + (y.rangeBand()/2); })
+						.attr('dy', '.35em')
+						.text(function(d) { return d.value; });
+				}
+			}, true);
+		}
+	}
+});
 'use strict';
 
 //Letters service used for communicating with the letters REST endpoints
