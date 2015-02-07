@@ -125,7 +125,7 @@ angular.module('letters').controller('ArticlesController',
 		$scope.showSidebar = function(selected) {
 			$scope.isNewAgency = selected ? false : true;
 			$scope.partner = selected;
-			$scope.needToUpdate = !$scope.needToUpdate;
+			$scope.needToUpdate = true;
 		};
 
 		$scope.hideSidebar = function() {

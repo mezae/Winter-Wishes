@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	db: 'mongodb://nycares:volunteer87@ds031571.mongolab.com:31571/winterwishes', //|| 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + '/meanww',
+	db: 'mongodb://nycares:volunteer87@ds031571.mongolab.com:31571/winterwishes',
 	assets: {
 		lib: {
 			css: [

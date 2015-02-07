@@ -38,7 +38,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var article = req.article;
 
-	article = _.extend(article, req.body);
+	article = _.assign(article, req.body);
 	article.updated = Date.now();
 
 	article.save(function(err) {

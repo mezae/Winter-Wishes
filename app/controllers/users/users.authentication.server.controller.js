@@ -54,13 +54,11 @@ function initRecs(code, types, recs) {
 					if(err) {
 						console.log('letter not created');
 					}
-					else {
-						console.log('letter created');
-					}
 				});
 			}
 		}
 	}
+	console.log('Created letters for ' + code);
 };
 
 //Helps make all label numbers the same number of digits

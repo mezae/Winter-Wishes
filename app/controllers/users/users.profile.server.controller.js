@@ -52,12 +52,6 @@ exports.update = function(req, res) {
 	var user = req.user;
 	var message = null;
 
-	if(req.user.username === 'AAA') {
-		User.findOne({_id: req.body._id}).exec(function(err, agency) {
-			user = agency;
-		});
-	}
-
 	// For security measurement we remove the roles from the req.body object
 	delete req.body.roles;
 
@@ -72,16 +66,13 @@ exports.update = function(req, res) {
 			});
 		} else {
 			//Update letters collection if number accepted changed
-			if(req.user.username === 'AAA') {
-				Article.find({'track': { $regex: '^' + user.username}}).sort('track').exec(function(err, letters) {
-					updateRecords(user.username, {'C': user.children, 'T': user.teens, 'S': user.seniors}, letters);
-				});
-			}
-			res.json(user);
+			Article.find({'track': { $regex: '^' + user.username}}).sort('track').exec(function(err, letters) {
+				updateRecords(user.username, {'C': user.children, 'T': user.teens, 'S': user.seniors}, letters);
+				res.json(user);
+			});
 		}
 	});
 };
-
 
 //Make changes to the letters collection that the user requested; 
 //delete extras if accepted number of letters decreased
