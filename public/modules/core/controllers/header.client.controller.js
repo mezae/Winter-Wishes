@@ -91,8 +91,8 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
 .controller('ModalInstanceCtrl', 
   ['$scope', '$filter', '$modalInstance', 'Agencies',
   function($scope, $filter, $modalInstance, Agencies) {
-  	Agencies.query(function(admin) {
-  		var admin = $filter('filter')(admin, {username: 'AAA'});
+  	Agencies.query(function(users) {
+  		var admin = $filter('filter')(users, {username: 'AAA'});
 		$scope.dueDate = $filter('date')(admin[0].due, 'fullDate');
 	});
 

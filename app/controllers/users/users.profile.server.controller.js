@@ -45,34 +45,10 @@ exports.read = function(req, res) {
 	res.json(req.user);
 };
 
-//Allows admin to update a community partner account;
-//Allows community partner to update their profile info
-exports.update = function(req, res) {
-	// Init Variables
-	var user = req.user;
-	var message = null;
-
-	// For security measurement we remove the roles from the req.body object
-	delete req.body.roles;
-
-	// Merge existing user
-	user = _.assign(user, req.body);
-	user.updated = Date.now();
-
-	user.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			//Update letters collection if number accepted changed
-			Article.find({'track': { $regex: '^' + user.username}}).sort('track').exec(function(err, letters) {
-				updateRecords(user.username, {'C': user.children, 'T': user.teens, 'S': user.seniors}, letters);
-				res.json(user);
-			});
-		}
-	});
-};
+//Helps make all label numbers the same number of digits
+function pad(num, size) {
+	return ('00' + num).substr(-size); 
+}
 
 //Make changes to the letters collection that the user requested; 
 //delete extras if accepted number of letters decreased
@@ -104,11 +80,35 @@ function updateRecords(code, types, recs) {
 			console.log('Created new records, avoided duplicates');
 		}
 	}
-};
+}
 
-//Helps make all label numbers the same number of digits
-function pad(num, size) {
-	return ('00' + num).substr(-size); 
+//Allows admin to update a community partner account;
+//Allows community partner to update their profile info
+exports.update = function(req, res) {
+	// Init Variables
+	var user = req.user;
+	var message = null;
+
+	// For security measurement we remove the roles from the req.body object
+	delete req.body.roles;
+
+	// Merge existing user
+	user = _.assign(user, req.body);
+	user.updated = Date.now();
+
+	user.save(function(err) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			//Update letters collection if number accepted changed
+			Article.find({'track': { $regex: '^' + user.username}}).sort('track').exec(function(err, letters) {
+				updateRecords(user.username, {'C': user.children, 'T': user.teens, 'S': user.seniors}, letters);
+				res.json(user);
+			});
+		}
+	});
 };
 
 //Delete a community partner's account, including all associated letters

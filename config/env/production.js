@@ -20,7 +20,8 @@ module.exports = {
 				'public/lib/angular-ui-utils/ui-utils.min.js',
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
 				'public/lib/d3/d3.min.js',
-				'public/lib/c3/c3.min.js'
+				'public/lib/c3/c3.min.js',
+				'public/lib/lodash/lodash.min.js'
 			]
 		},
 		css: 'public/dist/application.min.css',

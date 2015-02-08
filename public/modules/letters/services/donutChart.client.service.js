@@ -1,9 +1,11 @@
+'use strict';
+
 angular.module('letters').directive('donutChart', function() {
 	return {
 		restrict: 'E',
 		scope: { data: '=' },
-		link: function(scope, element) {
-			var element = element[0];
+		link: function(scope, elem) {
+			var element = elem[0];
 			var margin = {top: 20, right: 30, bottom: 30, left: 55},
 			width = element.clientWidth - margin.left - margin.right,
 			height = 300 - margin.top - margin.bottom;
@@ -51,5 +53,5 @@ angular.module('letters').directive('donutChart', function() {
 				}
 			}, true);
 		}
-	}
+	};
 });

@@ -9,6 +9,14 @@
 	border-color: #FA787E;
 }
 
+.letter-form.new input.dependent.ng-pristine.ng-touched {
+  border-color: #f0ad4e;
+}
+
+.letter-form.new textarea.dependent.ng-pristine.ng-touched {
+  border-color: #f0ad4e;
+}
+
 .navbar {
   margin-bottom: 5px;
 }

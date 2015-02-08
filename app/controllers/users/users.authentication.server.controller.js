@@ -10,6 +10,32 @@ var _ = require('lodash'),
 	User = mongoose.model('User'),
 	Article = mongoose.model('Article');
 
+//Helps make all label numbers the same number of digits
+function pad(num, size) {
+	return ('00' + num).substr(-size); 
+}
+
+function trackExists(recs, newTrack) {
+	return recs.filter(function (reco) {return reco.track === newTrack;}).length === 0;
+}
+
+function initRecs(code, types, recs) {
+	for(var type in types) {
+		for(var i=1; i<=types[type]; i++) {
+			var newTrack = code + type + pad(i,3);
+			if(trackExists(recs, newTrack)) {
+				var letter = new Article();
+				letter.track = newTrack;
+				letter.save(function(err) {
+					if(err) {
+						console.log('letter not created');
+					}
+				});
+			}
+		}
+	}
+	console.log('Created letters for ' + code);
+}
 
 /**
  * Signup
@@ -41,29 +67,6 @@ exports.signup = function(req, res) {
 			res.json(user);
 		}
 	});
-};
-
-function initRecs(code, types, recs) {
-	for(var type in types) {
-		for(var i=1; i<=types[type]; i++) {
-			var newTrack = code + type + pad(i,3);
-			if(recs.filter(function (reco) {return reco.track === newTrack;}).length === 0) {
-				var letter = new Article();
-				letter.track = newTrack;
-				letter.save(function(err) {
-					if(err) {
-						console.log('letter not created');
-					}
-				});
-			}
-		}
-	}
-	console.log('Created letters for ' + code);
-};
-
-//Helps make all label numbers the same number of digits
-function pad(num, size) {
-	return ('00' + num).substr(-size); 
 };
 
 /**

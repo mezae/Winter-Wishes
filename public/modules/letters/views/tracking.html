@@ -33,7 +33,7 @@
 
 	<div class="row">
 		<div class="col-md-3 pull-right sideb col-sm-12 col-xs-12" ng-hide="(adminView && currentAgency.status != 4) || (!adminView && currentAgency.status >= 3)">
-			<alert ng-show="!adminView && activateAlert" type="{{alert.type}}" ng-model="alert" close="closeAlert()">{{alert.msg}}</alert>
+			<alert ng-show="!adminView && alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false"><i class="glyphicon glyphicon-warning-sign"></i> {{alert.msg}}</alert>
 			<div class="input-group">
 				<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
 				<input type="search" class="form-control" ng-model="query" placeholder="Search"/>
@@ -42,19 +42,27 @@
 			<div class="input-group">
 				<input type="text" class="form-control" ng-model="current.track" value="{{current.track}}" readonly>
 				<span class="input-group-btn" tooltip="Remove recipient from this slot" tooltip-trigger="mouseenter" tooltip-append-to-body="false">
-					<button type="button" class="btn btn-danger" ng-click="clearForm()"><i class="glyphicon glyphicon-trash"></i></button>
+					<button type="button" class="btn btn-danger" ng-click="clearForm(tform)"><i class="glyphicon glyphicon-trash"></i></button>
 				</span> 
 			</div>
-			<form name="tform" >
-				<input type="text" class="form-control" ng-model="current.name" placeholder="full name" name="fname">
-				<span class="error" ng-show="blankName">Must include recipient's full name</span>
-				<input type="number" class="form-control" ng-model="current.age" placeholder="age - between {{minAge}} and {{maxAge}}" name="age">
-				<span class="error" ng-show="invalidAge">The value must be in range {{minAge}} to {{maxAge}}!</span>
-				<input type="text" class="form-control" ng-model="current.gender" placeholder="gender - enter F or M" name="gender">
-				<span class="error" ng-show="invalidGender">Enter F for female or M for male</span>
-				<textarea class="form-control" ng-model="current.gift" rows="3" placeholder="gift requested (if clothing, include size)  - must be under $40" name="gift"></textarea>
+			<form name="tform" class="letter-form" ng-class="current.updated ? 'old' : 'new'">
+				<input type="text" class="form-control" ng-model="current.name" ng-change="isUsed(tform)" placeholder="full name" name="fname">
+				<span class="error text-danger" ng-show="blankName">Must include recipient's full name</span>
+
+				<input type="number" class="form-control dependent" ng-model="current.age" ng-change="isWithinRange(tform.age)" placeholder="age - between {{minAge}} and {{maxAge}}" name="age">
+				<span class="error text-danger" ng-show="tform.age.$error.inRange">The value must be in range {{minAge}} to {{maxAge}}!</span>
+
+				<input type="text" class="form-control dependent" ng-model="current.gender" ng-pattern="/^[fmFM]$/" placeholder="gender - enter F or M" name="gender">
+				<span class="error text-danger" ng-show="tform.gender.$error.pattern">Enter F for female or M for male</span>
+
+				<textarea class="form-control dependent" ng-model="current.gift" ng-minlength="3" rows="3" placeholder="gift requested (if clothing, include size)  - must be under $40" name="gift"></textarea>
+				<span class="error text-danger" ng-show="tform.gift.$error.minlength">Written letter must include a gift request</span>
+
 			</form>
-			<input type="submit" class="btn btn-success btn-block" ng-click="goToNext(tform)" value="Save & Continue">
+			<input type="submit" class="btn btn-success btn-block" ng-disabled="tform.$invalid" ng-click="goToNext(tform)" value="Save & Continue">
+			<div data-ng-show="error" class="text-center text-danger">
+				<strong data-ng-bind="error"></strong>
+			</div>
 		</div>
 
 		<div ng-class="(adminView && currentAgency.status != 4) || (!adminView && currentAgency.status >= 3) ? 'col-md-12' : 'col-md-9 pull-left col-sm-12 col-xs-12'">

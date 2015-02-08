@@ -106,5 +106,4 @@ angular.module('letters')
 
 		});
 
-
 }]);

@@ -21,7 +21,7 @@ angular.module('letters').controller('ArticlesController',
 			}).error(function(response) {
 				$scope.error = response.message;
 			});
-		};
+		}
 
 		//Check out the file the user is trying to upload
 		function fileInfo(e){
@@ -67,8 +67,8 @@ angular.module('letters').controller('ArticlesController',
 					var teen_col	= headers.indexOf('Accepted Teens');
 					var seniors_col	= headers.indexOf('Accepted Seniors');
 				  
-					for(var i=1; i<rows.length; i++){
-						var record = rows[i].split(',');
+					for(var x=1; x<rows.length; x++){
+						var record = rows[x].split(',');
 						if($filter('filter')($scope.partners, {username: record[code_col]}).length === 0) {
 							var newPartner = {
 								username: 	record[code_col],

@@ -21,7 +21,7 @@ var _ = require('lodash'),
 				});
 			} else {
 				if(req.body.target === 'NYS') {
-					users = users.filter(function (user) {return user.status < 3;}) 
+					users = users.filter(function (user) {return user.status < 3;});
 				}
 				var smtpTransport = nodemailer.createTransport(config.mailer.options);
 				for (var i=0; i < users.length; i++) {

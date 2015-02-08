@@ -39,7 +39,7 @@ exports.update = function(req, res) {
 	var article = req.article;
 
 	article = _.assign(article, req.body);
-	article.updated = Date.now();
+	article.updated = article.name ? Date.now() : '';
 
 	article.save(function(err) {
 		if (err) {
