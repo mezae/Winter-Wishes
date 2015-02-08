@@ -36,16 +36,16 @@
 				<div class="form-group">
 					<label>Agency Info</label>
 					<input type="text"  class="form-control" id="agency" ng-disabled="!isNewAgency" ng-model="partner.username" placeholder="agency code">
-					<input type="text" class="form-control" ng-model="partner.agency" min="0" placeholder="agency name">
-					<input type="text" class="form-control" ng-model="partner.contact" min="0" placeholder="contact name">
-					<input type="email" class="form-control" ng-model="partner.email" min="0" placeholder="contact email">
+					<input type="text" class="form-control" ng-model="partner.agency" placeholder="agency name">
+					<input type="text" class="form-control" ng-model="partner.contact" placeholder="contact name">
+					<input type="email" class="form-control" ng-model="partner.email" placeholder="contact email">
 				</div>
 
 				<div class="form-group">
 					<label>Accepted Letters</label>
-					<input type="number" class="form-control" ng-model="partner.children" min="0" placeholder="children">
-					<input type="number" class="form-control" ng-model="partner.teens" min="0" placeholder="teens">
-					<input type="number" class="form-control" ng-model="partner.seniors" min="0" placeholder="seniors">
+					<input type="number" class="form-control" ng-model="partner.children" ng-disabled="partner.status >= 3" min="0" placeholder="children">
+					<input type="number" class="form-control" ng-model="partner.teens" ng-disabled="partner.status >= 3" min="0" placeholder="teens">
+					<input type="number" class="form-control" ng-model="partner.seniors" ng-disabled="partner.status >= 3" min="0" placeholder="seniors">
 				</div>
 				<input type="button" class="btn btn-danger col-md-4 col-sm-3 col-xs-3 pull-left" ng-click="hideSidebar()" value="Cancel">
 				<div class="form-group">

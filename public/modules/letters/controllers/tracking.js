@@ -64,9 +64,9 @@ angular.module('letters').controller('AgencyController',
 			var mySeniors = $filter('filter')(Recipients, {track: $scope.currentAgency.username + 'S'});
 
 			$scope.tabs = [
-				{ title:'Children', content: myChildren, active: false },
-				{ title:'Teens', content: myTeens, active: false },
-				{ title:'Seniors', content: mySeniors, active: false }
+				{ title:'Children', content: myChildren, active: false, minAge: 4, maxAge: 13 },
+				{ title:'Teens', content: myTeens, active: false, minAge: 14, maxAge: 18 },
+				{ title:'Seniors', content: mySeniors, active: false, minAge: 65, maxAge: 125 }
 			];
 
 			$scope.activateTab(myChildren.length > 0 ? $scope.tabs[0] : (myTeens.length > 0 ? $scope.tabs[1] : $scope.tabs[2]));
@@ -75,12 +75,14 @@ angular.module('letters').controller('AgencyController',
 		}
 		
 		//Allows user to work on another tab
-		$scope.activateTab = function(clicked) {
+		$scope.activateTab = function(clicked, form) {
 			clicked.active = true;
 			$scope.recipients = clicked.content;
+			$scope.minAge = clicked.minAge;
+			$scope.maxAge = clicked.maxAge;
 			blankRecords = $filter('filter')($scope.recipients, function(rec) { return !rec.name; });
 			currentIndex = blankRecords.length > 0 ? $scope.recipients.indexOf(blankRecords[0]) : 0;
-			updateForm();
+			updateForm(form);
 		};
 
 		//Helps find how many days are left until the deadline
@@ -93,28 +95,21 @@ angular.module('letters').controller('AgencyController',
 		}
 
 		//Allows user to clear the current slot
-		$scope.clearForm = function(form) {
+		$scope.clearForm = function() {
 			$scope.current.name = '';
 			$scope.current.age = '';
 			$scope.current.gender = '';
 			$scope.current.gift = '';
+			$scope.current.$update();
 		};
 
 		//Helps to show user appropriate age range of each recipient type
-		function updateForm() {
+		function updateForm(form) {
+			if(form) {
+				form.$setPristine();
+				form.$setUntouched();
+			}
 			$scope.current = $scope.recipients[currentIndex];
-			if($scope.current.track.match(/^...C/)) {
-				$scope.minAge = 4;
-				$scope.maxAge = 13;
-			}
-			else if($scope.current.track.match(/^...T/)) {
-				$scope.minAge = 14;
-				$scope.maxAge = 18;
-			}
-			else if($scope.current.track.match(/^...S/)) {
-				$scope.minAge = 65;
-				$scope.maxAge = 125;
-			}
 		}
 
 		//Allow user to see/edit the next record if current letter is valid
@@ -122,23 +117,19 @@ angular.module('letters').controller('AgencyController',
 			if(isValidLetter(form)) {
 				if(currentIndex < $scope.recipients.length - 1) {
 					currentIndex++;
-					updateForm();
+					updateForm(form);
 				}
 				else {
-					$scope.alert = {
-						active: true,
-						  type: 'info',
-						   msg: 'You just entered the last letter on this page.'
-					};
+					$scope.alert = { active: true, type: 'info', msg: 'You just entered the last letter on this page.' };
 				}
 			}
 		};
 
 		//Allow user to see the record they selected if current letter is valid
 		$scope.goToSelected = function(selected, form) {
-			if(isValidLetter(form)) {
+			if(isValidLetter(form) && !form.$invalid) {
 				currentIndex = $scope.recipients.indexOf(selected);
-				updateForm();
+				updateForm(form);
 			}
 		};
 
@@ -199,8 +190,6 @@ angular.module('letters').controller('AgencyController',
 			}
 
 			$scope.current.$update();
-
-			form.$setUntouched();
 		}
 
 		//Helps clean up sloppy user input

@@ -17,7 +17,7 @@
 				<div class="col-md-12 col-sm-12 col-xs-12 ttseparator">
 					<div class="col-md-9 col-sm-9 col-xs-9 tabs">
 						<tabset>
-							<tab ng-repeat="tab in tabs" heading="{{tab.title}}" active="tab.active" ng-show="tab.content.length > 0" ng-click="activateTab(tab)">
+							<tab ng-repeat="tab in tabs" heading="{{tab.title}}" active="tab.active" ng-show="tab.content.length > 0" ng-click="activateTab(tab, tform)">
 							</tab>
 						</tabset>
 					</div>
@@ -42,7 +42,7 @@
 			<div class="input-group">
 				<input type="text" class="form-control" ng-model="current.track" value="{{current.track}}" readonly>
 				<span class="input-group-btn" tooltip="Remove recipient from this slot" tooltip-trigger="mouseenter" tooltip-append-to-body="false">
-					<button type="button" class="btn btn-danger" ng-click="clearForm(tform)"><i class="glyphicon glyphicon-trash"></i></button>
+					<button type="button" class="btn btn-danger" ng-disabled="!current.updated" ng-click="clearForm()"><i class="glyphicon glyphicon-trash"></i></button>
 				</span> 
 			</div>
 			<form name="tform" class="letter-form" ng-class="current.updated ? 'old' : 'new'">
