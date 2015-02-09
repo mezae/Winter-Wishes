@@ -1,9 +1,9 @@
 <div class="modal-header">
   <h3 class="modal-title">Tracking Form Review</h3>
-  <button type="button" class="btn btn-sm btn-link pull-right closeModal" ng-click="ok()">
+  <button type="button" class="btn btn-sm btn-link pull-right closeModal badflag" ng-click="ok()">
     <i class="glyphicon glyphicon-remove"></i></button>
 </div>
-<div class="modal-body">
+<div class="modal-body same-size">
   <div ng-hide="currentPage > 1">
     This page will help you easily review a tracking form once it has been submitted. <br/><br/>
 
@@ -47,6 +47,6 @@
   Once complete, click <button type="button" class="btn btn-xs btn-link" ><i class="glyphicon glyphicon-download"></i></button> to download a copy of the tracking form.
   </div>
 </div>
-<div class="modal-footer">
+<div class="modal-footer pages">
   <pagination class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" total-items="4" items-per-page="1" max-size="2" rotate="false" ng-model="currentPage"></pagination>
 </div>

@@ -4,10 +4,10 @@
   <h3 class="modal-title" ng-show="currentPage === 3">Editing a letter</h3>
   <h3 class="modal-title" ng-show="currentPage === 4">Submitting your Tracking Form</h3>
   <h3 class="modal-title" ng-show="currentPage === 5">Tracking Gift Receipts</h3>
-  <button type="button" class="btn btn-sm btn-link pull-right closeModal" ng-click="ok()">
+  <button type="button" class="btn btn-sm btn-link pull-right closeModal badflag" ng-click="ok()">
 	<i class="glyphicon glyphicon-remove"></i></button>
 </div>
-<div class="modal-body">
+<div class="modal-body same-size">
 	<div ng-hide="currentPage > 1">
 	<p>This page will help you easily add winter wishes letters and submit the tracking form to the New York Cares Winter Wishes Team.</p>
 
@@ -50,6 +50,6 @@
 		<p>Once the gifts start arriving, click <button type="button" class="btn btn-xs btn-link badflag"><i class="glyphicon glyphicon-gift"></i></button> on the appropriate row to notify the Winter Wishes Team whether or not a gift has been received.</p>
 	</div>
 </div>
-<div class="modal-footer">
+<div class="modal-footer pages">
  	<pagination class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" total-items="5" items-per-page="1" max-size="2" rotate="false" ng-model="currentPage"></pagination>
 </div>

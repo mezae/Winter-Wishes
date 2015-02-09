@@ -85,9 +85,9 @@
 			<div class="caption">
 			  <div class="text-center">
 				<a href="/#!/admin/agency/{{partner._id}}" class="btn btn-sm" ng-class="{'btn-primary': partner.status == 5, 'btn-info': partner.status == 4, 'btn-success': partner.status == 3, 'btn-warning': partner.status == 1, 'btn-danger': partner.status == 0}"><strong>{{partner.username}}</strong></a>
-
 			  </div>
-			  <p class="text-center">{{partner.children + partner.teens + partner.seniors}} Letters</p>
+			  <p class="text-center" ng-show="partner.status < 5">{{partner.children + partner.teens + partner.seniors}} Letters</p>
+			  <p class="text-center" ng-show="partner.status === 5"><rating ng-model="partner.rating.overall" readonly="true"></rating></p>
 
 			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right deleteAgency" ng-click="deleteAgency(partner)"><i class="glyphicon glyphicon-remove"></i></button>
 			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right editAgency" ng-click="showSidebar(partner)"><i class="glyphicon glyphicon-pencil"></i></button>

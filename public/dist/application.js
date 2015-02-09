@@ -95,26 +95,30 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
 				$modal.open({
 					templateUrl: 'modules/core/views/adminTutorial.html',
 					controller: 'AdminModalController',
+					backdrop: false
 				});
 			}
 			else if($location.path() === '/admin/email') {
 				$modal.open({
 					templateUrl: 'modules/core/views/emailTutorial.html',
 					controller: 'ModalInstanceCtrl',
+					backdrop: false
 				});
 			}
 			else if($location.path().indexOf('agency') >= 0) {
 				var template = isAdmin ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
 				$modal.open({
 					templateUrl: template,
-					controller: 'ModalInstanceCtrl'
+					controller: 'ModalInstanceCtrl',
+					backdrop: false
 				});
 			}
 			else {
 				$modal.open({
 					size: 'sm',
 					templateUrl: 'modules/core/views/noTutorial.html',
-					controller: 'ModalInstanceCtrl'
+					controller: 'ModalInstanceCtrl',
+					backdrop: false
 				});
 			}
 		};
@@ -557,8 +561,8 @@ angular.module('letters')
 'use strict';
 
 angular.module('letters').controller('AgencyController', 
-	['$scope', '$stateParams', '$location', '$filter' ,'$timeout', 'Authentication', 'Articles', 'Agencies', 'Users',
-	function($scope, $stateParams, $location, $filter, $timeout, Authentication, Articles, Agencies, Users) {
+	['$scope', '$stateParams', '$location', '$filter' ,'$timeout', '$modal', 'Authentication', 'Articles', 'Agencies', 'Users',
+	function($scope, $stateParams, $location, $filter, $timeout, $modal, Authentication, Articles, Agencies, Users) {
 		$scope.user = Authentication.user;
 
 		if (!$scope.user) $location.path('/');
@@ -764,23 +768,12 @@ angular.module('letters').controller('AgencyController',
 		//Allows admin to complete the review of a tracking form
 		//Allows community partner to submit their completed tracking form
 		$scope.confirmCompletion = function () {
-			var dblcheck = null;
 			var user = null;
 			if($scope.adminView) {
-				dblcheck = confirm('Click OK to confirm that you have reviewed this tracking form.');
-				if(dblcheck) {
-					$scope.currentAgency.status = 5;
-					user = new Agencies($scope.currentAgency);
-					user.$update(function(response) {
-						$scope.currentAgency = response;
-						downloadCSV();
-					}, function(response) {
-						$scope.error = response.data.message;
-					});
-				}
+				rateAgencyToComplete();
 			}
 			else {
-				dblcheck = confirm('Click OK to let the Winter Wishes Team know that your tracking form is ready. You will not be able to make any further changes.');
+				var dblcheck = confirm('Click OK to let the Winter Wishes Team know that your tracking form is ready. You will not be able to make any further changes.');
 				if(dblcheck) {
 					$scope.currentAgency.status = 3;
 					user = new Users($scope.currentAgency);
@@ -854,6 +847,72 @@ angular.module('letters').controller('AgencyController',
 			selected.$update();
 		};
 
+		function rateAgencyToComplete() {
+			var modalInstance = $modal.open({
+				templateUrl: 'modules/letters/views/rating.html',
+				controller: 'RatingCtrl',
+				backdrop: false,
+				size: 'md',
+				resolve: {
+					rating: function () {
+						return $scope.currentAgency.rating;
+					}
+				}
+			});
+
+			modalInstance.result.then(function (result) {
+				$scope.currentAgency.rating = result;
+				$scope.currentAgency.status = 5;
+				var user = new Agencies($scope.currentAgency);
+				user.$update(function(response) {
+					$scope.currentAgency = response;
+					downloadCSV();
+				}, function(response) {
+					$scope.error = response.data.message;
+				});
+			});
+		}
+
+}])
+
+.controller('RatingCtrl', 
+  ['$scope', '$timeout', '$modalInstance', 'rating',
+  function($scope, $timeout, $modalInstance, rating) {
+  		$scope.rating = rating;
+
+		$scope.hoveringOver = function(value, rating) {
+			$scope.overStar = value;
+			$scope.desc = {percent: 100 * (value / 5)};
+			switch(value) {
+				case 1: $scope.desc.words = 'None';
+				break;
+				case 2: $scope.desc.words = 'Scarce';
+				break;
+				case 3: $scope.desc.words = 'Some';
+				break;
+				case 4: $scope.desc.words = 'Good';
+				break;
+				case 5: $scope.desc.words = 'Great';
+				break;
+			}
+			$scope.active = rating;
+		};
+
+		$scope.updateOverall = function() {
+			$scope.rating.overall = ($scope.rating.content + $scope.rating.decoration) / 2;
+		};
+
+		$scope.ok = function () {
+			if($scope.rating.overall > 0) {
+		  		$modalInstance.close($scope.rating);
+		  	}
+		  	else {
+		  		$scope.error = 'your feedback would be greatly appreciated';
+		  		$timeout(function() {
+					$scope.error = null;
+				}, 2000);
+		  	}
+		};
 }]);
 'use strict';
 

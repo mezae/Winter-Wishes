@@ -138,11 +138,11 @@ td {
   right: 0.5em;
 }
 
-.modal-body {
-  min-height: 25em;
+.modal-body.same-size {
+  min-height: 23em;
 }
 
-.modal-footer {
+.modal-footer.pages {
   text-align: center;
   padding: 0;
 }

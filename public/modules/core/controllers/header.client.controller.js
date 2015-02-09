@@ -20,26 +20,30 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
 				$modal.open({
 					templateUrl: 'modules/core/views/adminTutorial.html',
 					controller: 'AdminModalController',
+					backdrop: false
 				});
 			}
 			else if($location.path() === '/admin/email') {
 				$modal.open({
 					templateUrl: 'modules/core/views/emailTutorial.html',
 					controller: 'ModalInstanceCtrl',
+					backdrop: false
 				});
 			}
 			else if($location.path().indexOf('agency') >= 0) {
 				var template = isAdmin ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
 				$modal.open({
 					templateUrl: template,
-					controller: 'ModalInstanceCtrl'
+					controller: 'ModalInstanceCtrl',
+					backdrop: false
 				});
 			}
 			else {
 				$modal.open({
 					size: 'sm',
 					templateUrl: 'modules/core/views/noTutorial.html',
-					controller: 'ModalInstanceCtrl'
+					controller: 'ModalInstanceCtrl',
+					backdrop: false
 				});
 			}
 		};

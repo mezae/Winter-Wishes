@@ -1,0 +1,32 @@
+<div class="modal-header">
+	<h3 class="modal-title">Almost done...</h3>
+</div>
+
+<div class="modal-body">
+	Provide feedback about this agency that may be useful for next year:
+
+	<div>
+		Content: <rating ng-model="rating.content" on-hover="hoveringOver(value, 'content')" on-leave="overStar = null; active = null" ng-click="updateOverall()"></rating>
+		<span ng-show="active == 'content'" class="label" ng-class="{'label-danger': desc.percent<30, 'label-warning': desc.percent>=30 && desc.percent<70, 'label-success': desc.percent>=70}" ng-show="overStar">{{desc.words}}</span>
+	</div>
+
+	<div>
+		Decoration: <rating ng-model="rating.decoration" on-hover="hoveringOver(value, 'decoration')" on-leave="overStar = null; active = null" ng-click="updateOverall()"></rating>
+		<span ng-show="active == 'decoration'" class="label" ng-class="{'label-danger': desc.percent<30, 'label-warning': desc.percent>=30 && desc.percent<70, 'label-success': desc.percent>=70}" ng-show="overStar">{{desc.words}}</span>
+	</div>
+
+	<div>
+		<strong>Overall Rating: </strong><rating ng-model="rating.overall" readonly="true"></rating>
+	</div>
+
+	<div>
+		<textarea class="form-control dependent" ng-model="rating.comments" rows="3" placeholder="add your comments here"></textarea>
+	</div>
+	<div data-ng-show="error" class="text-center text-danger">
+		<strong data-ng-bind="error"></strong>
+	</div>
+</div>
+
+<div class="modal-footer">
+	<button class="btn btn-primary" ng-click="ok()">Complete Review</button>
+</div>

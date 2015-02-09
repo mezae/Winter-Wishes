@@ -63,6 +63,10 @@ var UserSchema = new Schema({
 		type: Number,
 		default: 0
 	},
+	rating: {
+		type: Object,
+		default: {overall: 0, content: 0, decoration: 0}
+	},
 	acceptance: {
 		type: Array
 	},

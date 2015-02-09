@@ -6,11 +6,11 @@
 	<h3 class="modal-title" ng-show="currentPage === 5">Viewing a tracking form</h3>
 	<h3 class="modal-title" ng-show="currentPage === 6">Ready, Go!</h3>
 	
-	<button type="button" class="btn btn-sm btn-link pull-right closeModal" ng-click="exit()">
+	<button type="button" class="btn btn-sm btn-link pull-right closeModal badflag" ng-click="exit()">
 		<i class="glyphicon glyphicon-remove"></i></button>
 </div>
 
-<div class="modal-body">
+<div class="modal-body same-size">
 	<div ng-hide="currentPage > 1">
 		<p>This page will help you easily create and manage tracking forms for each agency accepted into the Winter Wishes program this year. <strong>Let's get started!</strong> </p>
 		
@@ -98,6 +98,6 @@
 
 </div>
 
-<div class="modal-footer">
+<div class="modal-footer pages">
 	<pagination class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" total-items="6" items-per-page="1" max-size="3" rotate="false" ng-model="currentPage"></pagination>
 </div>
