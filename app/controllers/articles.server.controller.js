@@ -13,14 +13,36 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 	var article = new Article(req.body);
+	var user = article.track.substring(0, 4);
+	var index = Number(article.track.substring(4));
 
-	article.save(function(err) {
+	Article.find({'track': { $regex: '^' + user}}).sort('track').exec(function(err, letters) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
-		} else {
-			res.json(article);
+		} 
+		else {
+			for(var i=index-1; i < letters.length; i++) {
+				var newTrack = user + ('00' + (i+2)).substr(-3);
+				letters[i].track = newTrack;
+				letters[i].save(function(err) {
+					if (err) {
+						return res.status(400).send({
+							message: errorHandler.getErrorMessage(err)
+						});
+					}
+				});
+			}
+			article.save(function(err) {
+				if (err) {
+					return res.status(400).send({
+						message: errorHandler.getErrorMessage(err)
+					});
+				} else {
+					res.json(article);
+				}
+			});
 		}
 	});
 };
@@ -52,11 +74,18 @@ exports.update = function(req, res) {
 	});
 };
 
+
+function pad(num) {
+	return ('00' + num).substr(-3); 
+}
+
 /**
  * Delete an article
  */
 exports.delete = function(req, res) {
 	var article = req.article;
+	var user = article.track.substring(0, 4);
+	var index = Number(article.track.substring(4));
 
 	article.remove(function(err) {
 		if (err) {
@@ -64,7 +93,28 @@ exports.delete = function(req, res) {
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.json(article);
+			Article.find({'track': { $regex: '^' + user}}).sort('track').exec(function(err, letters) {
+				if (err) {
+					return res.status(400).send({
+						message: errorHandler.getErrorMessage(err)
+					});
+				} else {
+					for(var i=index - 1; i < letters.length; i++) {
+						var newTrack = user + ('00' + (i+1)).substr(-3);
+						letters[i].track = newTrack;
+						letters[i].save(function(err) {
+							if (err) {
+								return res.status(400).send({
+									message: errorHandler.getErrorMessage(err)
+								});
+							}
+						});
+					}
+				}
+			});
+			return res.status(200).send({
+				message: "remaining tracking labels updated"
+			});
 		}
 	});
 };

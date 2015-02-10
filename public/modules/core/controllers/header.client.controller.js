@@ -20,14 +20,21 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
 				$modal.open({
 					templateUrl: 'modules/core/views/adminTutorial.html',
 					controller: 'AdminModalController',
-					backdrop: false
+					backdrop: 'static'
 				});
 			}
 			else if($location.path() === '/admin/email') {
 				$modal.open({
 					templateUrl: 'modules/core/views/emailTutorial.html',
 					controller: 'ModalInstanceCtrl',
-					backdrop: false
+					backdrop: 'static'
+				});
+			}
+			else if($location.path().indexOf('/admin/email/') >= 0) {
+				$modal.open({
+					templateUrl: 'modules/core/views/etemplateTutorial.html',
+					controller: 'ModalInstanceCtrl',
+					backdrop: 'static'
 				});
 			}
 			else if($location.path().indexOf('agency') >= 0) {
@@ -35,15 +42,14 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
 				$modal.open({
 					templateUrl: template,
 					controller: 'ModalInstanceCtrl',
-					backdrop: false
+					backdrop: 'static'
 				});
 			}
 			else {
 				$modal.open({
 					size: 'sm',
 					templateUrl: 'modules/core/views/noTutorial.html',
-					controller: 'ModalInstanceCtrl',
-					backdrop: false
+					controller: 'ModalInstanceCtrl'
 				});
 			}
 		};

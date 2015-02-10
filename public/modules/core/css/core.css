@@ -30,6 +30,10 @@
   padding: 2px 15px;
 }
 
+.modal-backdrop {
+  bottom: 0;
+}
+
 h2 {
   margin-top: 5px;
 }
@@ -52,7 +56,7 @@ td {
 }
 
 .mainRow {
-  padding-top: 10%;
+  padding-top: 25%;
 }
 
 .mainLegend {
@@ -96,7 +100,7 @@ td {
 /*tracking forms*/
 @media screen and (min-width: 992px) {
   .makeScroll {
-    height: 77vh;
+    height: 73vh;
     width: auto;
   }
 
@@ -152,6 +156,10 @@ td {
   background-color: #f2faf2;
 }
 
+.table-stripes>tbody>tr:nth-child(odd) {
+  background-color: white;
+}
+
 .table tbody>tr>td{
   vertical-align: middle;
   text-align: center;
@@ -171,6 +179,10 @@ th {
 
 .badflag.btn-link {
   color: #d9534f;
+}
+
+.tutor-link {
+  padding: 0 2px;
 }
 
 /*File upload button*/
@@ -262,4 +274,17 @@ donut-chart {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+footer {
+  font-size: 0.8em;
+  text-align: center;
+  color: #d1d1d1;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #e5e5e5;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  background: none repeat scroll 0 0 white;
 }

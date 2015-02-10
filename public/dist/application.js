@@ -95,14 +95,21 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
 				$modal.open({
 					templateUrl: 'modules/core/views/adminTutorial.html',
 					controller: 'AdminModalController',
-					backdrop: false
+					backdrop: 'static'
 				});
 			}
 			else if($location.path() === '/admin/email') {
 				$modal.open({
 					templateUrl: 'modules/core/views/emailTutorial.html',
 					controller: 'ModalInstanceCtrl',
-					backdrop: false
+					backdrop: 'static'
+				});
+			}
+			else if($location.path().indexOf('/admin/email/') >= 0) {
+				$modal.open({
+					templateUrl: 'modules/core/views/etemplateTutorial.html',
+					controller: 'ModalInstanceCtrl',
+					backdrop: 'static'
 				});
 			}
 			else if($location.path().indexOf('agency') >= 0) {
@@ -110,15 +117,14 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
 				$modal.open({
 					templateUrl: template,
 					controller: 'ModalInstanceCtrl',
-					backdrop: false
+					backdrop: 'static'
 				});
 			}
 			else {
 				$modal.open({
 					size: 'sm',
 					templateUrl: 'modules/core/views/noTutorial.html',
-					controller: 'ModalInstanceCtrl',
-					backdrop: false
+					controller: 'ModalInstanceCtrl'
 				});
 			}
 		};
@@ -327,22 +333,28 @@ angular.module('letters').controller('ArticlesController',
 
 		//Allows user to add/update a partner
 		$scope.saveAgency = function() {
-			if($scope.isNewAgency) {
-				if($filter('filter')($scope.partners, {username: $scope.partner.username}).length === 0) {
-					signup($scope.partner);
+			$scope.alert.active = false;
+			if($scope.partner.children + $scope.partner.teens + $scope.partner.seniors > 0) {
+				if($scope.isNewAgency) {
+					if($filter('filter')($scope.partners, {username: $scope.partner.username}).length === 0) {
+						signup($scope.partner);
+					}
+					else {
+						$scope.alert = {active: true, type: 'danger', msg: $scope.partner.username + ' already exists. Please edit the existing copy to avoid duplicates.'};
+					}
 				}
 				else {
-					$scope.alert = {active: true, type: 'danger', msg: $scope.partner.username + ' already exists. Please edit the existing copy to avoid duplicates.'};
+					$scope.partner.$update(function(partner) {
+						console.log(partner.username + ' was updated');
+					}, function(errorResponse) {
+						console.log(errorResponse.data.message);
+					});
 				}
+				$scope.hideSidebar();
 			}
 			else {
-				$scope.partner.$update(function(partner) {
-					console.log(partner.username + ' was updated');
-				}, function(errorResponse) {
-					console.log(errorResponse.data.message);
-				});
+				$scope.alert = {active: true, type: 'danger', msg: 'A tracking form must include at least one letter.'};
 			}
-			$scope.hideSidebar();
 		};
 
 
@@ -654,13 +666,33 @@ angular.module('letters').controller('AgencyController',
 			return Math.floor((utc2 - utc1) / MS_PER_DAY);
 		}
 
+		//Allows admin to add a blank letter and shift everything down
+		$scope.addBlank = function() {
+			var letter = new Articles({track: $scope.current.track});
+			letter.$save(function(response) {
+					$scope.find();
+				}, function(errorResponse) {
+					console.log('response');
+				});
+		}
+
+		//Allows admin to delete an existing letter and shift everything up
 		//Allows user to clear the current slot
-		$scope.clearForm = function() {
-			$scope.current.name = '';
-			$scope.current.age = '';
-			$scope.current.gender = '';
-			$scope.current.gift = '';
-			$scope.current.$update();
+		$scope.clearForm = function(selected) {
+			if($scope.adminView) {
+				selected.$remove(function(response) {
+					$scope.find();
+				}, function(errorResponse) {
+					console.log('Remove Failed');
+				});
+			}
+			else {
+				$scope.current.name = '';
+				$scope.current.age = '';
+				$scope.current.gender = '';
+				$scope.current.gift = '';
+				$scope.current.$update();
+			}
 		};
 
 		//Helps to show user appropriate age range of each recipient type
@@ -851,7 +883,7 @@ angular.module('letters').controller('AgencyController',
 			var modalInstance = $modal.open({
 				templateUrl: 'modules/letters/views/rating.html',
 				controller: 'RatingCtrl',
-				backdrop: false,
+				backdrop: 'static',
 				size: 'md',
 				resolve: {
 					rating: function () {

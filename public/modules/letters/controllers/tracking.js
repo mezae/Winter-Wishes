@@ -94,13 +94,33 @@ angular.module('letters').controller('AgencyController',
 			return Math.floor((utc2 - utc1) / MS_PER_DAY);
 		}
 
+		//Allows admin to add a blank letter and shift everything down
+		$scope.addBlank = function() {
+			var letter = new Articles({track: $scope.current.track});
+			letter.$save(function(response) {
+					$scope.find();
+				}, function(errorResponse) {
+					console.log('response');
+				});
+		}
+
+		//Allows admin to delete an existing letter and shift everything up
 		//Allows user to clear the current slot
-		$scope.clearForm = function() {
-			$scope.current.name = '';
-			$scope.current.age = '';
-			$scope.current.gender = '';
-			$scope.current.gift = '';
-			$scope.current.$update();
+		$scope.clearForm = function(selected) {
+			if($scope.adminView) {
+				selected.$remove(function(response) {
+					$scope.find();
+				}, function(errorResponse) {
+					console.log('Remove Failed');
+				});
+			}
+			else {
+				$scope.current.name = '';
+				$scope.current.age = '';
+				$scope.current.gender = '';
+				$scope.current.gift = '';
+				$scope.current.$update();
+			}
 		};
 
 		//Helps to show user appropriate age range of each recipient type
@@ -291,7 +311,7 @@ angular.module('letters').controller('AgencyController',
 			var modalInstance = $modal.open({
 				templateUrl: 'modules/letters/views/rating.html',
 				controller: 'RatingCtrl',
-				backdrop: false,
+				backdrop: 'static',
 				size: 'md',
 				resolve: {
 					rating: function () {

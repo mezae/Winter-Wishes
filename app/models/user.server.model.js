@@ -25,10 +25,6 @@ var validateLocalStrategyPassword = function(password) {
  * User Schema
  */
 var UserSchema = new Schema({
-	displayName: {
-		type: String,
-		trim: true
-	},
 	email: {
 		type: String,
 		trim: true,
@@ -49,15 +45,15 @@ var UserSchema = new Schema({
 	},
 	children: {
 		type: Number,
-		default: ''
+		default: 0
 	},
 	teens: {
 		type: Number,
-		default: ''
+		default: 0
 	},
 	seniors: {
 		type: Number,
-		default: ''
+		default: 0
 	},
 	status: {
 		type: Number,

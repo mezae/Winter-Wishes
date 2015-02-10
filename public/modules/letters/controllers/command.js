@@ -90,22 +90,28 @@ angular.module('letters').controller('ArticlesController',
 
 		//Allows user to add/update a partner
 		$scope.saveAgency = function() {
-			if($scope.isNewAgency) {
-				if($filter('filter')($scope.partners, {username: $scope.partner.username}).length === 0) {
-					signup($scope.partner);
+			$scope.alert.active = false;
+			if($scope.partner.children + $scope.partner.teens + $scope.partner.seniors > 0) {
+				if($scope.isNewAgency) {
+					if($filter('filter')($scope.partners, {username: $scope.partner.username}).length === 0) {
+						signup($scope.partner);
+					}
+					else {
+						$scope.alert = {active: true, type: 'danger', msg: $scope.partner.username + ' already exists. Please edit the existing copy to avoid duplicates.'};
+					}
 				}
 				else {
-					$scope.alert = {active: true, type: 'danger', msg: $scope.partner.username + ' already exists. Please edit the existing copy to avoid duplicates.'};
+					$scope.partner.$update(function(partner) {
+						console.log(partner.username + ' was updated');
+					}, function(errorResponse) {
+						console.log(errorResponse.data.message);
+					});
 				}
+				$scope.hideSidebar();
 			}
 			else {
-				$scope.partner.$update(function(partner) {
-					console.log(partner.username + ' was updated');
-				}, function(errorResponse) {
-					console.log(errorResponse.data.message);
-				});
+				$scope.alert = {active: true, type: 'danger', msg: 'A tracking form must include at least one letter.'};
 			}
-			$scope.hideSidebar();
 		};
 
 

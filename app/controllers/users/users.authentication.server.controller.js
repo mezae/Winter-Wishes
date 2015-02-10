@@ -50,7 +50,6 @@ exports.signup = function(req, res) {
 
 	// Add missing user fields
 	user.provider = 'local';
-	user.displayName = user.agency;
 	user.password = 'volunteer87';
 
 	// Then save the user 

@@ -24,7 +24,7 @@
 					<div class="col-md-3 col-sm-3 col-xs-3 text-right icons">
 						<button type="button" class="btn btn-lg btn-link badflag" ng-show="currentAgency.status == 4 && adminView" ng-click="returnLetters()"><i class="glyphicon glyphicon-exclamation-sign" tooltip="Return" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></button>
 
-						<button type="button" class="btn btn-lg btn-link" ng-show="(currentAgency.status == 3 || currentAgency.status == 5) && adminView" ng-click="startReview()"><i class="glyphicon glyphicon-edit" tooltip="Review" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></button>
+						<button type="button" class="btn btn-lg btn-link" ng-show="(currentAgency.status == 3 || currentAgency.status == 5) && adminView" ng-click="startReview()"><i class="glyphicon glyphicon-edit" tooltip="{{currentAgency.status == 5 ? 'Oops...forgot something?' : 'Review'}}" tooltip-trigger="mouseenter"></i></button>
 
 						<button type="button" class="btn btn-lg btn-link" ng-show="(!adminView && currentAgency.status < 3) || (adminView && currentAgency.status == 4)" ng-click="confirmCompletion()"><i class="glyphicon glyphicon-ok-sign" tooltip="Submit" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></button>
 
@@ -44,9 +44,12 @@
 			</div>
 			<br/>
 			<div class="input-group">
+				<span class="input-group-btn" ng-show="adminView" tooltip="Add blank slot and shift everything down" tooltip-trigger="mouseenter" tooltip-append-to-body="false">
+					<button type="button" class="btn btn-danger" ng-click="addBlank(current)"><i class="glyphicon glyphicon-plus"></i></button>
+				</span> 
 				<input type="text" class="form-control" ng-model="current.track" value="{{current.track}}" readonly>
-				<span class="input-group-btn" tooltip="Remove recipient from this slot" tooltip-trigger="mouseenter" tooltip-append-to-body="false">
-					<button type="button" class="btn btn-danger" ng-disabled="!current.updated" ng-click="clearForm()"><i class="glyphicon glyphicon-trash"></i></button>
+				<span class="input-group-btn" tooltip="{{adminView ? 'Delete letter and shift everything up' : 'Remove recipient from this slot'}}" tooltip-trigger="mouseenter" tooltip-append-to-body="false">
+					<button type="button" class="btn btn-danger" ng-disabled="!adminView && !current.updated" ng-click="clearForm(current)"><i ng-class="adminView ? 'glyphicon glyphicon-minus' : 'glyphicon glyphicon-trash'"></i></button>
 				</span> 
 			</div>
 			<form name="tform" class="letter-form" ng-class="current.updated ? 'old' : 'new'">
@@ -96,7 +99,7 @@
 								<button type="button" class="btn btn-xs btn-link" ng-class="rec.flagged ? 'badflag' : 'goodflag'" ng-click="flagLetter(rec)" ng-disabled="currentAgency.status == 5"><i class="glyphicon glyphicon-flag"></i></button>
 							</td>
 							<td ng-show="currentAgency.status >= 5">
-								<button type="button" class="btn btn-xs btn-link" ng-class="rec.received ? 'goodflag' : 'badflag'" ng-click="giftReceived(rec)"><i class="glyphicon glyphicon-gift"></i></button>
+								<button type="button" class="btn btn-xs btn-link" ng-class="rec.received ? 'goodflag' : 'badflag'" ng-click="giftReceived(rec)" ng-disabled="adminView"><i class="glyphicon glyphicon-gift"></i></button>
 							</td>
 						</tr>
 						<tr ng-if="letters.$resolved && results.length == 0">
