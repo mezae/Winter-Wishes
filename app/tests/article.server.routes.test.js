@@ -20,27 +20,32 @@ describe('Article CRUD tests', function() {
 	beforeEach(function(done) {
 		// Create user credentials
 		credentials = {
-			username: 'username',
+			username: 'AAA',
 			password: 'password'
 		};
 
 		// Create a new user
 		user = new User({
-			firstName: 'Full',
-			lastName: 'Name',
-			displayName: 'Full Name',
 			email: 'test@test.com',
 			username: credentials.username,
 			password: credentials.password,
+			children: 0, 
+			teens: 0,
+			seniors: 0,
+			agency: 'A Better Chance',
+			contact: 'Howard Ratero',
 			provider: 'local'
 		});
 
 		// Save a user to the test db and create new article
 		user.save(function() {
-			article = {
-				title: 'Article Title',
-				content: 'Article Content'
-			};
+			article = new Article({
+			track: 'ABCC001',
+			name: 'Elmer Meza',
+			age: 6,
+			gender: 'M',
+			gift: 'a patchwork elephant'
+			});
 
 			done();
 		});
@@ -75,8 +80,7 @@ describe('Article CRUD tests', function() {
 								var articles = articlesGetRes.body;
 
 								// Set assertions
-								(articles[0].user._id).should.equal(userId);
-								(articles[0].title).should.match('Article Title');
+								(articles[0].name).should.match('Elmer Meza');
 
 								// Call the assertion callback
 								done();
@@ -95,33 +99,33 @@ describe('Article CRUD tests', function() {
 			});
 	});
 
-	it('should not be able to save an article if no title is provided', function(done) {
-		// Invalidate title field
-		article.title = '';
+	// it('should not be able to save an article if no title is provided', function(done) {
+	// 	// Invalidate title field
+	// 	article.title = '';
 
-		agent.post('/auth/signin')
-			.send(credentials)
-			.expect(200)
-			.end(function(signinErr, signinRes) {
-				// Handle signin error
-				if (signinErr) done(signinErr);
+	// 	agent.post('/auth/signin')
+	// 		.send(credentials)
+	// 		.expect(200)
+	// 		.end(function(signinErr, signinRes) {
+	// 			// Handle signin error
+	// 			if (signinErr) done(signinErr);
 
-				// Get the userId
-				var userId = user.id;
+	// 			// Get the userId
+	// 			var userId = user.id;
 
-				// Save a new article
-				agent.post('/articles')
-					.send(article)
-					.expect(400)
-					.end(function(articleSaveErr, articleSaveRes) {
-						// Set message assertion
-						(articleSaveRes.body.message).should.match('Title cannot be blank');
+	// 			// Save a new article
+	// 			agent.post('/articles')
+	// 				.send(article)
+	// 				.expect(400)
+	// 				.end(function(articleSaveErr, articleSaveRes) {
+	// 					// Set message assertion
+	// 					(articleSaveRes.body.message).should.match('Title cannot be blank');
 						
-						// Handle article save error
-						done(articleSaveErr);
-					});
-			});
-	});
+	// 					// Handle article save error
+	// 					done(articleSaveErr);
+	// 				});
+	// 		});
+	// });
 
 	it('should be able to update an article if signed in', function(done) {
 		agent.post('/auth/signin')
@@ -143,7 +147,7 @@ describe('Article CRUD tests', function() {
 						if (articleSaveErr) done(articleSaveErr);
 
 						// Update article title
-						article.title = 'WHY YOU GOTTA BE SO MEAN?';
+						article.name = 'Elmer Meza Nazario';
 
 						// Update an existing article
 						agent.put('/articles/' + articleSaveRes.body._id)
@@ -155,7 +159,7 @@ describe('Article CRUD tests', function() {
 
 								// Set assertions
 								(articleUpdateRes.body._id).should.equal(articleSaveRes.body._id);
-								(articleUpdateRes.body.title).should.match('WHY YOU GOTTA BE SO MEAN?');
+								(articleUpdateRes.body.name).should.match('Elmer Meza Nazario');
 
 								// Call the assertion callback
 								done();
@@ -164,7 +168,7 @@ describe('Article CRUD tests', function() {
 			});
 	});
 
-	it('should be able to get a list of articles if not signed in', function(done) {
+	it('should not be able to get a list of articles if not signed in', function(done) {
 		// Create new article model instance
 		var articleObj = new Article(article);
 
@@ -172,31 +176,39 @@ describe('Article CRUD tests', function() {
 		articleObj.save(function() {
 			// Request articles
 			request(app).get('/articles')
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Array.with.lengthOf(1);
+			.expect(401)
+			.end(function(articleSaveErr, articleSaveRes) {
+				// Call the assertion callback
+				done(articleSaveErr);
+				// .end(function(req, res) {
+				// 	// Set assertion
+				// 	res.body.should.be.an.Array.with.lengthOf(1);
 
-					// Call the assertion callback
-					done();
+				// 	// Call the assertion callback
+				// 	done();
 				});
 
 		});
 	});
 
 
-	it('should be able to get a single article if not signed in', function(done) {
+	it('should not be able to get a single article if not signed in', function(done) {
 		// Create new article model instance
 		var articleObj = new Article(article);
 
 		// Save the article
 		articleObj.save(function() {
 			request(app).get('/articles/' + articleObj._id)
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Object.with.property('title', article.title);
-
+				.expect(401)
+				.end(function(articleSaveErr, articleSaveRes) {
 					// Call the assertion callback
-					done();
+					done(articleSaveErr);
+				// .end(function(req, res) {
+				// 	// Set assertion
+				// 	res.body.should.be.an.Object.with.property('title', article.title);
+
+				// 	// Call the assertion callback
+				// 	done();
 				});
 		});
 	});
@@ -229,7 +241,7 @@ describe('Article CRUD tests', function() {
 								if (articleDeleteErr) done(articleDeleteErr);
 
 								// Set assertions
-								(articleDeleteRes.body._id).should.equal(articleSaveRes.body._id);
+								(articleDeleteRes.body.message).should.match('remaining tracking labels updated');
 
 								// Call the assertion callback
 								done();

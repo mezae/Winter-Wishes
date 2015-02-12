@@ -139,6 +139,11 @@ module.exports = function(grunt) {
 			unit: {
 				configFile: 'karma.conf.js'
 			}
+		},
+		protractor: {
+			unit: {
+				configFile: 'protractor-conf.js'
+			}
 		}
 	});
 
@@ -174,4 +179,6 @@ module.exports = function(grunt) {
 
 	// Test task.
 	grunt.registerTask('test', ['env:test', 'mochaTest', 'karma:unit']);
+
+	grunt.registerTask('eetest', ['env:test', 'mochaTest', 'protractor.unit']);
 };

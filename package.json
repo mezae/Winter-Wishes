@@ -10,6 +10,10 @@
   "scripts": {
     "start": "grunt",
     "test": "grunt test",
+    "preupdate-webdriver": "npm install",
+    "update-webdriver": "webdriver-manager update",
+    "preprotractor": "npm run update-webdriver",
+    "protractor": "protractor test/protractor-conf.js",
     "postinstall": "bower install --config.interactive=false"
   },
   "dependencies": {
@@ -57,6 +61,7 @@
     "karma-jasmine": "~0.2.1",
     "karma-phantomjs-launcher": "~0.1.2",
     "load-grunt-tasks": "~1.0.0",
+    "protractor": "^1.6.1",
     "should": "~4.1.0",
     "supertest": "~0.14.0"
   }

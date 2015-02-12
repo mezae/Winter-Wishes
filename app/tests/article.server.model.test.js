@@ -19,19 +19,23 @@ var user, article;
 describe('Article Model Unit Tests:', function() {
 	beforeEach(function(done) {
 		user = new User({
-			firstName: 'Full',
-			lastName: 'Name',
-			displayName: 'Full Name',
 			email: 'test@test.com',
-			username: 'username',
-			password: 'password'
+			username: 'ABC',
+			password: 'password',
+			children: 0, 
+			teens: 0,
+			seniors: 0,
+			agency: 'A Better Chance',
+			contact: 'Howard Ratero'
 		});
 
 		user.save(function() {
 			article = new Article({
-				title: 'Article Title',
-				content: 'Article Content',
-				user: user
+			track: 'ABCC001',
+			name: 'Elmer Meza',
+			age: 6,
+			gender: 'M',
+			gift: 'a patchwork elephant'
 			});
 
 			done();
@@ -46,14 +50,14 @@ describe('Article Model Unit Tests:', function() {
 			});
 		});
 
-		it('should be able to show an error when try to save without title', function(done) {
-			article.title = '';
+		// it('should be able to show an error when try to save without title', function(done) {
+		// 	article.title = '';
 
-			return article.save(function(err) {
-				should.exist(err);
-				done();
-			});
-		});
+		// 	return article.save(function(err) {
+		// 		should.exist(err);
+		// 		done();
+		// 	});
+		// });
 	});
 
 	afterEach(function(done) {

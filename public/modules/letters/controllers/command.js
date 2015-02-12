@@ -11,7 +11,6 @@ angular.module('letters').controller('ArticlesController',
 
 		$scope.find = function() {
 			$scope.partners = Agencies.query();
-			document.getElementById('the_file').addEventListener('change', fileInfo, false);
 		};
 
 		//Allows user to add create new accounts, consider moving to backend
@@ -23,18 +22,18 @@ angular.module('letters').controller('ArticlesController',
 			});
 		}
 
-		//Check out the file the user is trying to upload
-		function fileInfo(e){
-		  $scope.file = e.target.files[0];
-		  if ($scope.file.name.split('.')[1].toUpperCase() !== 'CSV'){
-			alert('Must be a csv file!');
-			e.target.parentNode.reset();
-			return;
-		  }
-		  else {
-			document.getElementById('filename').value = $scope.file.name;
-		  }
-		}
+		$scope.fileInfo = function(element) {
+			$scope.$apply(function() {
+				$scope.file = element.files[0];
+				if ($scope.file) {
+					if ($scope.file.name.split('.')[1].toUpperCase() !== 'CSV'){
+					 	alert('Must be a csv file!');
+					 	$scope.file = null;
+					 	return;
+					}
+				}
+	    	});
+	    };
 
 		//Allow user to upload file to add partners in bulk
 		//Makes sure CSV file includes required fields, otherwise lets user which fields are missing
@@ -42,7 +41,6 @@ angular.module('letters').controller('ArticlesController',
 			var file = $scope.file;
 			var reader = new FileReader();
 			reader.onload = function(file) {
-				$scope.needToUpdate = false;
 				var content = file.target.result;
 				var rows = content.split(/[\r\n|\n]+/);
 				var headers = rows[0].split(',');
@@ -86,6 +84,8 @@ angular.module('letters').controller('ArticlesController',
 				}
 			};
 			reader.readAsText(file);
+			$scope.needToUpdate = false;
+			$scope.file = null;
 		};
 
 		//Allows user to add/update a partner
