@@ -14,7 +14,7 @@
 	</div>
 
 	<div class="row">
-		<div class="col-md-3 pull-right sideb col-sm-12 col-xs-12" ng-show="needToUpdate">
+		<div class="col-md-3 pull-right sideb col-sm-12 col-xs-12 nga-default nga-stagger nga-slide-right" ng-show="needToUpdate">
 			<form role="form" ng-show="!partner">
 				<div class="form-group">
 					<label class="sr-only" for="the_file">File input</label>
@@ -80,8 +80,8 @@
 	<div ng-class="needToUpdate ? 'col-md-9 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-12 col-sm-12 col-xs-12'">
 
 	  <div class="row">
-		<div class="col-xs-6 col-sm-3 col-md-2" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results" ng-if="partner.username != 'AAA'">
-		  <div class="thumbnail" ng-mouseenter="turn = true" ng-mouseleave="turn = false">
+		<div class="col-xs-6 col-sm-3 col-md-2 nga-default nga-stagger nga-slide-right" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results" ng-if="partner.username != 'AAA'">
+		  <div class="thumbnail " ng-mouseenter="turn = true" ng-mouseleave="turn = false" >
 			<div class="caption">
 			  <div class="text-center">
 				<a href="/#!/admin/agency/{{partner._id}}" class="btn btn-sm" ng-class="{'btn-primary': partner.status == 5, 'btn-info': partner.status == 4, 'btn-success': partner.status == 3, 'btn-warning': partner.status == 1, 'btn-danger': partner.status == 0}"><strong>{{partner.username}}</strong></a>
