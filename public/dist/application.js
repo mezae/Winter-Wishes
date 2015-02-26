@@ -2,24 +2,24 @@
 
 // Init the application configuration module for AngularJS application
 var ApplicationConfiguration = (function() {
-	// Init module configuration options
-	var applicationModuleName = 'meanww';
-	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngAnimate',  'ngTouch',  'ngSanitize',  'ui.router', 'ui.bootstrap', 'ui.utils'];
+    // Init module configuration options
+    var applicationModuleName = 'meanww';
+    var applicationModuleVendorDependencies = ['ngResource', 'ngCookies', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ui.utils'];
 
-	// Add a new vertical module
-	var registerModule = function(moduleName, dependencies) {
-		// Create angular module
-		angular.module(moduleName, dependencies || []);
+    // Add a new vertical module
+    var registerModule = function(moduleName, dependencies) {
+        // Create angular module
+        angular.module(moduleName, dependencies || []);
 
-		// Add the module to the AngularJS configuration file
-		angular.module(applicationModuleName).requires.push(moduleName);
-	};
+        // Add the module to the AngularJS configuration file
+        angular.module(applicationModuleName).requires.push(moduleName);
+    };
 
-	return {
-		applicationModuleName: applicationModuleName,
-		applicationModuleVendorDependencies: applicationModuleVendorDependencies,
-		registerModule: registerModule
-	};
+    return {
+        applicationModuleName: applicationModuleName,
+        applicationModuleVendorDependencies: applicationModuleVendorDependencies,
+        registerModule: registerModule
+    };
 })();
 'use strict';
 
@@ -76,115 +76,114 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
 'use strict';
 
 angular.module('core').controller('HeaderController', ['$scope', '$location', '$modal', 'Authentication',
-	function($scope, $location, $modal, Authentication) {
-		$scope.authentication = Authentication;
-		$scope.isCollapsed = false;
-		var isAdmin = $scope.authentication.user.username === 'AAA' ? true : false;
+    function($scope, $location, $modal, Authentication) {
+        $scope.authentication = Authentication;
+        $scope.isCollapsed = false;
+        var isAdmin = $scope.authentication.user.username === 'AAA' ? true : false;
 
-		$scope.toggleCollapsibleMenu = function() {
-			$scope.isCollapsed = !$scope.isCollapsed;
-		};
+        $scope.toggleCollapsibleMenu = function() {
+            $scope.isCollapsed = !$scope.isCollapsed;
+        };
 
-		// Collapsing the menu after navigation
-		$scope.$on('$stateChangeSuccess', function() {
-			$scope.isCollapsed = false;
-		});
+        // Collapsing the menu after navigation
+        $scope.$on('$stateChangeSuccess', function() {
+            $scope.isCollapsed = false;
+        });
 
-		$scope.showTutorial = function () {
-			if($location.path() === '/admin') {
-				$modal.open({
-					templateUrl: 'modules/core/views/adminTutorial.html',
-					controller: 'AdminModalController',
-					backdrop: 'static'
-				});
-			}
-			else if($location.path() === '/admin/email') {
-				$modal.open({
-					templateUrl: 'modules/core/views/emailTutorial.html',
-					controller: 'ModalInstanceCtrl',
-					backdrop: 'static'
-				});
-			}
-			else if($location.path().indexOf('/admin/email/') >= 0) {
-				$modal.open({
-					templateUrl: 'modules/core/views/etemplateTutorial.html',
-					controller: 'ModalInstanceCtrl',
-					backdrop: 'static'
-				});
-			}
-			else if($location.path().indexOf('agency') >= 0) {
-				var template = isAdmin ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
-				$modal.open({
-					templateUrl: template,
-					controller: 'ModalInstanceCtrl',
-					backdrop: 'static'
-				});
-			}
-			else {
-				$modal.open({
-					size: 'sm',
-					templateUrl: 'modules/core/views/noTutorial.html',
-					controller: 'ModalInstanceCtrl'
-				});
-			}
-		};
+        $scope.showTutorial = function() {
+            if ($location.path() === '/admin') {
+                $modal.open({
+                    templateUrl: 'modules/core/views/adminTutorial.html',
+                    controller: 'AdminModalController',
+                    backdrop: 'static'
+                });
+            } else if ($location.path() === '/admin/email') {
+                $modal.open({
+                    templateUrl: 'modules/core/views/emailTutorial.html',
+                    controller: 'ModalInstanceCtrl',
+                    backdrop: 'static'
+                });
+            } else if ($location.path().indexOf('/admin/email/') >= 0) {
+                $modal.open({
+                    templateUrl: 'modules/core/views/etemplateTutorial.html',
+                    controller: 'ModalInstanceCtrl',
+                    backdrop: 'static'
+                });
+            } else if ($location.path().indexOf('agency') >= 0) {
+                var template = isAdmin ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
+                $modal.open({
+                    templateUrl: template,
+                    controller: 'ModalInstanceCtrl',
+                    backdrop: 'static'
+                });
+            } else {
+                $modal.open({
+                    size: 'sm',
+                    templateUrl: 'modules/core/views/noTutorial.html',
+                    controller: 'ModalInstanceCtrl'
+                });
+            }
+        };
 
-		if(!isAdmin && $scope.authentication.user.status === 0) $scope.showTutorial();
-	}
+        if (!isAdmin && $scope.authentication.user.status === 0) $scope.showTutorial();
+    }
 ])
 
 .controller('AdminModalController', ['$scope', '$modalInstance', '$filter', 'Authentication', 'Users',
-  
-  function($scope, $modalInstance, $filter, Authentication, Users) {
 
-  	function init() {
-		$scope.user = Authentication.user;
-		$scope.dueDate = $filter('date')($scope.user.due, 'MM/dd/yy');
-	}
+    function($scope, $modalInstance, $filter, Authentication, Users) {
 
-	$scope.saveDueDate = function() {
-		$scope.user.due = $scope.dueDate;
-		var user = new Users($scope.user);
-		user.$update(function(response) {
-			Authentication.user = response;
-			init();
-		}, function(response) {
-			console.log(response.data.message);
-		});
-	};
+        function init() {
+            $scope.user = Authentication.user;
+            $scope.dueDate = $filter('date')($scope.user.due, 'MM/dd/yy');
+        }
 
-	$scope.open = function($event) {
-	  $event.preventDefault();
-	  $event.stopPropagation();
-	  $scope.opened = true;
-	};
+        $scope.saveDueDate = function() {
+            $scope.user.due = $scope.dueDate;
+            var user = new Users($scope.user);
+            user.$update(function(response) {
+                Authentication.user = response;
+                init();
+            }, function(response) {
+                console.log(response.data.message);
+            });
+        };
 
-	$scope.minDate = new Date();
+        $scope.open = function($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.opened = true;
+        };
 
-	$scope.dateOptions = {
-	  showWeeks: false
-	};
+        $scope.minDate = new Date();
 
-	$scope.exit = function () {
-	  $modalInstance.close();
-	};
+        $scope.dateOptions = {
+            showWeeks: false
+        };
 
-	init();
+        $scope.exit = function() {
+            $modalInstance.close();
+        };
 
-}])
+        init();
 
-.controller('ModalInstanceCtrl', 
-  ['$scope', '$filter', '$modalInstance', 'Agencies',
-  function($scope, $filter, $modalInstance, Agencies) {
-  	Agencies.query(function(users) {
-  		var admin = $filter('filter')(users, {username: 'AAA'});
-		$scope.dueDate = $filter('date')(admin[0].due, 'fullDate');
-	});
+    }
+])
 
-	$scope.ok = function () {
-	  $modalInstance.close();
-	};
-}]);
+.controller('ModalInstanceCtrl', ['$scope', '$filter', '$modalInstance', 'Agencies',
+    function($scope, $filter, $modalInstance, Agencies) {
+        Agencies.query(function(users) {
+            var admin = _.find(users, {
+                'username': 'AAA'
+            });
+            $scope.dueDate = $filter('date')(admin.due, 'fullDate');
+        });
+
+        $scope.ok = function() {
+            $modalInstance.close();
+        };
+    }
+]);
 'use strict';
 
 // Users service used for communicating with the users REST endpoint
@@ -243,146 +242,168 @@ angular.module('letters').config(['$stateProvider',
 ]);
 'use strict';
 
-angular.module('letters').controller('ArticlesController', 
-	['$scope', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
-	function($scope, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
-		$scope.user = Authentication.user;
-		if (!$scope.user) $location.path('/');
-		
-		$scope.needToUpdate = false;		//helps hide sidebar when it's not needed
-		$scope.alert = {active: false};
+angular.module('letters').controller('ArticlesController', ['$scope', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
+    function($scope, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
+        $scope.user = Authentication.user;
+        if (!$scope.user) $location.path('/');
 
-		$scope.find = function() {
-			$scope.partners = Agencies.query();
-		};
+        $scope.needToUpdate = false; //helps hide sidebar when it's not needed
+        $scope.alert = {
+            active: false
+        };
 
-		//Allows user to add create new accounts, consider moving to backend
-		function signup(credentials) {
-			$http.post('/auth/signup', credentials).success(function(response) {
-				$scope.partners.push(response);
-			}).error(function(response) {
-				$scope.error = response.message;
-			});
-		}
+        $scope.find = function() {
+            $scope.partners = Agencies.query();
+        };
 
-		$scope.fileInfo = function(element) {
-			$scope.$apply(function() {
-				$scope.file = element.files[0];
-				if ($scope.file) {
-					if ($scope.file.name.split('.')[1].toUpperCase() !== 'CSV'){
-					 	alert('Must be a csv file!');
-					 	$scope.file = null;
-					 	return;
-					}
-				}
-	    	});
-	    };
+        //Allows user to add create new accounts, consider moving to backend
+        function signup(credentials) {
+            $http.post('/auth/signup', credentials).success(function(response) {
+                $scope.partners.push(response);
+            }).error(function(response) {
+                $scope.error = response.message;
+            });
+        }
 
-		//Allow user to upload file to add partners in bulk
-		//Makes sure CSV file includes required fields, otherwise lets user which fields are missing
-		$scope.handleFileSelect = function(){
-			var file = $scope.file;
-			var reader = new FileReader();
-			reader.onload = function(file) {
-				var content = file.target.result;
-				var rows = content.split(/[\r\n|\n]+/);
-				var headers = rows[0].split(',');
-				var required_fields = ['Agency Code', 'Agency Name', 'Contact Name', 'Contact E-mail', 'Accepted Children', 'Accepted Teens', 'Accepted Seniors'];
-				var missing_fields = [];
+        $scope.fileInfo = function(element) {
+            $scope.$apply(function() {
+                $scope.file = element.files[0];
+                if ($scope.file) {
+                    if ($scope.file.name.split('.')[1].toUpperCase() !== 'CSV') {
+                        alert('Must be a csv file!');
+                        $scope.file = null;
+                        return;
+                    }
+                }
+            });
+        };
 
-				for(var i = 0; i < required_fields.length; i++) {
-					if(headers.indexOf(required_fields[i]) === -1) {
-						missing_fields.push(required_fields[i]);
-					}
-				}
+        //Allow user to upload file to add partners in bulk
+        //Makes sure CSV file includes required fields, otherwise lets user which fields are missing
+        $scope.handleFileSelect = function() {
+            var file = $scope.file;
+            var reader = new FileReader();
+            reader.onload = function(file) {
+                var content = file.target.result;
+                var rows = content.split(/[\r\n|\n]+/);
+                var headers = rows.shift();
+                var required_fields = ['Agency Code', 'Agency Name', 'Contact Name', 'Contact E-mail', 'Accepted Children', 'Accepted Teens', 'Accepted Seniors'];
+                var missing_fields = [];
 
-				if(missing_fields.length > 0) {
-					$scope.alert = {active: true, type: 'danger', msg: 'Your csv file could not be uploaded. It is missing the following columns: ' + missing_fields.join(', ') + '.'};
-				}
-				else {
-					var code_col	= headers.indexOf('Agency Code');
-					var agency_col	= headers.indexOf('Agency Name');
-					var contact_col	= headers.indexOf('Contact Name');
-					var email_col	= headers.indexOf('Contact E-mail');
-					var child_col	= headers.indexOf('Accepted Children');
-					var teen_col	= headers.indexOf('Accepted Teens');
-					var seniors_col	= headers.indexOf('Accepted Seniors');
-				  
-					for(var x=1; x<rows.length; x++){
-						var record = rows[x].split(',');
-						if($filter('filter')($scope.partners, {username: record[code_col]}).length === 0) {
-							var newPartner = {
-								username: 	record[code_col],
-								agency: 	record[agency_col],
-								contact: 	record[contact_col],
-								email: 		record[email_col],
-								children: 	Number(record[child_col]),
-								teens: 		Number(record[teen_col]),
-								seniors: 	Number(record[seniors_col])
-							};
-							signup(newPartner);
-						}
-					}
-					$scope.alert = {active: true, type: 'success', msg: 'Your csv file was uploaded successfully.'};
-				}
-			};
-			reader.readAsText(file);
-			$scope.needToUpdate = false;
-			$scope.file = null;
-		};
+                _.forEach(required_fields, function(field) {
+                    if (!_.includes(headers, field)) {
+                        missing_fields.push(field);
+                    }
+                });
 
-		//Allows user to add/update a partner
-		$scope.saveAgency = function() {
-			$scope.alert.active = false;
-			if($scope.partner.children + $scope.partner.teens + $scope.partner.seniors > 0) {
-				if($scope.isNewAgency) {
-					if($filter('filter')($scope.partners, {username: $scope.partner.username}).length === 0) {
-						signup($scope.partner);
-					}
-					else {
-						$scope.alert = {active: true, type: 'danger', msg: $scope.partner.username + ' already exists. Please edit the existing copy to avoid duplicates.'};
-					}
-				}
-				else {
-					$scope.partner.$update(function(partner) {
-						console.log(partner.username + ' was updated');
-					}, function(errorResponse) {
-						console.log(errorResponse.data.message);
-					});
-				}
-				$scope.hideSidebar();
-			}
-			else {
-				$scope.alert = {active: true, type: 'danger', msg: 'A tracking form must include at least one letter.'};
-			}
-		};
+                if (missing_fields.length) {
+                    $scope.alert = {
+                        active: true,
+                        type: 'danger',
+                        msg: 'Your csv file could not be uploaded. It is missing the following columns: ' + missing_fields.join(', ') + '.'
+                    };
+                } else {
+                    headers = headers.split(',');
+                    var code_col = headers.indexOf('Agency Code');
+                    var agency_col = headers.indexOf('Agency Name');
+                    var contact_col = headers.indexOf('Contact Name');
+                    var email_col = headers.indexOf('Contact E-mail');
+                    var child_col = headers.indexOf('Accepted Children');
+                    var teen_col = headers.indexOf('Accepted Teens');
+                    var seniors_col = headers.indexOf('Accepted Seniors');
+
+                    _.forEach(rows, function(row) {
+                        var record = row.split(',');
+                        if (!_.includes($scope.partners, record[code_col])) {
+                            var newPartner = {
+                                username: record[code_col],
+                                agency: record[agency_col],
+                                contact: record[contact_col],
+                                email: record[email_col],
+                                children: Number(record[child_col]),
+                                teens: Number(record[teen_col]),
+                                seniors: Number(record[seniors_col])
+                            };
+                            signup(newPartner);
+                        }
+                    });
+                    $scope.alert = {
+                        active: true,
+                        type: 'success',
+                        msg: 'Your csv file was uploaded successfully.'
+                    };
+                }
+            };
+            reader.readAsText(file);
+            $scope.needToUpdate = false;
+            $scope.file = null;
+        };
+
+        //Allows user to add/update a partner
+        $scope.saveAgency = function() {
+            $scope.alert.active = false;
+            var lettersTotal = 0;
+            _.forEach([$scope.partner.children, $scope.partner.teens, $scope.partner.seniors], function(type) {
+                if (type) {
+                    lettersTotal += type;
+                }
+            });
+            if (lettersTotal > 0) {
+                if ($scope.isNewAgency) {
+                    if (_.find($scope.partners, {
+                        'username': $scope.partner.username
+                    })) {
+                        $scope.alert = {
+                            active: true,
+                            type: 'danger',
+                            msg: $scope.partner.username + ' already exists. Please edit the existing copy to avoid duplicates.'
+                        };
+                    } else {
+                        signup($scope.partner);
+                    }
+                } else {
+                    $scope.partner.$update(function(partner) {
+                        console.log(partner.username + ' was updated');
+                    }, function(errorResponse) {
+                        console.log(errorResponse.data.message);
+                    });
+                }
+                $scope.hideSidebar();
+            } else {
+                $scope.alert = {
+                    active: true,
+                    type: 'danger',
+                    msg: 'A tracking form must include at least one letter.'
+                };
+            }
+        };
 
 
-		//Allow user to delete selected partner and all associated recipients
-		$scope.deleteAgency = function(selected) {
-			var confirmation = prompt('Please type DELETE to remove ' + selected.agency + '.');
-			if(confirmation === 'DELETE') {
-				selected.$remove(function() {
-					$scope.partners.splice($scope.partners.indexOf(selected), 1);
-				}, function(errorResponse) {
-					console.log('Remove Failed');
-				});
-			}
-		};
+        //Allow user to delete selected partner and all associated recipients
+        $scope.deleteAgency = function(selected) {
+            var confirmation = prompt('Please type DELETE to remove ' + selected.agency + '.');
+            if (confirmation === 'DELETE') {
+                selected.$remove(function() {
+                    $scope.partners.splice($scope.partners.indexOf(selected), 1);
+                }, function(errorResponse) {
+                    console.log('Remove Failed');
+                });
+            }
+        };
 
-		//Show current state of partner that user wants to edit
-		$scope.showSidebar = function(selected) {
-			$scope.isNewAgency = selected ? false : true;
-			$scope.partner = selected;
-			$scope.needToUpdate = true;
-		};
+        //Show current state of partner that user wants to edit
+        $scope.showSidebar = function(selected) {
+            $scope.isNewAgency = selected ? false : true;
+            $scope.partner = selected;
+            $scope.needToUpdate = true;
+        };
 
-		$scope.hideSidebar = function() {
-			$scope.partner = null;
-			$scope.needToUpdate = false;
-		};
+        $scope.hideSidebar = function() {
+            $scope.partner = null;
+            $scope.needToUpdate = false;
+        };
 
-	}
+    }
 ]);
 'use strict';
 
@@ -466,486 +487,537 @@ angular.module('letters')
 angular.module('letters')
 
 .controller('SummaryController', ['$scope', '$window', '$location', '$filter', 'Authentication', 'Agencies', 'Articles',
-	function($scope, $window, $location, $filter, Authentication, Agencies, Articles) {
-		$scope.authentication = Authentication;
+    function($scope, $window, $location, $filter, Authentication, Agencies, Articles) {
+        $scope.authentication = Authentication;
 
-		if (!$scope.authentication.user) $location.path('/');
+        if (!$scope.authentication.user) $location.path('/');
 
-		angular.element($window).on('resize', function() {
-			$scope.$apply();
-		});
+        angular.element($window).on('resize', function() {
+            $scope.$apply();
+        });
 
-		$scope.partners = Agencies.query(function() {
+        $scope.partners = Agencies.query(function() {
 
-			var donut = c3.generate({
-				bindto: '#donut',
-				data: {
-					columns: [
-						['NotYetStarted', $filter('filter')($scope.partners, {status: 0}).length],
-						['InProgress', $filter('filter')($scope.partners, {status: 1}).length],
-						['Submitted', $filter('filter')($scope.partners, {status: 3}).length],
-						['UnderReview', $filter('filter')($scope.partners, {status: 4}).length],
-						['Reviewed', $filter('filter')($scope.partners, {status: 5}).length]
-					],
-					type : 'donut',
-					colors: {
-						Reviewed: '#428bca',
-						UnderReview: '#5bc0de',
-						Submitted: '#5cb85c',
-						InProgress: '#f0ad4e',
-						NotYetStarted: '#d9534f'
-					}
-				},
-				tooltip: {
-					format: {
-						value: function (value, ratio, id) {
-							return value;
-						}
-					}
-				},
-				donut: {
-					title: 'Progress'
-				}
-			});
-		});
+            var status = _.countBy($scope.partners, function(tf) {
+                return tf.status;
+            });
 
-		$scope.letters = Articles.query(function() {
-			var useful = $filter('filter')($scope.letters, {updated: '!' + null});
-			var counts = {};
-			useful.forEach(function(letter) {
-				var date = $filter('date')(letter.updated, 'yyyy-MM-dd');
-				counts[date] = (counts[date] || 0)+1; 
-			});
-			var values = Object.keys(counts);
-			var frequency = ['Wishes Added'];
-			for(var key in counts) {
-					frequency.push(counts[key]);
-			}
-			values.unshift('x');
+            var donut = c3.generate({
+                bindto: '#donut',
+                data: {
+                    columns: [
+                        ['NotYetStarted', status[0]],
+                        ['InProgress', status[1]],
+                        ['Submitted', status[3]],
+                        ['UnderReview', status[4]],
+                        ['Reviewed', status[5]]
+                    ],
+                    type: 'donut',
+                    colors: {
+                        Reviewed: '#428bca',
+                        UnderReview: '#5bc0de',
+                        Submitted: '#5cb85c',
+                        InProgress: '#f0ad4e',
+                        NotYetStarted: '#d9534f'
+                    }
+                },
+                tooltip: {
+                    format: {
+                        value: function(value, ratio, id) {
+                            return value;
+                        }
+                    }
+                },
+                donut: {
+                    title: 'Progress'
+                }
+            });
+        });
 
-			var timeline = c3.generate({
-				bindto: '#timeline',
-				data: {
-					x: 'x',
-					columns: [
-						values,
-						frequency
-					]
-				},
-				axis: {
-					x: {
-						type: 'timeseries',
-						tick: {
-							format: '%m/%d/%y'
-						}
-					}
-				}
-			});
+        $scope.letters = Articles.query(function() {
+            var useful = $filter('filter')($scope.letters, {
+                updated: '!' + null
+            });
 
-			var wordCounts = { };
-			var fillers = ' , a, an, and, but, or, the, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont';
+            var counts = _.countBy(useful, function(letter) {
+                return $filter('date')(letter.updated, 'yyyy-MM-dd');
+            });
 
-			useful.forEach(function(rec) {
-				var words = rec.gift.replace(/[\.,-\/#\?!$%\^&\*;:{}=\-_'"`~()]/g, '').split(/\b/);
+            var values = ['x'];
+            var frequency = ['Wishes Added'];
+            _.forEach(counts, function(count, date) {
+                values.push(date);
+                frequency.push(count);
+            });
 
-				for(var i = 0; i < words.length; i++) {
-					if(fillers.indexOf(words[i]) === -1) {
-						wordCounts[words[i].toLowerCase()] = (wordCounts[words[i].toLowerCase()] || 0) + 1;
-					}
-				}
-			});
+            var timeline = c3.generate({
+                bindto: '#timeline',
+                data: {
+                    x: 'x',
+                    columns: [
+                        values,
+                        frequency
+                    ]
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            format: '%m/%d'
+                        }
+                    }
+                }
+            });
 
-			var sortable = [];
-			for (var word in wordCounts) {
-				sortable.push([word, wordCounts[word]]);
-			}
-			sortable.sort(function(b, a) {return a[1] - b[1];});
-			var topTen = sortable.slice(0, 10);
+            var wordCounts = [];
+            var fillers = ' , a, an, and, but, or, the, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont';
 
-			$scope.gifts = [];
-			for(var i=0; i < topTen.length; i++) {
-				$scope.gifts.push({name: topTen[i][0], value: topTen[i][1]});
-			}
+            _.forEach(useful, function(letter) {
+                var words = _.words(letter.gift);
 
-		});
+                _.forEach(words, function(word) {
+                    word = word.toLowerCase();
+                    if (!_.includes(fillers, word)) {
+                        var cc = _.find(wordCounts, {
+                            'name': word
+                        });
+                        if (cc) {
+                            cc.value += 1;
+                        } else {
+                            wordCounts.push({
+                                name: word,
+                                value: 1
+                            });
+                        }
+                    }
+                });
+            });
 
-}]);
+            var sorted = _.sortBy(wordCounts, function(word) {
+                return -word.value;
+            });
+
+            $scope.gifts = _.take(sorted, 10);
+
+        });
+
+    }
+]);
 'use strict';
 
-angular.module('letters').controller('AgencyController', 
-	['$scope', '$stateParams', '$location', '$filter' ,'$timeout', '$modal', 'Authentication', 'Articles', 'Agencies', 'Users',
-	function($scope, $stateParams, $location, $filter, $timeout, $modal, Authentication, Articles, Agencies, Users) {
-		$scope.user = Authentication.user;
+angular.module('letters').controller('AgencyController', ['$scope', '$stateParams', '$location', '$filter', '$timeout', '$modal', 'Authentication', 'Articles', 'Agencies', 'Users',
+    function($scope, $stateParams, $location, $filter, $timeout, $modal, Authentication, Articles, Agencies, Users) {
+        $scope.user = Authentication.user;
 
-		if (!$scope.user) $location.path('/');
+        if (!$scope.user) $location.path('/');
 
-		$scope.adminView = $scope.user.username === 'AAA' ? true : false;
-		$scope.minAge = null;
-		$scope.maxAge = null; 
-		$scope.recipients = null;
-		$scope.tabs = [];
-		var Recipients = null;
-		var blankRecords = null;
-		var currentIndex = 0;
+        $scope.adminView = _.includes($scope.user.roles, 'admin');
+        var Recipients = null;
+        var currentIndex = 0;
 
-		//Helps initialize page by finding the appropriate letters
-		$scope.find = function() {
-			$scope.letters = Articles.query(function() {
-				if($scope.adminView) {
-					$scope.currentAgency = Agencies.get({agencyId: $stateParams.articleId}, function() {
-						init();
-					});
-				}
-				else {
-					$scope.currentAgency = $scope.user;
-					Agencies.query(function(users) {
-						var admin = $filter('filter')(users, {username: 'AAA'});
-						var due = $filter('date')(admin[0].due, 'MM/dd/yy');
+        //Helps initialize page by finding the appropriate letters
+        $scope.find = function() {
+            $scope.letters = Articles.query(function() {
+                if ($scope.adminView) {
+                    $scope.currentAgency = Agencies.get({
+                        agencyId: $stateParams.articleId
+                    }, function() {
+                        Recipients = $filter('filter')($scope.letters, {
+                            track: $scope.currentAgency.username
+                        });
+                        init();
+                    });
+                } else {
+                    $scope.currentAgency = $scope.user;
+                    Agencies.query(function(users) {
+                        var admin = _.find(users, {
+                            'username': 'AAA'
+                        });
+                        var due = $filter('date')(admin.due, 'MM/dd/yy');
 
-						if($scope.currentAgency.status < 3) {
-							var countdown = dateDiff(new Date(), new Date(admin[0].due));
-							if(countdown === 14) {
-								$scope.alert = {active: true, type: 'warning', msg: 'Two weeks left'};
-							}
-							else if(countdown === 7) {
-								$scope.alert = {active: true, type: 'warning', msg: 'One week left'};
-							}
-							else if(countdown === 0) {
-								$scope.alert = {active: true, type: 'danger', msg: 'Last day to submit'};
-							}
-							else if(countdown === 1) {
-								$scope.alert = {active: true, type: 'danger', msg: 'One day left'};
-							}
-							else if(countdown < 0) {
-								$scope.alert = {active: true, type: 'danger', msg: 'Past due -- please submit it ASAP'};
-							}
-							else if(countdown <= 3) {
-								$scope.alert = {active: true, type: 'danger', msg: countdown + ' days left'};
-							}
-						}
-						init();
-					});
-				}
-			});
-		};
+                        if ($scope.currentAgency.status < 3) {
+                            var countdown = dateDiff(new Date(), new Date(admin.due));
+                            if (countdown === 14) {
+                                $scope.alert = {
+                                    type: 'warning',
+                                    msg: 'Two weeks left'
+                                };
+                            } else if (countdown === 7) {
+                                $scope.alert = {
+                                    type: 'warning',
+                                    msg: 'One week left'
+                                };
+                            } else if (countdown === 0) {
+                                $scope.alert = {
+                                    type: 'danger',
+                                    msg: 'Last day to submit'
+                                };
+                            } else if (countdown === 1) {
+                                $scope.alert = {
+                                    type: 'danger',
+                                    msg: 'One day left'
+                                };
+                            } else if (countdown < 0) {
+                                $scope.alert = {
+                                    type: 'danger',
+                                    msg: 'Past due -- please submit it ASAP'
+                                };
+                            } else if (countdown <= 3) {
+                                $scope.alert = {
+                                    type: 'danger',
+                                    msg: countdown + ' days left'
+                                };
+                            }
+                            $scope.alert.active = $scope.alert.msg.length;
+                        }
+                        Recipients = $scope.letters;
+                        init();
+                    });
+                }
+            });
+        };
 
-		function init() {
-			Recipients = $filter('filter')($scope.letters, {track: $scope.currentAgency.username});
-			var myChildren = $filter('filter')(Recipients, {track: $scope.currentAgency.username + 'C'});
-			var myTeens = $filter('filter')(Recipients, {track: $scope.currentAgency.username + 'T'});
-			var mySeniors = $filter('filter')(Recipients, {track: $scope.currentAgency.username + 'S'});
+        function init() {
+            $scope.tabs = [{
+                title: 'Children',
+                content: $scope.currentAgency.children,
+                active: false,
+                minAge: 4,
+                maxAge: 13
+            }, {
+                title: 'Teens',
+                content: $scope.currentAgency.teens,
+                active: false,
+                minAge: 14,
+                maxAge: 18
+            }, {
+                title: 'Seniors',
+                content: $scope.currentAgency.seniors,
+                active: false,
+                minAge: 65,
+                maxAge: 125
+            }];
 
-			$scope.tabs = [
-				{ title:'Children', content: myChildren, active: false, minAge: 4, maxAge: 13 },
-				{ title:'Teens', content: myTeens, active: false, minAge: 14, maxAge: 18 },
-				{ title:'Seniors', content: mySeniors, active: false, minAge: 65, maxAge: 125 }
-			];
+            $scope.activateTab($scope.currentAgency.children > 0 ? $scope.tabs[0] : ($scope.currentAgency.teens > 0 ? $scope.tabs[1] : $scope.tabs[2]));
 
-			$scope.activateTab(myChildren.length > 0 ? $scope.tabs[0] : (myTeens.length > 0 ? $scope.tabs[1] : $scope.tabs[2]));
+            if ((!$scope.adminView && $scope.currentAgency.status >= 3) || ($scope.adminView && $scope.currentAgency.status === 5)) downloadCSV();
+        }
 
-			if((!$scope.adminView && $scope.currentAgency.status >= 3) || ($scope.adminView && $scope.currentAgency.status === 5)) downloadCSV();
-		}
-		
-		//Allows user to work on another tab
-		$scope.activateTab = function(clicked, form) {
-			clicked.active = true;
-			$scope.recipients = clicked.content;
-			$scope.minAge = clicked.minAge;
-			$scope.maxAge = clicked.maxAge;
-			blankRecords = $filter('filter')($scope.recipients, function(rec) { return !rec.name; });
-			currentIndex = blankRecords.length > 0 ? $scope.recipients.indexOf(blankRecords[0]) : 0;
-			updateForm(form);
-		};
+        //Allows user to work on another tab
+        $scope.activateTab = function(clicked, form) {
+            clicked.active = true;
+            $scope.recipients = $filter('filter')(Recipients, {
+                track: $scope.currentAgency.username + clicked.title.charAt(0)
+            });
+            $scope.minAge = clicked.minAge;
+            $scope.maxAge = clicked.maxAge;
+            var blankRecord = _.findIndex($scope.recipients, {
+                'name': ''
+            });
+            currentIndex = blankRecord ? blankRecord : 0;
+            updateForm(form);
+        };
 
-		//Helps find how many days are left until the deadline
-		function dateDiff(a, b) {
-			var MS_PER_DAY = 1000 * 60 * 60 * 24;
-			// Discard the time and time-zone information.
-			var utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
-			var utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-			return Math.floor((utc2 - utc1) / MS_PER_DAY);
-		}
+        //Helps find how many days are left until the deadline
+        function dateDiff(a, b) {
+            var MS_PER_DAY = 1000 * 60 * 60 * 24;
+            // Discard the time and time-zone information.
+            var utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+            var utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+            return Math.floor((utc2 - utc1) / MS_PER_DAY);
+        }
 
-		//Allows admin to add a blank letter and shift everything down
-		$scope.addBlank = function() {
-			var letter = new Articles({track: $scope.current.track});
-			letter.$save(function(response) {
-					$scope.find();
-				}, function(errorResponse) {
-					console.log('response');
-				});
-		}
+        //Allows admin to add a blank letter and shift everything down
+        $scope.addBlank = function() {
+            var letter = new Articles({
+                track: $scope.current.track
+            });
+            letter.$save(function(response) {
+                $scope.find();
+            }, function(errorResponse) {
+                console.log('response');
+            });
+        };
 
-		//Allows admin to delete an existing letter and shift everything up
-		//Allows user to clear the current slot
-		$scope.clearForm = function(selected) {
-			if($scope.adminView) {
-				selected.$remove(function(response) {
-					$scope.find();
-				}, function(errorResponse) {
-					console.log('Remove Failed');
-				});
-			}
-			else {
-				$scope.current.name = '';
-				$scope.current.age = '';
-				$scope.current.gender = '';
-				$scope.current.gift = '';
-				$scope.current.$update();
-			}
-		};
+        //Allows admin to delete an existing letter and shift everything up
+        //Allows user to clear the current slot
+        $scope.clearForm = function(selected) {
+            if ($scope.adminView) {
+                selected.$remove(function(response) {
+                    $scope.find();
+                }, function(errorResponse) {
+                    console.log('Remove Failed');
+                });
+            } else {
+                $scope.current.name = '';
+                $scope.current.age = '';
+                $scope.current.gender = '';
+                $scope.current.gift = '';
+                $scope.current.$update();
+            }
+        };
 
-		//Helps to show user appropriate age range of each recipient type
-		function updateForm(form) {
-			if(form) {
-				form.$setPristine();
-				form.$setUntouched();
-			}
-			$scope.current = $scope.recipients[currentIndex];
-		}
+        //Helps to show user appropriate age range of each recipient type
+        function updateForm(form) {
+            if (form) {
+                form.$setPristine();
+                form.$setUntouched();
+            }
+            $scope.current = $scope.recipients[currentIndex];
+        }
 
-		//Allow user to see/edit the next record if current letter is valid
-		$scope.goToNext = function(form) {
-			if(isValidLetter(form)) {
-				if(currentIndex < $scope.recipients.length - 1) {
-					currentIndex++;
-					updateForm(form);
-				}
-				else {
-					$scope.alert = { active: true, type: 'info', msg: 'You just entered the last letter on this page.' };
-				}
-			}
-		};
+        //Allow user to see/edit the next record if current letter is valid
+        $scope.goToNext = function(form) {
+            if (isValidLetter(form)) {
+                if (currentIndex < $scope.recipients.length - 1) {
+                    currentIndex++;
+                    updateForm(form);
+                } else {
+                    $scope.alert = {
+                        active: true,
+                        type: 'info',
+                        msg: 'You just entered the last letter on this page.'
+                    };
+                }
+            }
+        };
 
-		//Allow user to see the record they selected if current letter is valid
-		$scope.goToSelected = function(selected, form) {
-			if(isValidLetter(form) && !form.$invalid) {
-				currentIndex = $scope.recipients.indexOf(selected);
-				updateForm(form);
-			}
-		};
+        //Allow user to see the record they selected if current letter is valid
+        $scope.goToSelected = function(selected, form) {
+            if (isValidLetter(form) && !form.$invalid) {
+                currentIndex = _.indexOf($scope.recipients, selected);
+                updateForm(form);
+            }
+        };
 
-		//Make form more user-friendly, make required fields glow
-		$scope.isUsed = function(form) {
-			if($scope.current.name.length > 0) {
-				$scope.blankName = false;
-				form.age.$setTouched();
-				form.gender.$setTouched();
-				form.gift.$setTouched();
-			}
-			else {
-				form.$setUntouched();
-			}
-		};
+        //Make form more user-friendly, make required fields glow
+        $scope.isUsed = function(form) {
+            if ($scope.current.name) {
+                $scope.blankName = false;
+                form.age.$setTouched();
+                form.gender.$setTouched();
+                form.gift.$setTouched();
+            } else {
+                form.$setUntouched();
+            }
+        };
 
-		//Check if age entered is within valid range
-		$scope.isWithinRange = function(age) {
-			age.$setValidity('inRange', $scope.current.age === null || ($scope.current.age >= $scope.minAge && $scope.current.age <= $scope.maxAge));
-		};
+        //Check if age entered is within valid range
+        $scope.isWithinRange = function(age) {
+            age.$setValidity('inRange', $scope.current.age === null || ($scope.current.age >= $scope.minAge && $scope.current.age <= $scope.maxAge));
+        };
 
-		//Help validate user's data entry
-		function isValidLetter(form) {
-			//It's OK if no data was entered
-			if(!$scope.current.name && !$scope.current.age && !$scope.current.gender && !$scope.current.gift) {
-				return true;
-			}
-			//It's not OK if some fields are missing
-			else if(!$scope.current.name || !$scope.current.age || !$scope.current.gender || !$scope.current.gift) {
-				$scope.blankName = !$scope.current.name ? true : false;
-				$scope.error = 'fields cannot be left blank';
-				$timeout(function() {
-					$scope.blankName = false;
-					$scope.error = null;
-				}, 2000);
-				return false;
-			}
-			//It's great when all fields are entered properly
-			else {
-				addRecipient(form);
-				return true;
-			}
-		}
+        //Help validate user's data entry
+        function isValidLetter(form) {
+            //It's OK if no data was entered
+            if (!$scope.current.name && !$scope.current.age && !$scope.current.gender && !$scope.current.gift) {
+                return true;
+            }
+            //It's not OK if some fields are missing
+            else if (!$scope.current.name || !$scope.current.age || !$scope.current.gender || !$scope.current.gift) {
+                $scope.blankName = !$scope.current.name;
+                $scope.error = 'fields cannot be left blank';
+                $timeout(function() {
+                    $scope.blankName = false;
+                    $scope.error = null;
+                }, 2000);
+                return false;
+            }
+            //It's great when all fields are entered properly
+            else {
+                addRecipient(form);
+                return true;
+            }
+        }
 
-		//Helps update/add recipient record
-		function addRecipient(form) {
-			$scope.current.name = cleanText($scope.current.name, 1).trim();
-			$scope.current.gender = $scope.current.gender.toUpperCase();
-			$scope.current.gift = cleanText($scope.current.gift, 2);
+        //Helps update/add recipient record
+        function addRecipient(form) {
+            $scope.current.name = cleanText($scope.current.name, 1).trim();
+            $scope.current.gender = $scope.current.gender.toUpperCase();
+            $scope.current.gift = cleanText($scope.current.gift, 2);
 
-			//update Agency status
-			if($scope.currentAgency.status === 0) {
-				$scope.currentAgency.status = 1;
-				var user = new Users($scope.currentAgency);
-				user.$update(function(response) {
-					$scope.currentAgency = response;
-				});
-			}
+            //update Agency status
+            if ($scope.currentAgency.status === 0) {
+                $scope.currentAgency.status = 1;
+                var user = new Users($scope.currentAgency);
+                user.$update(function(response) {
+                    $scope.currentAgency = response;
+                });
+            }
 
-			$scope.current.$update();
-		}
+            $scope.current.$update();
+        }
 
-		//Helps clean up sloppy user input
-		function cleanText(text, priority) {
-			if((text === text.toLowerCase() || text === text.toUpperCase()) && priority === 1) {
-				return text.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-			}
-			else if(text === text.toUpperCase()) {
-				return text.toLowerCase();
-			}
-			else {
-				return text;
-			}
-		}
+        //Helps clean up sloppy user input
+        function cleanText(text, priority) {
+            if ((text === text.toLowerCase() || text === text.toUpperCase()) && priority === 1) {
+                return text.replace(/\w\S*/g, function(txt) {
+                    return _.capitalize(txt);
+                });
+            } else if (text === text.toUpperCase()) {
+                return text.toLowerCase();
+            } else {
+                return text;
+            }
+        }
 
-		//Allows admin to complete the review of a tracking form
-		//Allows community partner to submit their completed tracking form
-		$scope.confirmCompletion = function () {
-			var user = null;
-			if($scope.adminView) {
-				rateAgencyToComplete();
-			}
-			else {
-				var dblcheck = confirm('Click OK to let the Winter Wishes Team know that your tracking form is ready. You will not be able to make any further changes.');
-				if(dblcheck) {
-					$scope.currentAgency.status = 3;
-					user = new Users($scope.currentAgency);
-					user.$update(function(response) {
-						$scope.currentAgency = response;
-						downloadCSV();
-					}, function(response) {
-						$scope.error = response.data.message;
-					});
-				}
-			}
-		};
+        //Allows admin to complete the review of a tracking form
+        //Allows community partner to submit their completed tracking form
+        $scope.confirmCompletion = function() {
+            var user = null;
+            if ($scope.adminView) {
+                rateAgencyToComplete();
+            } else {
+                var dblcheck = confirm('Click OK to let the Winter Wishes Team know that your tracking form is ready. You will not be able to make any further changes.');
+                if (dblcheck) {
+                    $scope.currentAgency.status = 3;
+                    user = new Users($scope.currentAgency);
+                    user.$update(function(response) {
+                        $scope.currentAgency = response;
+                        downloadCSV();
+                    }, function(response) {
+                        $scope.error = response.data.message;
+                    });
+                }
+            }
+        };
 
-		//Allows admin to start the review of a tracking form
-		$scope.startReview = function() {
-			$scope.currentAgency.status = 4;
-			var user = new Agencies($scope.currentAgency);
-			user.$update(function(response) {
-				$scope.currentAgency = response;
-			}, function(response) {
-				$scope.error = response.data.message;
-			});
-		};
+        //Allows admin to start the review of a tracking form
+        $scope.startReview = function() {
+            $scope.currentAgency.status = 4;
+            var user = new Agencies($scope.currentAgency);
+            user.$update(function(response) {
+                $scope.currentAgency = response;
+            }, function(response) {
+                $scope.error = response.data.message;
+            });
+        };
 
-		//Allows admin to flag sub par letters during review
-		$scope.flagLetter = function(selected) {
-			selected.flagged = !selected.flagged;
-			selected.$update();
-		};
+        //Allows admin to flag sub par letters during review
+        $scope.flagLetter = function(selected) {
+            selected.flagged = !selected.flagged;
+            selected.$update();
+        };
 
-		//Allows admin to reject a tracking form with many sub par letters
-		$scope.returnLetters = function() {
-			$scope.currentAgency.status = 1;
-			var user = new Agencies($scope.currentAgency);
-			user.$update(function(response) {
-				$scope.currentAgency = response;
-			}, function(response) {
-				$scope.error = response.data.message;
-			});
-		};
+        //Allows admin to reject a tracking form with many sub par letters
+        $scope.returnLetters = function() {
+            $scope.currentAgency.status = 1;
+            var user = new Agencies($scope.currentAgency);
+            user.$update(function(response) {
+                $scope.currentAgency = response;
+            }, function(response) {
+                $scope.error = response.data.message;
+            });
+        };
 
-		//Helps create a downloadable csv version of the tracking form
-		function downloadCSV() {
-			var headers = ['track', 'name', 'age', 'gender', 'gift'];
-			if($scope.adminView) {headers.push('flagged');}
-			var csvString= headers.join(',') + '\r\n';
-			for (var i=0; i < Recipients.length; i++) {
-				if(Recipients[i].name) {
-					for(var key in headers) {
-						var line = Recipients[i][headers[key]];
-						if(key === 4) {
-							if(Recipients[i][headers[key]].indexOf(',') !== -1) {
-								line = '"' + Recipients[i][headers[key]] + '"';
-							}
-						}
-						csvString += line + ',';
-					}
-					csvString += '\r\n';
-				}
-			}
+        //Helps create a downloadable csv version of the tracking form
+        function downloadCSV() {
+            var headers = ['track', 'name', 'age', 'gender', 'gift'];
+            if ($scope.adminView) {
+                headers.push('flagged');
+            }
+            var csvString = headers.join(',') + '\r\n';
+            _.forEach(Recipients, function(letter) {
+                if (letter.name) {
+                    _.forEach(headers, function(key) {
+                        var line = letter[key];
+                        if (key === 'gift' && _.indexOf(letter[key], ',')) {
+                            line = '"' + letter[key] + '"';
+                        }
+                        csvString += line + ',';
+                    });
+                    csvString += '\r\n';
+                }
+            });
 
-			var date = $filter('date')(new Date(), 'MM-dd');
-			$scope.fileName = ( 'WishesToSF_' + date + '.csv' );
-			var blob = new Blob([csvString], { type: 'text/csv;charset=UTF-8' }); 
-			$scope.url = window.URL.createObjectURL( blob );
-		}
+            var date = $filter('date')(new Date(), 'MM-dd');
+            $scope.fileName = ('WishesToSF_' + $scope.currentAgency.username + '_' + date + '.csv');
+            var blob = new Blob([csvString], {
+                type: 'text/csv;charset=UTF-8'
+            });
+            $scope.url = window.URL.createObjectURL(blob);
+        }
 
-		//Allows partner to let WWT know whether a gift has been received
-		$scope.giftReceived = function(selected) {
-			selected.received = !selected.received;
-			selected.$update();
-		};
+        //Allows partner to let WWT know whether a gift has been received
+        $scope.giftReceived = function(selected) {
+            selected.received = !selected.received;
+            selected.$update();
+        };
 
-		function rateAgencyToComplete() {
-			var modalInstance = $modal.open({
-				templateUrl: 'modules/letters/views/rating.html',
-				controller: 'RatingCtrl',
-				backdrop: 'static',
-				size: 'md',
-				resolve: {
-					rating: function () {
-						return $scope.currentAgency.rating;
-					}
-				}
-			});
+        function rateAgencyToComplete() {
+            var modalInstance = $modal.open({
+                templateUrl: 'modules/letters/views/rating.html',
+                controller: 'RatingCtrl',
+                backdrop: 'static',
+                size: 'md',
+                resolve: {
+                    rating: function() {
+                        return $scope.currentAgency.rating;
+                    }
+                }
+            });
 
-			modalInstance.result.then(function (result) {
-				$scope.currentAgency.rating = result;
-				$scope.currentAgency.status = 5;
-				var user = new Agencies($scope.currentAgency);
-				user.$update(function(response) {
-					$scope.currentAgency = response;
-					downloadCSV();
-				}, function(response) {
-					$scope.error = response.data.message;
-				});
-			});
-		}
+            modalInstance.result.then(function(result) {
+                $scope.currentAgency.rating = result;
+                $scope.currentAgency.status = 5;
+                var user = new Agencies($scope.currentAgency);
+                user.$update(function(response) {
+                    $scope.currentAgency = response;
+                    downloadCSV();
+                }, function(response) {
+                    $scope.error = response.data.message;
+                });
+            });
+        }
 
-}])
+    }
+])
 
-.controller('RatingCtrl', 
-  ['$scope', '$timeout', '$modalInstance', 'rating',
-  function($scope, $timeout, $modalInstance, rating) {
-  		$scope.rating = rating;
+.controller('RatingCtrl', ['$scope', '$timeout', '$modalInstance', 'rating',
+    function($scope, $timeout, $modalInstance, rating) {
+        $scope.rating = rating;
 
-		$scope.hoveringOver = function(value, rating) {
-			$scope.overStar = value;
-			$scope.desc = {percent: 100 * (value / 5)};
-			switch(value) {
-				case 1: $scope.desc.words = 'None';
-				break;
-				case 2: $scope.desc.words = 'Scarce';
-				break;
-				case 3: $scope.desc.words = 'Some';
-				break;
-				case 4: $scope.desc.words = 'Good';
-				break;
-				case 5: $scope.desc.words = 'Great';
-				break;
-			}
-			$scope.active = rating;
-		};
+        $scope.hoveringOver = function(value, rating) {
+            $scope.overStar = value;
+            $scope.desc = {
+                percent: 100 * (value / 5)
+            };
+            switch (value) {
+                case 1:
+                    $scope.desc.words = 'None';
+                    break;
+                case 2:
+                    $scope.desc.words = 'Scarce';
+                    break;
+                case 3:
+                    $scope.desc.words = 'Some';
+                    break;
+                case 4:
+                    $scope.desc.words = 'Good';
+                    break;
+                case 5:
+                    $scope.desc.words = 'Great';
+                    break;
+            }
+            $scope.active = rating;
+        };
 
-		$scope.updateOverall = function() {
-			$scope.rating.overall = ($scope.rating.content + $scope.rating.decoration) / 2;
-		};
+        $scope.updateOverall = function() {
+            $scope.rating.overall = ($scope.rating.content + $scope.rating.decoration) / 2;
+        };
 
-		$scope.ok = function () {
-			if($scope.rating.overall > 0) {
-		  		$modalInstance.close($scope.rating);
-		  	}
-		  	else {
-		  		$scope.error = 'your feedback would be greatly appreciated';
-		  		$timeout(function() {
-					$scope.error = null;
-				}, 2000);
-		  	}
-		};
-}]);
+        $scope.ok = function() {
+            if ($scope.rating.overall > 0) {
+                $modalInstance.close($scope.rating);
+            } else {
+                $scope.error = 'your feedback would be greatly appreciated';
+                $timeout(function() {
+                    $scope.error = null;
+                }, 2000);
+            }
+        };
+    }
+]);
 'use strict';
 
 //Letters service used for communicating with the agencies REST endpoints
