@@ -3,107 +3,119 @@
 angular.module('letters')
 
 .controller('SummaryController', ['$scope', '$window', '$location', '$filter', 'Authentication', 'Agencies', 'Articles',
-	function($scope, $window, $location, $filter, Authentication, Agencies, Articles) {
-		$scope.authentication = Authentication;
+    function($scope, $window, $location, $filter, Authentication, Agencies, Articles) {
+        $scope.authentication = Authentication;
 
-		if (!$scope.authentication.user) $location.path('/');
+        if (!$scope.authentication.user) $location.path('/');
 
-		angular.element($window).on('resize', function() {
-			$scope.$apply();
-		});
+        angular.element($window).on('resize', function() {
+            $scope.$apply();
+        });
 
-		$scope.partners = Agencies.query(function() {
+        $scope.partners = Agencies.query(function() {
 
-			var donut = c3.generate({
-				bindto: '#donut',
-				data: {
-					columns: [
-						['NotYetStarted', $filter('filter')($scope.partners, {status: 0}).length],
-						['InProgress', $filter('filter')($scope.partners, {status: 1}).length],
-						['Submitted', $filter('filter')($scope.partners, {status: 3}).length],
-						['UnderReview', $filter('filter')($scope.partners, {status: 4}).length],
-						['Reviewed', $filter('filter')($scope.partners, {status: 5}).length]
-					],
-					type : 'donut',
-					colors: {
-						Reviewed: '#428bca',
-						UnderReview: '#5bc0de',
-						Submitted: '#5cb85c',
-						InProgress: '#f0ad4e',
-						NotYetStarted: '#d9534f'
-					}
-				},
-				tooltip: {
-					format: {
-						value: function (value, ratio, id) {
-							return value;
-						}
-					}
-				},
-				donut: {
-					title: 'Progress'
-				}
-			});
-		});
+            var status = _.countBy($scope.partners, function(tf) {
+                return tf.status;
+            });
 
-		$scope.letters = Articles.query(function() {
-			var useful = $filter('filter')($scope.letters, {updated: '!' + null});
-			var counts = {};
-			useful.forEach(function(letter) {
-				var date = $filter('date')(letter.updated, 'yyyy-MM-dd');
-				counts[date] = (counts[date] || 0)+1; 
-			});
-			var values = Object.keys(counts);
-			var frequency = ['Wishes Added'];
-			for(var key in counts) {
-					frequency.push(counts[key]);
-			}
-			values.unshift('x');
+            var donut = c3.generate({
+                bindto: '#donut',
+                data: {
+                    columns: [
+                        ['NotYetStarted', status[0]],
+                        ['InProgress', status[1]],
+                        ['Submitted', status[3]],
+                        ['UnderReview', status[4]],
+                        ['Reviewed', status[5]]
+                    ],
+                    type: 'donut',
+                    colors: {
+                        Reviewed: '#428bca',
+                        UnderReview: '#5bc0de',
+                        Submitted: '#5cb85c',
+                        InProgress: '#f0ad4e',
+                        NotYetStarted: '#d9534f'
+                    }
+                },
+                tooltip: {
+                    format: {
+                        value: function(value, ratio, id) {
+                            return value;
+                        }
+                    }
+                },
+                donut: {
+                    title: 'Progress'
+                }
+            });
+        });
 
-			var timeline = c3.generate({
-				bindto: '#timeline',
-				data: {
-					x: 'x',
-					columns: [
-						values,
-						frequency
-					]
-				},
-				axis: {
-					x: {
-						type: 'timeseries',
-						tick: {
-							format: '%m/%d/%y'
-						}
-					}
-				}
-			});
+        $scope.letters = Articles.query(function() {
+            var useful = $filter('filter')($scope.letters, {
+                updated: '!' + null
+            });
 
-			var wordCounts = { };
-			var fillers = ' , a, an, and, but, or, the, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont';
+            var counts = _.countBy(useful, function(letter) {
+                return $filter('date')(letter.updated, 'yyyy-MM-dd');
+            });
 
-			useful.forEach(function(rec) {
-				var words = rec.gift.replace(/[\.,-\/#\?!$%\^&\*;:{}=\-_'"`~()]/g, '').split(/\b/);
+            var values = ['x'];
+            var frequency = ['Wishes Added'];
+            _.forEach(counts, function(count, date) {
+                values.push(date);
+                frequency.push(count);
+            });
 
-				for(var i = 0; i < words.length; i++) {
-					if(fillers.indexOf(words[i]) === -1) {
-						wordCounts[words[i].toLowerCase()] = (wordCounts[words[i].toLowerCase()] || 0) + 1;
-					}
-				}
-			});
+            var timeline = c3.generate({
+                bindto: '#timeline',
+                data: {
+                    x: 'x',
+                    columns: [
+                        values,
+                        frequency
+                    ]
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            format: '%m/%d'
+                        }
+                    }
+                }
+            });
 
-			var sortable = [];
-			for (var word in wordCounts) {
-				sortable.push([word, wordCounts[word]]);
-			}
-			sortable.sort(function(b, a) {return a[1] - b[1];});
-			var topTen = sortable.slice(0, 10);
+            var wordCounts = [];
+            var fillers = ' , a, an, and, but, or, the, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont';
 
-			$scope.gifts = [];
-			for(var i=0; i < topTen.length; i++) {
-				$scope.gifts.push({name: topTen[i][0], value: topTen[i][1]});
-			}
+            _.forEach(useful, function(letter) {
+                var words = _.words(letter.gift);
 
-		});
+                _.forEach(words, function(word) {
+                    word = word.toLowerCase();
+                    if (!_.includes(fillers, word)) {
+                        var cc = _.find(wordCounts, {
+                            'name': word
+                        });
+                        if (cc) {
+                            cc.value += 1;
+                        } else {
+                            wordCounts.push({
+                                name: word,
+                                value: 1
+                            });
+                        }
+                    }
+                });
+            });
 
-}]);
+            var sorted = _.sortBy(wordCounts, function(word) {
+                return -word.value;
+            });
+
+            $scope.gifts = _.take(sorted, 10);
+
+        });
+
+    }
+]);
