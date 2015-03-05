@@ -1,13 +1,15 @@
 'use strict';
 
-angular.module('letters').controller('ArticlesController', ['$scope', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
-    function($scope, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
+angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
+    function($scope, $window, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/');
 
         $scope.needToUpdate = false; //helps hide sidebar when it's not needed
         $scope.alert = {
-            active: false
+            active: false,
+            type: '',
+            msg: ''
         };
 
         $scope.find = function() {
@@ -78,9 +80,9 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$modal', 
                                 agency: record[agency_col],
                                 contact: record[contact_col],
                                 email: record[email_col],
-                                children: Number(record[child_col]),
-                                teens: Number(record[teen_col]),
-                                seniors: Number(record[seniors_col])
+                                children: parseInt(record[child_col], 10),
+                                teens: parseInt(record[teen_col], 10),
+                                seniors: parseInt(record[seniors_col], 10)
                             };
                             signup(newPartner);
                         }
@@ -139,7 +141,7 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$modal', 
 
         //Allow user to delete selected partner and all associated recipients
         $scope.deleteAgency = function(selected) {
-            var confirmation = prompt('Please type DELETE to remove ' + selected.agency + '.');
+            var confirmation = $window.prompt('Please type DELETE to remove ' + selected.agency + '.');
             if (confirmation === 'DELETE') {
                 selected.$remove(function() {
                     $scope.partners.splice($scope.partners.indexOf(selected), 1);

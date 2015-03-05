@@ -1,4 +1,4 @@
-<div class="container" data-ng-controller="HeaderController" data-ng-show="authentication.user">
+<div class="container" data-ng-controller="HeaderController">
 
 	<div class="navbar-header">
 		<button class="navbar-toggle btn btn-lg btn-link" type="button" data-ng-click="toggleCollapsibleMenu()">
@@ -6,12 +6,13 @@
 			<i class="glyphicon glyphicon-menu-hamburger"></i>
 		</button>
 		<a href="/#!/" class="navbar-brand"><img class="navbar-image" src="/modules/core/img/brand/winter_wishes_header.png"></a>
-	</div>
+	</div>	
 
 	<nav class="collapse navbar-collapse" collapse="!isCollapsed" role="navigation">
 		
 		<ul class="nav navbar-nav navbar-right">
-			<li class="dropdown" dropdown on-toggle="toggled(open)">
+			<li ng-hide="authentication.user"><a href="/#!/login">Login</a></li>
+			<li class="dropdown" dropdown on-toggle="toggled(open)" ng-show="authentication.user">
 				<a href class="dropdown-toggle" dropdown-toggle>
 					<span data-ng-bind="authentication.user.agency"></span> <b class="caret"></b>
 				</a>

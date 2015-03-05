@@ -1,0 +1,53 @@
+
+
+.home{
+  background: url(christmas-snow-background.jpg);
+  background-repeat: repeat;
+  background-size: cover;
+  position: absolute;
+  overflow: hidden;
+  opacity: 0.5;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  top: 50px;
+  left: 0;
+}
+
+.logo-container {
+  border-bottom: 1px solid white;
+}
+
+.logo {
+  height: 80px;
+  width: auto;
+}
+
+.welcome-container {
+  padding: 4% 0;
+  text-align: center;
+}
+
+.welcome-mat {
+    font-size: 2.5em;
+}
+
+.step-container {
+  border-bottom: 1px solid #e5e5e5;
+  padding: 5% 0;
+  text-align: center;
+  background-color: white;
+  overflow: hidden;
+}
+
+.steps {
+  font-size: 2em;
+}
+
+
+.step-separator {
+  border-top: 1px solid #e5e5e5;
+  padding-top: 2%;
+  width: 60%;
+  margin: auto;
+}

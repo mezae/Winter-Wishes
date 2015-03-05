@@ -57,21 +57,25 @@ ApplicationConfiguration.registerModule('users');
 
 // Setting up route
 angular.module('core').config(['$stateProvider', '$urlRouterProvider',
-	function($stateProvider, $urlRouterProvider) {
-		// Redirect to home view when route not found
-		$urlRouterProvider.otherwise('/');
+    function($stateProvider, $urlRouterProvider) {
+        // Redirect to home view when route not found
+        $urlRouterProvider.otherwise('/');
 
-		// Home state routing
-		$stateProvider
-		.state('home', {
-			url: '/',
-			templateUrl: 'modules/users/views/authentication/signin.client.view.html'
-		})
-		.state('admin', {
-			url: '/admin',
-			templateUrl: 'modules/letters/views/command.html'
-		});
-	}
+        // Home state routing
+        $stateProvider
+            .state('home', {
+                url: '/',
+                templateUrl: 'modules/core/views/home.html'
+            })
+            .state('login', {
+                url: '/login',
+                templateUrl: 'modules/users/views/authentication/signin.client.view.html'
+            })
+            .state('admin', {
+                url: '/admin',
+                templateUrl: 'modules/letters/views/command.html'
+            });
+    }
 ]);
 'use strict';
 
@@ -186,6 +190,24 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
 ]);
 'use strict';
 
+angular.module('core').controller('HomeController', ['$scope', '$location', 'Authentication',
+    function($scope, $location, Authentication) {
+        $scope.user = Authentication.user;
+
+        function redirect(user) {
+            if (user.username === 'AAA') {
+                $location.path('/admin');
+            } else {
+                $location.path('/agency/' + user._id);
+            }
+        }
+
+        // If user is signed in then redirect back home
+        if ($scope.user) redirect($scope.user);
+    }
+]);
+'use strict';
+
 // Users service used for communicating with the users REST endpoint
 angular.module('core').factory('Users', ['$resource',
 	function($resource) {
@@ -242,14 +264,16 @@ angular.module('letters').config(['$stateProvider',
 ]);
 'use strict';
 
-angular.module('letters').controller('ArticlesController', ['$scope', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
-    function($scope, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
+angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
+    function($scope, $window, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/');
 
         $scope.needToUpdate = false; //helps hide sidebar when it's not needed
         $scope.alert = {
-            active: false
+            active: false,
+            type: '',
+            msg: ''
         };
 
         $scope.find = function() {
@@ -320,9 +344,9 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$modal', 
                                 agency: record[agency_col],
                                 contact: record[contact_col],
                                 email: record[email_col],
-                                children: Number(record[child_col]),
-                                teens: Number(record[teen_col]),
-                                seniors: Number(record[seniors_col])
+                                children: parseInt(record[child_col], 10),
+                                teens: parseInt(record[teen_col], 10),
+                                seniors: parseInt(record[seniors_col], 10)
                             };
                             signup(newPartner);
                         }
@@ -381,7 +405,7 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$modal', 
 
         //Allow user to delete selected partner and all associated recipients
         $scope.deleteAgency = function(selected) {
-            var confirmation = prompt('Please type DELETE to remove ' + selected.agency + '.');
+            var confirmation = $window.prompt('Please type DELETE to remove ' + selected.agency + '.');
             if (confirmation === 'DELETE') {
                 selected.$remove(function() {
                     $scope.partners.splice($scope.partners.indexOf(selected), 1);

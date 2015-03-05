@@ -1,0 +1,22 @@
+.navbar-out {
+	background-color: white;
+	border-color: #e5e5e5;
+}
+
+.navbar-in {
+	background-color: #5cb85c;
+	border-color: #e5e5e5;
+}
+
+.navbar-image {
+  height: 35px;
+  width: auto;
+}
+
+.navbar {
+  margin-bottom: 2px;
+}
+
+.navbar-brand {
+  padding: 4px 15px;
+}

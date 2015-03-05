@@ -1,26 +1,26 @@
 
-<section class="login" data-ng-controller="AuthenticationController">
-	<div class="row">
-		<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-8 col-xs-offset-2">
-			<div class="page-header mainRow">
-				<h2 class="mainLegend">Winter Wishes</h2>
-			</div>
-			<form data-ng-submit="signin()" class="" autocomplete="off">
-				<fieldset>
-					<input type="text" id="username" name="username" class="form-control" data-ng-model="credentials.username" placeholder="Username">
-					<input type="password" id="password" name="password" class="form-control" data-ng-model="credentials.password" placeholder="Password">
-					<div class="form-group">
-						<button type="submit" class="btn btn-success btn-block">Sign in</button>
-					</div>
-					<div class="forgot-password text-center">
-						<a href="/#!/password/forgot">Forgot your password?</a>
-					</div>
-					<div data-ng-show="error" class="text-center text-danger">
-						<strong data-ng-bind="error"></strong>
-					</div>
-				</fieldset>
-			</form>
-		</div>
-	</div>
-</section>
+<section class="row" data-ng-controller="AuthenticationController">
 
+	<h3 class="col-md-12 text-center">Login</h3>
+
+	<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
+
+		<form data-ng-submit="signin()" class="" autocomplete="off">
+			<fieldset>
+				<input type="text" id="username" name="username" class="form-control input-lg" data-ng-model="credentials.username" placeholder="Username">
+				<input type="password" id="password" name="password" class="form-control input-lg" data-ng-model="credentials.password" placeholder="Password">
+				<div class="form-group">
+					<button type="submit" class="btn btn-success btn-lg btn-block">Sign in</button>
+				</div>
+				<div class="forgot-password text-center">
+					<a href="/#!/password/forgot">Forgot your password?</a>
+				</div>
+				<div data-ng-show="error" class="text-center text-danger">
+					<strong data-ng-bind="error"></strong>
+				</div>
+			</fieldset>
+		</form>
+
+	</div>
+
+</section>

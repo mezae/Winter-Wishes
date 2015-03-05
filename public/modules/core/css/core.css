@@ -18,16 +18,28 @@
 }
 
 .navbar {
-  margin-bottom: 5px;
+  background-color: white;
+  margin-bottom: 2px;
+  border-color: #e5e5e5;
 }
 
 .navbar-image {
-  height: 40px;
+  height: 35px;
   width: auto;
 }
 
 .navbar-brand {
-  padding: 2px 15px;
+  padding: 4px 15px;
+}
+
+.navbar-toggle {
+  margin-bottom: 0;
+}
+
+@media (max-width: 767px) {
+  .navbar-nav .open .dropdown-menu > li > a, .navbar-nav .open .dropdown-menu .dropdown-header {
+    padding: 15px 15px 15px 25px;
+  }
 }
 
 .modal-backdrop {
@@ -40,28 +52,6 @@ h2 {
 
 td {
   cursor: pointer;
-}
-
-.login{
-  background: url(christmas-snow-background.jpg);
-  background-repeat: no-repeat;
-  background-size: cover;
-  position: absolute;
-  overflow: hidden;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-}
-
-.mainRow {
-  padding-top: 25%;
-}
-
-.mainLegend {
-  color: #d9534f;
-  text-align: center;
 }
 
 /*command center*/
