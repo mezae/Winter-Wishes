@@ -6,71 +6,66 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
 
         if (!$scope.user) $location.path('/');
 
-        $scope.adminView = _.includes($scope.user.roles, 'admin');
-        var Recipients = null;
+        $scope.adminView = $scope.user.role === 'admin';
         var currentIndex = 0;
 
         //Helps initialize page by finding the appropriate letters
         $scope.find = function() {
-            $scope.letters = Articles.query(function() {
-                if ($scope.adminView) {
-                    $scope.currentAgency = Agencies.get({
-                        agencyId: $stateParams.articleId
-                    }, function() {
-                        Recipients = $filter('filter')($scope.letters, {
-                            track: $scope.currentAgency.username
-                        });
-                        init();
+            if ($scope.adminView) {
+                $scope.currentAgency = Agencies.get({
+                    agencyId: $stateParams.articleId
+                }, function() {
+                    init();
+                });
+            } else {
+                $scope.currentAgency = $scope.user;
+                init();
+                Agencies.query(function(users) {
+                    var admin = _.find(users, {
+                        'username': 'AAA'
                     });
-                } else {
-                    $scope.currentAgency = $scope.user;
-                    Agencies.query(function(users) {
-                        var admin = _.find(users, {
-                            'username': 'AAA'
-                        });
-                        var due = $filter('date')(admin.due, 'MM/dd/yy');
+                    var due = $filter('date')(admin.due, 'MM/dd/yy');
 
-                        if ($scope.currentAgency.status < 3) {
-                            var countdown = dateDiff(new Date(), new Date(admin.due));
-                            if (countdown === 14) {
-                                $scope.alert = {
-                                    type: 'warning',
-                                    msg: 'Two weeks left'
-                                };
-                            } else if (countdown === 7) {
-                                $scope.alert = {
-                                    type: 'warning',
-                                    msg: 'One week left'
-                                };
-                            } else if (countdown === 0) {
-                                $scope.alert = {
-                                    type: 'danger',
-                                    msg: 'Last day to submit'
-                                };
-                            } else if (countdown === 1) {
-                                $scope.alert = {
-                                    type: 'danger',
-                                    msg: 'One day left'
-                                };
-                            } else if (countdown < 0) {
-                                $scope.alert = {
-                                    type: 'danger',
-                                    msg: 'Past due -- please submit it ASAP'
-                                };
-                            } else if (countdown <= 3) {
-                                $scope.alert = {
-                                    type: 'danger',
-                                    msg: countdown + ' days left'
-                                };
-                            }
-                            $scope.alert.active = $scope.alert.msg.length;
-                        }
-                        Recipients = $scope.letters;
-                        init();
-                    });
-                }
-            });
+                    if ($scope.currentAgency.status < 3) showCountdown(admin.due);
+                });
+            }
         };
+
+        function showCountdown(deadline) {
+            var countdown = dateDiff(new Date(), new Date(deadline));
+            if (countdown === 14) {
+                $scope.alert = {
+                    type: 'warning',
+                    msg: 'Two weeks left'
+                };
+            } else if (countdown === 7) {
+                $scope.alert = {
+                    type: 'warning',
+                    msg: 'One week left'
+                };
+            } else if (countdown === 0) {
+                $scope.alert = {
+                    type: 'danger',
+                    msg: 'Last day to submit'
+                };
+            } else if (countdown === 1) {
+                $scope.alert = {
+                    type: 'danger',
+                    msg: 'One day left'
+                };
+            } else if (countdown < 0) {
+                $scope.alert = {
+                    type: 'danger',
+                    msg: 'Past due -- please submit it ASAP'
+                };
+            } else if (countdown <= 3) {
+                $scope.alert = {
+                    type: 'danger',
+                    msg: countdown + ' days left'
+                };
+            }
+            $scope.alert.active = $scope.alert.msg.length;
+        }
 
         function init() {
             $scope.tabs = [{
@@ -101,16 +96,17 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
         //Allows user to work on another tab
         $scope.activateTab = function(clicked, form) {
             clicked.active = true;
-            $scope.recipients = $filter('filter')(Recipients, {
-                track: $scope.currentAgency.username + clicked.title.charAt(0)
+            $scope.recipients = Articles.query({
+                username: $stateParams.articleId + clicked.title.charAt(0)
+            }, function() {
+                $scope.minAge = clicked.minAge;
+                $scope.maxAge = clicked.maxAge;
+                var blankRecord = _.findIndex($scope.recipients, {
+                    'name': ''
+                });
+                currentIndex = blankRecord ? blankRecord : 0;
+                updateForm(form);
             });
-            $scope.minAge = clicked.minAge;
-            $scope.maxAge = clicked.maxAge;
-            var blankRecord = _.findIndex($scope.recipients, {
-                'name': ''
-            });
-            currentIndex = blankRecord ? blankRecord : 0;
-            updateForm(form);
         };
 
         //Helps find how many days are left until the deadline
@@ -180,7 +176,7 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
         //Allow user to see the record they selected if current letter is valid
         $scope.goToSelected = function(selected, form) {
             if (isValidLetter(form) && !form.$invalid) {
-                currentIndex = _.indexOf($scope.recipients, selected);
+                currentIndex = selected;
                 updateForm(form);
             }
         };
@@ -312,17 +308,21 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
                 headers.push('flagged');
             }
             var csvString = headers.join(',') + '\r\n';
-            _.forEach(Recipients, function(letter) {
-                if (letter.name) {
-                    _.forEach(headers, function(key) {
-                        var line = letter[key];
-                        if (key === 'gift' && _.indexOf(letter[key], ',')) {
-                            line = '"' + letter[key] + '"';
-                        }
-                        csvString += line + ',';
-                    });
-                    csvString += '\r\n';
-                }
+            var Recipients = Articles.query({
+                username: $stateParams.articleId
+            }, function() {
+                _.forEach(Recipients, function(letter) {
+                    if (letter.name) {
+                        _.forEach(headers, function(key) {
+                            var line = letter[key];
+                            if (key === 'gift' && _.indexOf(letter[key], ',')) {
+                                line = '"' + letter[key] + '"';
+                            }
+                            csvString += line + ',';
+                        });
+                        csvString += '\r\n';
+                    }
+                });
             });
 
             var date = $filter('date')(new Date(), 'MM-dd');

@@ -8,7 +8,7 @@ angular.module('core').controller('HomeController', ['$scope', '$location', 'Aut
             if (user.username === 'AAA') {
                 $location.path('/admin');
             } else {
-                $location.path('/agency/' + user._id);
+                $location.path('/agency/' + user.username);
             }
         }
 

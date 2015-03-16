@@ -1,41 +1,40 @@
 'use strict';
 
 angular.module('users').controller('AuthenticationController', ['$scope', '$http', '$location', 'Authentication',
-	function($scope, $http, $location, Authentication) {
-		$scope.user = Authentication.user;
+    function($scope, $http, $location, Authentication) {
+        $scope.user = Authentication.user;
 
-		function redirect(user) {
-			if(user.username === 'AAA') {
-				$location.path('/admin');
-			}
-			else {
-				$location.path('/agency/' + user._id);
-			}
-		}
+        function redirect(user) {
+            if (user.username === 'AAA') {
+                $location.path('/admin');
+            } else {
+                $location.path('/agency/' + user.username);
+            }
+        }
 
-		// If user is signed in then redirect back home
-		if($scope.user) redirect($scope.user);
+        // If user is signed in then redirect back home
+        if ($scope.user) redirect($scope.user);
 
-		$scope.signin = function() {
-			$http.post('/auth/signin', $scope.credentials).success(function(response) {
-				// If successful we assign the response to the global user model
-				Authentication.user = response;
-				// And redirect to appropriate page
-				redirect(response);
-			}).error(function(response) {
-				$scope.error = response.message;
-			});
-		};
+        $scope.signin = function() {
+            $http.post('/auth/signin', $scope.credentials).success(function(response) {
+                // If successful we assign the response to the global user model
+                Authentication.user = response;
+                // And redirect to appropriate page
+                redirect(response);
+            }).error(function(response) {
+                $scope.error = response.message;
+            });
+        };
 
-		$scope.signup = function() {
-			$http.post('/auth/signup', $scope.credentials).success(function(response) {
-				console.log('profile created');
-			}).error(function(response) {
-				$scope.error = response.message;
-			});
-		};
+        $scope.signup = function() {
+            $http.post('/auth/signup', $scope.credentials).success(function(response) {
+                console.log('profile created');
+            }).error(function(response) {
+                $scope.error = response.message;
+            });
+        };
 
-		/*
+        /*
 		$scope.credentials = {};
 		$scope.credentials.email = 'meza.elmer@gmail.com';
 		$scope.credentials.username = 'AAA';
@@ -55,5 +54,5 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
 		}
 		$scope.signup();
 		*/
-	}
+    }
 ]);

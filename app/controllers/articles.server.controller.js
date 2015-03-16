@@ -5,18 +5,18 @@
  */
 var mongoose = require('mongoose'),
     errorHandler = require('./errors.server.controller'),
-    Article = mongoose.model('Article'),
+    Letter = mongoose.model('Article'),
     _ = require('lodash');
 
 /**
  * Create a article
  */
 exports.create = function(req, res) {
-    var article = new Article(req.body);
+    var article = new Letter(req.body);
     var user = article.track.substring(0, 4);
     var index = Number(article.track.substring(4));
 
-    Article.find({
+    Letter.find({
         'track': {
             $regex: '^' + user
         }
@@ -90,7 +90,7 @@ exports.delete = function(req, res) {
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            Article.find({
+            Letter.find({
                 'track': {
                     $regex: '^' + user
                 }
@@ -120,15 +120,15 @@ exports.delete = function(req, res) {
 };
 
 /**
- * List of Articles
+ * List of Letters
  */
-exports.list = function(req, res) {
-    var query = req.user.username === 'AAA' ? {} : {
+exports.index = function(req, res) {
+    var query = req.query.username ? {
         'track': {
-            $regex: '^' + req.user.username
+            $regex: '^' + req.query.username
         }
-    };
-    Article.find(query).sort('track').exec(function(err, letters) {
+    } : {};
+    Letter.find(query, '-created').sort('track').exec(function(err, letters) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -140,27 +140,15 @@ exports.list = function(req, res) {
 };
 
 /**
- * Article middleware
+ * Letter middleware
  */
 exports.articleByID = function(req, res, next, id) {
-    Article.findOne({
+    Letter.findOne({
         _id: id
-    }).exec(function(err, article) {
+    }, '-created').exec(function(err, article) {
         if (err) return next(err);
         if (!article) return next(new Error('Failed to load article ' + id));
         req.article = article;
         next();
     });
-};
-
-/**
- * Article authorization middleware
- */
-exports.hasAuthorization = function(req, res, next) {
-    if (req.article.user.id !== req.user.id) {
-        return res.status(403).send({
-            message: 'User is not authorized'
-        });
-    }
-    next();
 };

@@ -84,7 +84,7 @@
 		  <div class="thumbnail " ng-mouseenter="turn = true" ng-mouseleave="turn = false" >
 			<div class="caption">
 			  <div class="text-center">
-				<a href="/#!/admin/agency/{{partner._id}}" class="btn btn-sm" ng-class="{'btn-primary': partner.status == 5, 'btn-info': partner.status == 4, 'btn-success': partner.status == 3, 'btn-warning': partner.status == 1, 'btn-danger': partner.status == 0}"><strong>{{partner.username}}</strong></a>
+				<a href="/#!/admin/agency/{{partner.username}}" class="btn btn-sm" ng-class="{'btn-primary': partner.status == 5, 'btn-info': partner.status == 4, 'btn-success': partner.status == 3, 'btn-warning': partner.status == 1, 'btn-danger': partner.status == 0}"><strong>{{partner.username}}</strong></a>
 			  </div>
 			  <p class="text-center" ng-show="partner.status < 5">{{partner.children + partner.teens + partner.seniors}} Letters</p>
 			  <p class="text-center" ng-show="partner.status === 5"><rating ng-model="partner.rating.overall" readonly="true"></rating></p>

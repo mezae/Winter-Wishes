@@ -47,9 +47,6 @@ exports.signup = function(req, res) {
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            // Remove sensitive data before login
-            user.password = undefined;
-            user.salt = undefined;
             initRecs(user.username, {
                 'C': user.children,
                 'T': user.teens,

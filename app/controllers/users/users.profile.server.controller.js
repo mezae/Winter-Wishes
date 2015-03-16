@@ -12,19 +12,12 @@ var _ = require('lodash'),
 
 //Allows admin access to all community partner accounts
 exports.list = function(req, res) {
-    User.find().exec(function(err, users) {
+    User.find({}, '-salt -password -acceptance -created -provider -roles').exec(function(err, users) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            _.forEach(users, function(user) {
-                // Remove sensitive data before login
-                user.password = undefined;
-                user.salt = undefined;
-                user.acceptance = undefined;
-                user.roles = undefined;
-            });
             res.json(users);
         }
     });
@@ -33,8 +26,8 @@ exports.list = function(req, res) {
 //Allows admin access to individual community partner accounts
 exports.agencyByID = function(req, res, next, id) {
     User.findOne({
-        _id: id
-    }).exec(function(err, agency) {
+        username: id
+    }, '-salt -password -created -provider').exec(function(err, agency) {
         if (err) return next(err);
         if (!agency) return next(new Error('Failed to load article ' + id));
         req.user = agency;
@@ -102,7 +95,7 @@ exports.update = function(req, res) {
     var message = null;
 
     // For security measurement we remove the roles from the req.body object
-    delete req.body.roles;
+    delete req.body.role;
 
     // Merge existing user
     user = _.assign(user, req.body);
