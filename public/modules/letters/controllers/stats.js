@@ -1,4 +1,5 @@
 'use strict';
+/* global _: false */
 
 angular.module('letters')
 
@@ -59,34 +60,30 @@ angular.module('letters')
                 return $filter('date')(letter.updated, 'yyyy-MM-dd');
             });
 
-            var values = ['x'];
-            var frequency = ['Wishes Added'];
+            var activeDays = [];
             _.forEach(counts, function(count, date) {
-                values.push(date);
-                frequency.push(count);
+                activeDays.push(date);
             });
 
-            var timeline = c3.generate({
-                bindto: '#timeline',
-                data: {
-                    x: 'x',
-                    columns: [
-                        values,
-                        frequency
-                    ]
-                },
-                axis: {
-                    x: {
-                        type: 'timeseries',
-                        tick: {
-                            format: '%m/%d'
-                        }
-                    }
-                }
+            activeDays = activeDays.sort(function(a, b) {
+                return b < a;
             });
+
+            $scope.wishesAdded = [];
+            var current = activeDays[0];
+            var endDate = $filter('date')(new Date(), 'yyyy-MM-dd');
+            while (current !== endDate) {
+                $scope.wishesAdded.push({
+                    date: current,
+                    count: counts[current] ? counts[current] : 0
+                });
+                current = new Date(current);
+                current.setDate(current.getDate() + 2);
+                current = $filter('date')(current, 'yyyy-MM-dd');
+            }
 
             var wordCounts = [];
-            var fillers = ' , a, an, and, but, or, the, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont';
+            var fillers = ' , a, an, and, but, or, the, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont, what, with';
 
             _.forEach(useful, function(letter) {
                 var words = _.words(letter.gift);

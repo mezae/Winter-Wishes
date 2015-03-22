@@ -507,6 +507,7 @@ angular.module('letters')
 
 }]);
 'use strict';
+/* global _: false */
 
 angular.module('letters')
 
@@ -567,34 +568,30 @@ angular.module('letters')
                 return $filter('date')(letter.updated, 'yyyy-MM-dd');
             });
 
-            var values = ['x'];
-            var frequency = ['Wishes Added'];
+            var activeDays = [];
             _.forEach(counts, function(count, date) {
-                values.push(date);
-                frequency.push(count);
+                activeDays.push(date);
             });
 
-            var timeline = c3.generate({
-                bindto: '#timeline',
-                data: {
-                    x: 'x',
-                    columns: [
-                        values,
-                        frequency
-                    ]
-                },
-                axis: {
-                    x: {
-                        type: 'timeseries',
-                        tick: {
-                            format: '%m/%d'
-                        }
-                    }
-                }
+            activeDays = activeDays.sort(function(a, b) {
+                return b < a;
             });
+
+            $scope.wishesAdded = [];
+            var current = activeDays[0];
+            var endDate = $filter('date')(new Date(), 'yyyy-MM-dd');
+            while (current !== endDate) {
+                $scope.wishesAdded.push({
+                    date: current,
+                    count: counts[current] ? counts[current] : 0
+                });
+                current = new Date(current);
+                current.setDate(current.getDate() + 2);
+                current = $filter('date')(current, 'yyyy-MM-dd');
+            }
 
             var wordCounts = [];
-            var fillers = ' , a, an, and, but, or, the, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont';
+            var fillers = ' , a, an, and, but, or, the, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont, what, with';
 
             _.forEach(useful, function(letter) {
                 var words = _.words(letter.gift);
@@ -952,14 +949,16 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
                         csvString += '\r\n';
                     }
                 });
+
+                var date = $filter('date')(new Date(), 'MM-dd');
+                $scope.fileName = ('WishesToSF_' + $scope.currentAgency.username + '_' + date + '.csv');
+                console.log(csvString);
+                var blob = new Blob([csvString], {
+                    type: 'text/csv;charset=UTF-8'
+                });
+                $scope.url = window.URL.createObjectURL(blob);
             });
 
-            var date = $filter('date')(new Date(), 'MM-dd');
-            $scope.fileName = ('WishesToSF_' + $scope.currentAgency.username + '_' + date + '.csv');
-            var blob = new Blob([csvString], {
-                type: 'text/csv;charset=UTF-8'
-            });
-            $scope.url = window.URL.createObjectURL(blob);
         }
 
         //Allows partner to let WWT know whether a gift has been received
@@ -1043,6 +1042,147 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
     }
 ]);
 'use strict';
+/* global d3: false */
+
+angular.module('letters').directive('activity', function() {
+    return {
+        restrict: 'E',
+        scope: {
+            data: '='
+        },
+        link: function(scope, elem) {
+            var element = elem[0];
+            var margin = {
+                    top: 20,
+                    right: 30,
+                    bottom: 40,
+                    left: 40
+                },
+                width = element.clientWidth - margin.left - margin.right,
+                height = 300 - margin.top - margin.bottom;
+
+            scope.$watch('data', function(data) {
+                if (data) {
+                    var parseDate = d3.time.format('%Y-%m-%d').parse;
+                    var formatTime = d3.time.format('%B %e'); // Format tooltip date / time
+
+                    data.forEach(function(d) {
+                        d.date = parseDate(d.date);
+
+                    });
+
+                    var x = d3.time.scale()
+                        .range([0, width]);
+
+                    var y = d3.scale.linear()
+                        .range([height, 0]);
+
+                    var xAxis = d3.svg.axis()
+                        .scale(x)
+                        .ticks(d3.time.week, 1)
+                        .tickFormat(d3.time.format('%m/%d'))
+                        .orient('bottom');
+
+                    var yAxis = d3.svg.axis()
+                        .scale(y)
+                        .ticks(5)
+                        .tickFormat(d3.format('d'))
+                        .tickSubdivide(0)
+                        .orient('left');
+
+
+
+                    var div = d3.select('body')
+                        .append('div') // declare the tooltip div 
+                        .attr('class', 'tooltip') // apply the 'tooltip' class
+                        .style('opacity', 0); // set the opacity to nil
+
+
+
+                    var line = d3.svg.line()
+                        .x(function(d) {
+                            return x(d.date);
+                        })
+                        .y(function(d) {
+                            return y(d.count);
+                        });
+
+                    x.domain(d3.extent(data, function(d) {
+                        return d.date;
+                    }));
+                    y.domain(d3.extent(data, function(d) {
+                        return d.count;
+                    }));
+
+                    var chart = d3.select(element).append('svg')
+                        .attr('width', width + margin.left + margin.right)
+                        .attr('height', height + margin.top + margin.bottom)
+                        .append('g')
+                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+                    chart.append('g')
+                        .attr('class', 'x axis')
+                        .attr('transform', 'translate(0,' + height + ')')
+                        .call(xAxis);
+
+                    // text label for the x axis
+                    chart.append('text')
+                        .attr('transform', 'translate(' + (width / 2) + ' ,' + (height + margin.bottom) + ')')
+                        .style('text-anchor', 'middle')
+                        .text('Date');
+
+                    chart.append('g')
+                        .attr('class', 'y axis')
+                        .call(yAxis);
+
+                    chart.append('text')
+                        .attr('transform', 'rotate(-90)')
+                        .attr('y', 0 - margin.left)
+                        .attr('x', 0 - (height / 2))
+                        .attr('dy', '1em')
+                        .style('text-anchor', 'middle')
+                        .text('# of Wishes Added');
+
+                    chart.append('path')
+                        .datum(data)
+                        .attr('class', 'line')
+                        .attr('d', line);
+
+                    chart.selectAll('dot')
+                        .data(data.filter(function(d) {
+                            return d.count > 0;
+                        }))
+                        .enter().append('circle')
+                        .attr('class', 'circle')
+                        .attr('r', 3)
+                        .attr('cx', function(d) {
+                            return x(d.date);
+                        })
+                        .attr('cy', function(d) {
+                            return y(d.count);
+                        })
+
+                    // Tooltip stuff after this
+                    .on('mouseover', function(d) {
+                        div.transition()
+                            .duration(500)
+                            .style('opacity', 0);
+                        div.transition()
+                            .duration(200)
+                            .style('opacity', .9);
+                        div.html(
+                            formatTime(d.date) +
+                            '<br/>Wishes Added: ' + d.count)
+                            .style('left', (d3.event.pageX) + 'px')
+                            .style('top', (d3.event.pageY - 28) + 'px');
+                    });
+
+                }
+            }, true);
+        }
+    };
+});
+'use strict';
 
 //Letters service used for communicating with the agencies REST endpoints
 angular.module('letters').factory('Agencies', ['$resource',
@@ -1084,61 +1224,83 @@ angular.module('letters').factory('Agencies', ['$resource',
 //         });
 //     });
 'use strict';
+/* global d3: false */
 
 angular.module('letters').directive('donutChart', function() {
-	return {
-		restrict: 'E',
-		scope: { data: '=' },
-		link: function(scope, elem) {
-			var element = elem[0];
-			var margin = {top: 20, right: 30, bottom: 30, left: 55},
-			width = element.clientWidth - margin.left - margin.right,
-			height = 300 - margin.top - margin.bottom;
+    return {
+        restrict: 'E',
+        scope: {
+            data: '='
+        },
+        link: function(scope, elem) {
+            var element = elem[0];
+            var margin = {
+                    top: 20,
+                    right: 30,
+                    bottom: 30,
+                    left: 55
+                },
+                width = element.clientWidth - margin.left - margin.right,
+                height = 300 - margin.top - margin.bottom;
 
-			scope.$watch('data', function(data) {
-				if(data) {
-					var y = d3.scale.ordinal()
-						.domain(data.map(function(d) { return d.name; }))
-						.rangeRoundBands([height, 0], 0.05);
+            scope.$watch('data', function(data) {
+                if (data) {
+                    var y = d3.scale.ordinal()
+                        .domain(data.map(function(d) {
+                            return d.name;
+                        }))
+                        .rangeRoundBands([height, 0], 0.05);
 
-					var x = d3.scale.linear()
-						.domain([0, d3.max(data, function(d) { return d.value; })])
-						.range([0, width]);
+                    var x = d3.scale.linear()
+                        .domain([0, d3.max(data, function(d) {
+                            return d.value;
+                        })])
+                        .range([0, width]);
 
-					var yAxis = d3.svg.axis()
-						.scale(y)
-						.orient('left');
+                    var yAxis = d3.svg.axis()
+                        .scale(y)
+                        .orient('left');
 
-					var chart = d3.select(element).append('svg')
-						.attr('width', width + margin.left + margin.right)
-						.attr('height', height + margin.top + margin.bottom)
-						.append('g')
-						.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                    var chart = d3.select(element).append('svg')
+                        .attr('width', width + margin.left + margin.right)
+                        .attr('height', height + margin.top + margin.bottom)
+                        .append('g')
+                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-					chart.append('g')
-						.attr('class', 'y axis')
-						.call(yAxis);
+                    chart.append('g')
+                        .attr('class', 'y axis')
+                        .call(yAxis);
 
-					chart.selectAll('.bar')
-						.data(data)
-						.enter().append('rect')
-						.attr('class', 'bar')
-						.attr('y', function(d) { return y(d.name); })
-						.attr('width', function(d) { return x(d.value); })
-						.attr('height', y.rangeBand());
-					
-					chart.selectAll('.btext')
-						.data(data)
-						.enter().append('text')
-						.attr('class', 'btext')
-						.attr('x', function(d) { return x(d.value) - 3; })
-						.attr('y', function(d) { return y(d.name) + (y.rangeBand()/2); })
-						.attr('dy', '.35em')
-						.text(function(d) { return d.value; });
-				}
-			}, true);
-		}
-	};
+                    chart.selectAll('.bar')
+                        .data(data)
+                        .enter().append('rect')
+                        .attr('class', 'bar')
+                        .attr('y', function(d) {
+                            return y(d.name);
+                        })
+                        .attr('width', function(d) {
+                            return x(d.value);
+                        })
+                        .attr('height', y.rangeBand());
+
+                    chart.selectAll('.btext')
+                        .data(data)
+                        .enter().append('text')
+                        .attr('class', 'btext')
+                        .attr('x', function(d) {
+                            return x(d.value) - 3;
+                        })
+                        .attr('y', function(d) {
+                            return y(d.name) + (y.rangeBand() / 2);
+                        })
+                        .attr('dy', '.35em')
+                        .text(function(d) {
+                            return d.value;
+                        });
+                }
+            }, true);
+        }
+    };
 });
 'use strict';
 

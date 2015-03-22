@@ -5,6 +5,11 @@
 	display: none !important;
 }
 
+.content {
+  padding-top: 0.5em;
+  padding-bottom: 1.5em;
+}
+
 .ng-invalid.ng-dirty {
 	border-color: #FA787E;
 }
@@ -250,7 +255,7 @@ textarea {
   shape-rendering: crispEdges;
 }
 
-.x.axis path {
+donut-chart.x.axis path {
   display: none;
 }
 
@@ -264,6 +269,34 @@ donut-chart {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+activity {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.circle {
+  fill: steelblue;
+}
+
+div.tooltip {
+  position: absolute; 
+  text-align: center; 
+  width: 120px;  
+  height: 28px;   
+  padding: 2px; 
+  font: 12px sans-serif;  
+  background: lightsteelblue; 
+  border: 0px;          
+  border-radius: 8px;
 }
 
 footer {

@@ -323,14 +323,16 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
                         csvString += '\r\n';
                     }
                 });
+
+                var date = $filter('date')(new Date(), 'MM-dd');
+                $scope.fileName = ('WishesToSF_' + $scope.currentAgency.username + '_' + date + '.csv');
+                console.log(csvString);
+                var blob = new Blob([csvString], {
+                    type: 'text/csv;charset=UTF-8'
+                });
+                $scope.url = window.URL.createObjectURL(blob);
             });
 
-            var date = $filter('date')(new Date(), 'MM-dd');
-            $scope.fileName = ('WishesToSF_' + $scope.currentAgency.username + '_' + date + '.csv');
-            var blob = new Blob([csvString], {
-                type: 'text/csv;charset=UTF-8'
-            });
-            $scope.url = window.URL.createObjectURL(blob);
         }
 
         //Allows partner to let WWT know whether a gift has been received
