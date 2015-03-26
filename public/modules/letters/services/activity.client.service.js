@@ -47,14 +47,10 @@ angular.module('letters').directive('activity', function() {
                         .tickSubdivide(0)
                         .orient('left');
 
-
-
                     var div = d3.select('body')
                         .append('div') // declare the tooltip div 
-                        .attr('class', 'tooltip') // apply the 'tooltip' class
+                        .attr('class', 'timeTooltip') // apply the 'tooltip' class
                         .style('opacity', 0); // set the opacity to nil
-
-
 
                     var line = d3.svg.line()
                         .x(function(d) {
@@ -80,13 +76,14 @@ angular.module('letters').directive('activity', function() {
                     chart.append('g')
                         .attr('class', 'x axis')
                         .attr('transform', 'translate(0,' + height + ')')
-                        .call(xAxis);
-
-                    // text label for the x axis
-                    chart.append('text')
-                        .attr('transform', 'translate(' + (width / 2) + ' ,' + (height + margin.bottom) + ')')
-                        .style('text-anchor', 'middle')
-                        .text('Date');
+                        .call(xAxis)
+                        .selectAll('text')
+                        .style('text-anchor', 'end')
+                        .attr('dx', '-.8em')
+                        .attr('dy', '.15em')
+                        .attr('transform', function(d) {
+                            return 'rotate(-65)';
+                        });
 
                     chart.append('g')
                         .attr('class', 'y axis')
@@ -111,7 +108,7 @@ angular.module('letters').directive('activity', function() {
                         }))
                         .enter().append('circle')
                         .attr('class', 'circle')
-                        .attr('r', 3)
+                        .attr('r', 3.5)
                         .attr('cx', function(d) {
                             return x(d.date);
                         })
@@ -126,14 +123,19 @@ angular.module('letters').directive('activity', function() {
                             .style('opacity', 0);
                         div.transition()
                             .duration(200)
-                            .style('opacity', .9);
+                            .style('opacity', 0.8);
                         div.html(
                             formatTime(d.date) +
                             '<br/>Wishes Added: ' + d.count)
                             .style('left', (d3.event.pageX) + 'px')
                             .style('top', (d3.event.pageY - 28) + 'px');
-                    });
+                    })
 
+                    .on('mouseout', function(d) {
+                        div.transition()
+                            .duration(1000)
+                            .style('opacity', 0);
+                    });
                 }
             }, true);
         }

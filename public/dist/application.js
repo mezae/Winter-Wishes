@@ -229,51 +229,61 @@ angular.module('letters').config(['$compileProvider', function($compileProvider)
 
 // Setting up route
 angular.module('letters').config(['$stateProvider',
-	function($stateProvider) {
-		// Letters state routing
-		$stateProvider.
-		state('command', {
-			url: '/admin',
-			templateUrl: 'modules/letters/views/command.html'
-		}).
-		state('tracking', {
-			url: '/admin/agency/:articleId',
-			templateUrl: 'modules/letters/views/tracking.html'
-		}).
-		state('agTracking', {
-			url: '/agency/:articleId',
-			templateUrl: 'modules/letters/views/tracking.html'
-		}).
-		state('email', {
-			url: '/admin/email',
-			templateUrl: 'modules/letters/views/emails.html'
-		}).
-		state('etemplate', {
-			url: '/admin/email/:template',
-			templateUrl: 'modules/letters/views/etemplate.html'
-		}).
-		state('email-success', {
-			url: '/admin/emails/success',
-			templateUrl: 'modules/letters/views/esent.html'
-		}).
-		state('stats', {
-			url: '/admin/stats',
-			templateUrl: 'modules/letters/views/stats.html'
-		});
-	}
+    function($stateProvider) {
+        // Letters state routing
+        $stateProvider.
+        state('command', {
+            url: '/admin:status',
+            templateUrl: 'modules/letters/views/command.html'
+        }).
+        state('tracking', {
+            url: '/admin/agency/:articleId',
+            templateUrl: 'modules/letters/views/tracking.html'
+        }).
+        state('agTracking', {
+            url: '/agency/:articleId',
+            templateUrl: 'modules/letters/views/tracking.html'
+        }).
+        state('email', {
+            url: '/admin/email',
+            templateUrl: 'modules/letters/views/emails.html'
+        }).
+        state('etemplate', {
+            url: '/admin/email/:template',
+            templateUrl: 'modules/letters/views/etemplate.html'
+        }).
+        state('email-success', {
+            url: '/admin/emails/success',
+            templateUrl: 'modules/letters/views/esent.html'
+        }).
+        state('stats', {
+            url: '/admin/stats',
+            templateUrl: 'modules/letters/views/stats.html'
+        });
+    }
 ]);
 'use strict';
+/* global _: false */
 
 angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
     function($scope, $window, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/');
+        if ($location.search()) $scope.query = $location.search();
 
         $scope.needToUpdate = false; //helps hide sidebar when it's not needed
         $scope.alert = {
             active: false,
             type: '',
             msg: ''
+        };
+
+        $scope.updateURL = function() {
+            if ($scope.query.status) {
+                $location.search('status', $scope.query.status);
+            } else {
+                $location.search('status', null);
+            }
         };
 
         $scope.find = function() {
@@ -523,40 +533,22 @@ angular.module('letters')
 
         $scope.partners = Agencies.query(function() {
 
-            var status = _.countBy($scope.partners, function(tf) {
+
+            var names = ['Not Yet Started', 'In Progress', 'Completed', 'Submitted', 'Under Review', 'Reviewed'];
+            var groups = _.countBy($scope.partners, function(tf) {
                 return tf.status;
             });
 
-            var donut = c3.generate({
-                bindto: '#donut',
-                data: {
-                    columns: [
-                        ['NotYetStarted', status[0]],
-                        ['InProgress', status[1]],
-                        ['Submitted', status[3]],
-                        ['UnderReview', status[4]],
-                        ['Reviewed', status[5]]
-                    ],
-                    type: 'donut',
-                    colors: {
-                        Reviewed: '#428bca',
-                        UnderReview: '#5bc0de',
-                        Submitted: '#5cb85c',
-                        InProgress: '#f0ad4e',
-                        NotYetStarted: '#d9534f'
-                    }
-                },
-                tooltip: {
-                    format: {
-                        value: function(value, ratio, id) {
-                            return value;
-                        }
-                    }
-                },
-                donut: {
-                    title: 'Progress'
-                }
+            $scope.status = [];
+            _.forEach(groups, function(c, g) {
+                $scope.status.push({
+                    status: g,
+                    name: names[g],
+                    count: c,
+                    percent: (c / $scope.partners.length * 100).toFixed(1) + '%'
+                });
             });
+
         });
 
         $scope.letters = Articles.query(function() {
@@ -579,7 +571,9 @@ angular.module('letters')
 
             $scope.wishesAdded = [];
             var current = activeDays[0];
-            var endDate = $filter('date')(new Date(), 'yyyy-MM-dd');
+            var endDate = new Date();
+            endDate.setDate(endDate.getDate() + 1);
+            endDate = $filter('date')(endDate, 'yyyy-MM-dd');
             while (current !== endDate) {
                 $scope.wishesAdded.push({
                     date: current,
@@ -591,7 +585,7 @@ angular.module('letters')
             }
 
             var wordCounts = [];
-            var fillers = ' , a, an, and, but, or, the, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont, what, with';
+            var fillers = ' , a, an, and, but, or, the, this, that, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont, who, what, where, when, why, how, which, with';
 
             _.forEach(useful, function(letter) {
                 var words = _.words(letter.gift);
@@ -1090,14 +1084,10 @@ angular.module('letters').directive('activity', function() {
                         .tickSubdivide(0)
                         .orient('left');
 
-
-
                     var div = d3.select('body')
                         .append('div') // declare the tooltip div 
-                        .attr('class', 'tooltip') // apply the 'tooltip' class
+                        .attr('class', 'timeTooltip') // apply the 'tooltip' class
                         .style('opacity', 0); // set the opacity to nil
-
-
 
                     var line = d3.svg.line()
                         .x(function(d) {
@@ -1123,13 +1113,14 @@ angular.module('letters').directive('activity', function() {
                     chart.append('g')
                         .attr('class', 'x axis')
                         .attr('transform', 'translate(0,' + height + ')')
-                        .call(xAxis);
-
-                    // text label for the x axis
-                    chart.append('text')
-                        .attr('transform', 'translate(' + (width / 2) + ' ,' + (height + margin.bottom) + ')')
-                        .style('text-anchor', 'middle')
-                        .text('Date');
+                        .call(xAxis)
+                        .selectAll('text')
+                        .style('text-anchor', 'end')
+                        .attr('dx', '-.8em')
+                        .attr('dy', '.15em')
+                        .attr('transform', function(d) {
+                            return 'rotate(-65)';
+                        });
 
                     chart.append('g')
                         .attr('class', 'y axis')
@@ -1154,7 +1145,7 @@ angular.module('letters').directive('activity', function() {
                         }))
                         .enter().append('circle')
                         .attr('class', 'circle')
-                        .attr('r', 3)
+                        .attr('r', 3.5)
                         .attr('cx', function(d) {
                             return x(d.date);
                         })
@@ -1169,14 +1160,19 @@ angular.module('letters').directive('activity', function() {
                             .style('opacity', 0);
                         div.transition()
                             .duration(200)
-                            .style('opacity', .9);
+                            .style('opacity', 0.8);
                         div.html(
                             formatTime(d.date) +
                             '<br/>Wishes Added: ' + d.count)
                             .style('left', (d3.event.pageX) + 'px')
                             .style('top', (d3.event.pageY - 28) + 'px');
-                    });
+                    })
 
+                    .on('mouseout', function(d) {
+                        div.transition()
+                            .duration(1000)
+                            .style('opacity', 0);
+                    });
                 }
             }, true);
         }
@@ -1223,6 +1219,217 @@ angular.module('letters').factory('Agencies', ['$resource',
 //             }
 //         });
 //     });
+'use strict';
+/* global d3: false */
+
+angular.module('letters').directive('donut', ['$location',
+    function($location) {
+        return {
+            restrict: 'E',
+            scope: {
+                data: '='
+            },
+            link: function(scope, elem) {
+                var element = elem[0];
+                var width = element.clientWidth,
+                    height = 320,
+                    radius = Math.min(width, height) / 2,
+                    outerRadius = height / 2 - 20,
+                    innerRadius = outerRadius / 2;
+
+                function arcTween(arc, outerRadius, delay) {
+                    return function() {
+                        d3.select(this)
+                            .transition()
+                            .delay(delay)
+                            .attrTween('d', function(d) {
+                                var i = d3.interpolate(d.outerRadius, outerRadius);
+                                return function(t) {
+                                    d.outerRadius = i(t);
+                                    return arc(d);
+                                };
+                            });
+                    };
+                }
+
+                scope.$watch('data', function(data) {
+                        if (data) {
+
+                            var color = d3.scale.ordinal()
+                                .range(['#d9534f', '#f0ad4e', '#5cb85c', '#5bc0de', '#428bca']);
+
+                            var pie = d3.layout.pie()
+                                .padAngle(0.01)
+                                .sort(null)
+                                .value(function(d) {
+                                    return d.count;
+                                });
+
+                            var arc = d3.svg.arc()
+                                .padRadius(outerRadius)
+                                .innerRadius(innerRadius);
+
+                            var div = d3.select('body')
+                                .append('div') // declare the tooltip div 
+                                .attr('class', 'donutTooltip') // apply the 'tooltip' class
+                                .style('opacity', 0); // set the opacity to nil
+
+                            var svg = d3.select(element).append('svg')
+                                .attr('width', width)
+                                .attr('height', height);
+
+                            var chart = svg.append('g')
+                                .attr('transform', 'translate(' + width / 2 + ',' + (height / 2 - 20) + ')');
+
+                            data.forEach(function(d) {
+                                d.count = +d.count;
+                            });
+
+                            var g = chart.selectAll('.arc')
+                                .data(pie(data))
+                                .enter().append('g')
+                                .attr('class', 'arc');
+
+                            g.append('path')
+                                .each(function(d) {
+                                    d.outerRadius = outerRadius - 10;
+                                })
+                                .attr('d', arc)
+                                .style('fill', function(d) {
+                                    return color(d.data.status);
+                                })
+                                .style('cursor', 'pointer')
+                                .on('mouseover', function(d) {
+                                    d3.select(this)
+                                        .transition()
+                                        .delay(0)
+                                        .attrTween('d', function(d) {
+                                            var i = d3.interpolate(d.outerRadius, outerRadius - 2);
+                                            return function(t) {
+                                                d.outerRadius = i(t);
+                                                return arc(d);
+                                            };
+                                        });
+                                    div.transition()
+                                        .duration(0)
+                                        .style('opacity', 0);
+                                    div.transition()
+                                        .duration(200)
+                                        .style('opacity', 0.8);
+                                    div.html(
+                                        d.data.name + ': ' + d.data.count)
+                                        .style('left', (d3.event.pageX + 14) + 'px')
+                                        .style('top', (d3.event.pageY + 14) + 'px');
+
+                                })
+                                .on('mousemove', function() {
+                                    div
+                                        .style('left', (d3.event.pageX + 10) + 'px')
+                                        .style('top', (d3.event.pageY + 16) + 'px');
+                                })
+                                .on('mouseout', function(d) {
+                                    d3.select(this)
+                                        .transition()
+                                        .delay(100)
+                                        .attrTween('d', function(d) {
+                                            var i = d3.interpolate(d.outerRadius, outerRadius - 10);
+                                            return function(t) {
+                                                d.outerRadius = i(t);
+                                                return arc(d);
+                                            };
+                                        });
+                                    div.transition()
+                                        .duration(1000)
+                                        .style('opacity', 0);
+                                })
+                                .on('click', function(d) {
+                                    //$location.path('/admin');
+                                    window.location.href = '/#!/admin?status=' + d.data.status;
+                                });
+
+                            g.append('text')
+                                .attr('transform', function(d) {
+                                    return 'translate(' + arc.centroid(d) + ')';
+                                })
+                                .attr('dy', '.35em')
+                                .style('text-anchor', 'middle')
+                                .text(function(d) {
+                                    return d.data.percent;
+                                });
+
+                            chart.append('text')
+                                .attr('class', 'donutTitle')
+                                .style('text-anchor', 'middle')
+                                .text('Progress');
+
+                            var legendContainer = svg.append('g')
+                                .attr('transform', 'translate(10,' + (height - 30) + ')');
+
+                            var legend = legendContainer.append('g')
+                                .attr('class', 'legend');
+
+                            var series = legend.selectAll('.series')
+                                .data(pie(data));
+
+                            var seriesEnter = series.enter()
+                                .append('g')
+                                .attr('class', 'series');
+
+                            seriesEnter.append('circle')
+                                .style('fill', function(d, i) {
+                                    return color(d.data.status);
+                                })
+                                .attr('r', 5);
+
+                            seriesEnter.append('text')
+                                .style('fill', 'black')
+                                .text(function(d) {
+                                    return d.data.name;
+                                })
+                                .attr('text-anchor', 'start')
+                                .attr('dy', '.32em')
+                                .attr('dx', '8');
+
+                            var ypos = 5,
+                                newxpos = 35,
+                                maxwidth = 0,
+                                xpos;
+                            series
+                                .attr('transform', function(d, i) {
+                                    var length = legendContainer.selectAll('text')[0][i].getComputedTextLength() + 28;
+                                    xpos = newxpos;
+
+                                    if (width < xpos + length) {
+                                        newxpos = xpos = 35;
+                                        ypos += 20;
+                                    }
+
+                                    newxpos += length;
+                                    if (newxpos > maxwidth) maxwidth = newxpos;
+
+                                    return 'translate(' + xpos + ',' + ypos + ')';
+                                });
+                        }
+                    },
+                    true);
+            }
+        };
+    }
+]);
+'use strict';
+
+//Letters service used for communicating with the letters REST endpoints
+angular.module('letters').factory('Articles', ['$resource',
+    function($resource) {
+        return $resource('articles/:articleId/:controller', {
+            articleId: '@_id'
+        }, {
+            update: {
+                method: 'PUT'
+            }
+        });
+    }
+]);
 'use strict';
 /* global d3: false */
 
@@ -1302,20 +1509,6 @@ angular.module('letters').directive('donutChart', function() {
         }
     };
 });
-'use strict';
-
-//Letters service used for communicating with the letters REST endpoints
-angular.module('letters').factory('Articles', ['$resource',
-    function($resource) {
-        return $resource('articles/:articleId/:controller', {
-            articleId: '@_id'
-        }, {
-            update: {
-                method: 'PUT'
-            }
-        });
-    }
-]);
 'use strict';
 
 // Users service used for communicating with the users REST endpoint

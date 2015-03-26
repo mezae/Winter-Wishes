@@ -1,15 +1,25 @@
 'use strict';
+/* global _: false */
 
 angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
     function($scope, $window, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/');
+        if ($location.search()) $scope.query = $location.search();
 
         $scope.needToUpdate = false; //helps hide sidebar when it's not needed
         $scope.alert = {
             active: false,
             type: '',
             msg: ''
+        };
+
+        $scope.updateURL = function() {
+            if ($scope.query.status) {
+                $location.search('status', $scope.query.status);
+            } else {
+                $location.search('status', null);
+            }
         };
 
         $scope.find = function() {

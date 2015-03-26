@@ -15,40 +15,22 @@ angular.module('letters')
 
         $scope.partners = Agencies.query(function() {
 
-            var status = _.countBy($scope.partners, function(tf) {
+
+            var names = ['Not Yet Started', 'In Progress', 'Completed', 'Submitted', 'Under Review', 'Reviewed'];
+            var groups = _.countBy($scope.partners, function(tf) {
                 return tf.status;
             });
 
-            var donut = c3.generate({
-                bindto: '#donut',
-                data: {
-                    columns: [
-                        ['NotYetStarted', status[0]],
-                        ['InProgress', status[1]],
-                        ['Submitted', status[3]],
-                        ['UnderReview', status[4]],
-                        ['Reviewed', status[5]]
-                    ],
-                    type: 'donut',
-                    colors: {
-                        Reviewed: '#428bca',
-                        UnderReview: '#5bc0de',
-                        Submitted: '#5cb85c',
-                        InProgress: '#f0ad4e',
-                        NotYetStarted: '#d9534f'
-                    }
-                },
-                tooltip: {
-                    format: {
-                        value: function(value, ratio, id) {
-                            return value;
-                        }
-                    }
-                },
-                donut: {
-                    title: 'Progress'
-                }
+            $scope.status = [];
+            _.forEach(groups, function(c, g) {
+                $scope.status.push({
+                    status: g,
+                    name: names[g],
+                    count: c,
+                    percent: (c / $scope.partners.length * 100).toFixed(1) + '%'
+                });
             });
+
         });
 
         $scope.letters = Articles.query(function() {
@@ -71,7 +53,9 @@ angular.module('letters')
 
             $scope.wishesAdded = [];
             var current = activeDays[0];
-            var endDate = $filter('date')(new Date(), 'yyyy-MM-dd');
+            var endDate = new Date();
+            endDate.setDate(endDate.getDate() + 1);
+            endDate = $filter('date')(endDate, 'yyyy-MM-dd');
             while (current !== endDate) {
                 $scope.wishesAdded.push({
                     date: current,
@@ -83,7 +67,7 @@ angular.module('letters')
             }
 
             var wordCounts = [];
-            var fillers = ' , a, an, and, but, or, the, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont, what, with';
+            var fillers = ' , a, an, and, but, or, the, this, that, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont, who, what, where, when, why, how, which, with';
 
             _.forEach(useful, function(letter) {
                 var words = _.words(letter.gift);
