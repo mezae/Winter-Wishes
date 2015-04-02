@@ -332,3 +332,17 @@ footer {
   padding-bottom: 0.2em;
   background: none repeat scroll 0 0 white;
 }
+
+.profile {
+  border-top-width: 0;
+  border-left-width: 0;
+  border-right-width: 0;
+  border-radius: 0;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+.profile:focus {
+  border-top: white;
+  box-shadow: none;
+}
