@@ -12,7 +12,7 @@
 		
 		<ul class="nav navbar-nav navbar-right">
 			<li ng-hide="authentication.user"><a href="/#!/login">Login</a></li>
-			<li class="dropdown" dropdown on-toggle="toggled(open)" ng-show="authentication.user">
+			<li class="dropdown" dropdown on-toggle="toggled(open)" ng-class="{open: hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-show="authentication.user">
 				<a href class="dropdown-toggle" dropdown-toggle>
 					<span data-ng-bind="authentication.user.agency"></span> <b class="caret"></b>
 				</a>

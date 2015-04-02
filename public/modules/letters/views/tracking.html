@@ -90,7 +90,9 @@
 						<tr ng-repeat="rec in recipients | filter:query as results" ng-click="goToSelected($index, tform)">
 							<td colspan="1" ng-show="rec.track == current.track && !adminView && currentAgency.status < 3"><i class="glyphicon glyphicon-pencil">...</i></td>
 							<td colspan="4" ng-show="rec.track == current.track && !adminView && currentAgency.status < 3">you are currently editing this letter</td>
-							<td class="col-md-1" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.track}}</td>
+							<td class="col-md-1" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">
+								<a ng-if="$index % 10 === 8" id="{{$index + 2}}"></a>{{rec.track}}
+							</td>
 							<td class="col-md-3 cap" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.name}}</td>
 							<td class="col-md-1" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.age}}</td>
 							<td class="col-md-1 cap" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.gender}}</td>

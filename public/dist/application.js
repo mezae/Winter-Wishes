@@ -268,7 +268,7 @@ angular.module('letters').config(['$stateProvider',
 angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
     function($scope, $window, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
         $scope.user = Authentication.user;
-        if (!$scope.user) $location.path('/');
+        if (!$scope.user) $location.path('/').replace();
         if ($location.search()) $scope.query = $location.search();
 
         $scope.needToUpdate = false; //helps hide sidebar when it's not needed
@@ -619,9 +619,10 @@ angular.module('letters')
     }
 ]);
 'use strict';
+/* global _: false */
 
-angular.module('letters').controller('AgencyController', ['$scope', '$stateParams', '$location', '$filter', '$timeout', '$modal', 'Authentication', 'Articles', 'Agencies', 'Users',
-    function($scope, $stateParams, $location, $filter, $timeout, $modal, Authentication, Articles, Agencies, Users) {
+angular.module('letters').controller('AgencyController', ['$scope', '$stateParams', '$location', '$anchorScroll', '$filter', '$timeout', '$modal', 'Authentication', 'Articles', 'Agencies', 'Users',
+    function($scope, $stateParams, $location, $anchorScroll, $filter, $timeout, $modal, Authentication, Articles, Agencies, Users) {
         $scope.user = Authentication.user;
 
         if (!$scope.user) $location.path('/');
@@ -775,6 +776,10 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
                 form.$setUntouched();
             }
             $scope.current = $scope.recipients[currentIndex];
+            if (currentIndex % 10 === 9) {
+                $location.hash(currentIndex + 1);
+                $anchorScroll();
+            }
         }
 
         //Allow user to see/edit the next record if current letter is valid
