@@ -17,21 +17,29 @@ The building blocks that assemble this Winter Wishes application:
 ## Getting Started
 Install Homebrew (http://brew.sh/)
 
-Execute the following commands (for any brew installation, check Caveats section for further instructions):
+Execute the following commands (for any brew installation, check Caveats section for further instructions)
+```
 brew install git
 brew install node
 brew install mongodb
 npm install -g bower
 npm install -g grunt-cli
+```
 
-At the Winter-Wishes root directory, execute the following to install dependencies:
+At the Winter-Wishes root directory, execute the following to install dependencies
+```
 npm install
+```
 
-If you installed mongo through Homebrew, execute the following command to run it in the background:
+If you installed mongo through Homebrew, execute the following command to run it in the background
+```
 mongod --config /usr/local/etc/mongod.conf
+```
 
 In a separate terminal, execute the following to run the server:
+```
 grunt
+```
 
 ## License
 (The MIT License)
