@@ -24,11 +24,11 @@ module.exports = {
 	mailer: {
 		from: 'Elmer <mezae10@gmail.com>',
 		options: {
-			service: process.env.MAILER_SERVICE_PROVIDER || 'Mailtrap.io',
-			auth: {
-				user: process.env.MAILER_EMAIL_ID || '328212ee68d2e7a2c@mailtrap.io',
-				pass: process.env.MAILER_PASSWORD || '3c104d180787e1'
-			}
+			service: process.env.MAILER_SERVICE_PROVIDER || 'Mailtrap',
+	            	auth: {
+	                	user: process.env.MAILER_EMAIL_ID || '328212ee68d2e7a2c@mailtrap.io',
+	                	pass: process.env.MAILER_PASSWORD || '3c104d180787e1'
+	            	}
 		}
 	}
 };
