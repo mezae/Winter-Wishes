@@ -9,11 +9,11 @@ module.exports = {
 	mailer: {
 		from: 'Elmer <mezae10@gmail.com>',
 		options: {
-			service: 'Mailtrap.io',
-			auth: {
-				user: '328212ee68d2e7a2c@mailtrap.io',
-				pass: '3c104d180787e1'
-			}
+			service: process.env.MAILER_SERVICE_PROVIDER || 'Mailtrap',
+	            	auth: {
+	                	user: '328212ee68d2e7a2c@mailtrap.io',
+	                	pass: '3c104d180787e1'
+	            	}
 		}
 	}
 };
