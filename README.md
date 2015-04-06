@@ -12,7 +12,7 @@ The building blocks that assemble this Winter Wishes application:
 * [Express](http://expressjs.com/)
 * [AngularJS](http://angularjs.org/)
 * [Node.js](http://www.nodejs.org/)
-** [MEAN.JS](http://www.meanjs.org/)
+* [MEAN.JS](http://www.meanjs.org/)
 
 ## Getting Started
 Install Homebrew (http://brew.sh/)

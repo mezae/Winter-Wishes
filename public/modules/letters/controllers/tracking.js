@@ -1,8 +1,8 @@
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('AgencyController', ['$scope', '$stateParams', '$location', '$anchorScroll', '$filter', '$timeout', '$modal', 'Authentication', 'Articles', 'Agencies', 'Users',
-    function($scope, $stateParams, $location, $anchorScroll, $filter, $timeout, $modal, Authentication, Articles, Agencies, Users) {
+angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stateParams', '$location', '$anchorScroll', '$filter', '$timeout', '$modal', 'Authentication', 'Articles', 'Agencies', 'Users',
+    function($scope, $q, $stateParams, $location, $anchorScroll, $filter, $timeout, $modal, Authentication, Articles, Agencies, Users) {
         $scope.user = Authentication.user;
 
         if (!$scope.user) $location.path('/');
@@ -96,6 +96,7 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
 
         //Allows user to work on another tab
         $scope.activateTab = function(clicked, form) {
+            $scope.currentTab = clicked;
             clicked.active = true;
             $scope.recipients = Articles.query({
                 username: $stateParams.articleId + clicked.title.charAt(0)
@@ -125,7 +126,12 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
                 track: $scope.current.track
             });
             letter.$save(function(response) {
-                $scope.find();
+                Articles.query({
+                    username: $stateParams.articleId + $scope.currentTab.title.charAt(0),
+                    limit: $scope.recipients.length
+                }, function(letters) {
+                    $scope.recipients = letters;
+                });
             }, function(errorResponse) {
                 console.log('response');
             });
@@ -136,7 +142,12 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
         $scope.clearForm = function(selected) {
             if ($scope.adminView) {
                 selected.$remove(function(response) {
-                    $scope.find();
+                    Articles.query({
+                        username: $stateParams.articleId + $scope.currentTab.title.charAt(0),
+                        limit: $scope.recipients.length
+                    }, function(letters) {
+                        $scope.recipients = letters;
+                    });
                 }, function(errorResponse) {
                     console.log('Remove Failed');
                 });
@@ -160,7 +171,23 @@ angular.module('letters').controller('AgencyController', ['$scope', '$stateParam
                 $location.hash(currentIndex + 1);
                 $anchorScroll();
             }
+
+            var limit = 50;
+            if (currentIndex % limit === limit - 15 && $scope.recipients.length < $scope.currentTab.content) {
+                $scope.loadMore(currentIndex + 15);
+            }
         }
+
+        $scope.loadMore = function(records) {
+            Articles.query({
+                username: $stateParams.articleId + $scope.currentTab.title.charAt(0),
+                offset: records
+            }, function(letters) {
+                $q.all([$scope.recipients, letters]).then(function(data) {
+                    $scope.recipients = data[0].concat(data[1]);
+                });
+            });
+        };
 
         //Allow user to see/edit the next record if current letter is valid
         $scope.goToNext = function(form) {

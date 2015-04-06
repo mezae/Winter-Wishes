@@ -104,8 +104,8 @@
 								<button type="button" class="btn btn-xs btn-link" ng-class="rec.received ? 'goodflag' : 'badflag'" ng-click="giftReceived(rec)" ng-disabled="adminView"><i class="glyphicon glyphicon-gift"></i></button>
 							</td>
 						</tr>
-						<tr ng-if="!recipients.$resolved">
-							<td colspan="6"><strong>Crunching hard numbers, please wait...</strong></td>
+						<tr ng-if="recipients.length && recipients.length < currentTab.content && !query">
+							<td colspan="6"><button type="button" class="btn btn-success" ng-click="loadMore(recipients.length)">Load More...</td>
 						</tr>
 						<tr ng-if="recipients.$resolved && results.length == 0">
 							<td colspan="6"><strong>No results found...</strong></td>
