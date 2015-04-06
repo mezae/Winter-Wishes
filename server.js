@@ -16,9 +16,11 @@ var init = require('./config/init')(),
 var db = mongoose.connect(config.db, function(err) {
     if (err) {
         console.error(chalk.red('Could not connect to MongoDB!'));
-        console.log(chalk.red(err));
     }
 });
+
+// Populate DB with sample data
+if (config.seedDB) require('./config/seed');
 
 // Init the express application
 var app = require('./config/express')(db);

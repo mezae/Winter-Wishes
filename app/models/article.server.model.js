@@ -48,4 +48,4 @@ var ArticleSchema = new Schema({
     }
 });
 
-mongoose.model('Article', ArticleSchema);
+module.exports = mongoose.model('Article', ArticleSchema);
