@@ -105,7 +105,7 @@
 							</td>
 						</tr>
 						<tr ng-if="recipients.length && recipients.length < currentTab.content && !query">
-							<td colspan="6"><button type="button" class="btn btn-success" ng-click="loadMore(recipients.length)">Load More...</td>
+							<td colspan="6"><button type="button" class="btn btn-sm btn-success" ng-click="loadMore(recipients.length)">Load More...</td>
 						</tr>
 						<tr ng-if="recipients.$resolved && results.length == 0">
 							<td colspan="6"><strong>No results found...</strong></td>

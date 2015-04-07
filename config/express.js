@@ -20,19 +20,26 @@ var fs = require('fs'),
     }),
     flash = require('connect-flash'),
     config = require('./config'),
+    config2 = require('../config/config'),
     consolidate = require('consolidate'),
-    path = require('path');
+    path = require('path'),
+    socket = require('socket.io'),
+    socket2 = require('../config/socketio');
 
 module.exports = function(db) {
     // Initialize express app
     var app = express();
 
-    // var server = require('http').createServer(app);
-    // var socketio = require('socket.io')(server, {
-    //     serveClient: (config.env === 'production') ? false : true,
-    //     path: '/socket.io-client'
-    // });
-    // require('./config/socketio.js')(socketio);
+    var server = http.createServer(app);
+    var socketio = socket(server, {
+        serveClient: (process.env.NODE_ENV === 'production') ? false : true,
+        path: '/socket.io-client'
+    });
+    socket2(socketio);
+
+    server.listen(config2.port, config2.ip, function() {
+        console.log('Express server listening on %d, in %s mode', config2.port, app.get('env'));
+    });
 
     // Globbing model files
     config.getGlobbedFiles('./app/models/**/*.js').forEach(function(modelPath) {

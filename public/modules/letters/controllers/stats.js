@@ -15,7 +15,6 @@ angular.module('letters')
 
         $scope.partners = Agencies.query(function() {
 
-
             var names = ['Not Yet Started', 'In Progress', 'Completed', 'Submitted', 'Under Review', 'Reviewed'];
             var groups = _.countBy($scope.partners, function(tf) {
                 return tf.status;

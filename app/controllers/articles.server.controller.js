@@ -128,8 +128,8 @@ exports.index = function(req, res) {
             $regex: '^' + req.query.username
         }
     } : {};
-    var offset = req.query.offset ? req.query.offset : 0;
-    var limit = req.query.limit ? req.query.limit : 50;
+    var offset = req.query.offset ? req.query.offset : '';
+    var limit = req.query.limit ? req.query.limit : '';
 
     Letter.find(query, '-created').sort('track').skip(offset).limit(limit).exec(function(err, letters) {
         if (err) {
