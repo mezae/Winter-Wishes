@@ -1,0 +1,43 @@
+.thumbnail {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #ccc;
+	padding-top: 12px;
+	padding-bottom: 12px;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+div.btn-link {
+	color: #555;
+}
+
+.btn-ready {
+	color: #7b39c7;
+  border-color:#7b39c7;
+}
+
+.btn-review {
+  color: #4d92cd;
+  border-color: #4d92cd;
+}
+
+.btn-complete {
+	 color: #85c739;
+	 border-color: #85c739;
+}
+
+.btn-started {
+	color: #cd884d;
+	border-color: #cd884d;
+}
+
+.btn-empty {
+	color: #cd4d52;
+  border-color: #cd4d52;
+}
+
+a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
+	border: none;
+	box-shadow: none;
+}
