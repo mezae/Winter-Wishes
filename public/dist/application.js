@@ -1298,7 +1298,7 @@ angular.module('letters').directive('donut', ['$location',
                         if (data) {
 
                             var color = d3.scale.ordinal()
-                                .range(['#d9534f', '#f0ad4e', '#5cb85c', '#5bc0de', '#428bca']);
+                                .range(['#cd4d52', '#cd884d', '#85c739', '#4d92cd', '#7b39c7']);
 
                             var pie = d3.layout.pie()
                                 .padAngle(0.01)

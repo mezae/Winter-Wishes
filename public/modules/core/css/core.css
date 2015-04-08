@@ -59,40 +59,6 @@ td {
   cursor: pointer;
 }
 
-/*command center*/
-.vcenter {
-  line-height: 60px;
-  vertical-align: middle;
-  cursor: pointer;
-}
-
-.deleteAgency {
-  position: absolute;
-  top: 0.3em;
-  right: 1.5em;
-}
-
-.editAgency {
-  position: absolute;
-  top: 5.2em;
-  right: 1.5em;
-}
-
-.evcenter {
-  line-height: 10em;
-  vertical-align: middle;
-}
-
-.emailnail {
-  height: 10em;
-}
-
-.editEtemplate {
-  position: absolute;
-  top: 10.2em;
-  right: 1.5em;
-}
-
 /*tracking forms*/
 @media screen and (min-width: 992px) {
   .makeScroll {
@@ -150,10 +116,6 @@ td {
 /*tables*/
 .table-stripes>tbody>tr:nth-child(even) {
   background-color: #f2faf2;
-}
-
-.table-stripes>tbody>tr:nth-child(odd) {
-  background-color: white;
 }
 
 .table tbody>tr>td{
