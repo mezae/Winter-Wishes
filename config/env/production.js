@@ -7,7 +7,6 @@ module.exports = {
             css: [
                 'public/lib/bootstrap/dist/css/bootstrap.min.css',
                 'public/lib/bootstrap/dist/css/bootstrap-theme.min.css'
-                //'public/lib/c3/c3.min.css'
             ],
             js: [
                 'public/lib/angular/angular.min.js',
@@ -20,7 +19,8 @@ module.exports = {
                 'public/lib/angular-ui-utils/ui-utils.min.js',
                 'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
                 'public/lib/d3/d3.min.js',
-                'public/lib/lodash/lodash.min.js'
+                'public/lib/lodash/lodash.min.js',
+                'public/lib/angular-socket-io/socket.min.js'
             ]
         },
         css: 'public/dist/application.min.css',

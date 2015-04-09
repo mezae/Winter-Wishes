@@ -99,7 +99,8 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
             $scope.currentTab = clicked;
             clicked.active = true;
             $scope.recipients = Articles.query({
-                username: $stateParams.articleId + clicked.title.charAt(0)
+                username: $stateParams.articleId + clicked.title.charAt(0),
+                limit: 50
             }, function() {
                 $scope.minAge = clicked.minAge;
                 $scope.maxAge = clicked.maxAge;
@@ -181,7 +182,8 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
         $scope.loadMore = function(records) {
             Articles.query({
                 username: $stateParams.articleId + $scope.currentTab.title.charAt(0),
-                offset: records
+                offset: records,
+                limit: 50
             }, function(letters) {
                 $q.all([$scope.recipients, letters]).then(function(data) {
                     $scope.recipients = data[0].concat(data[1]);
@@ -358,7 +360,6 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
 
                 var date = $filter('date')(new Date(), 'MM-dd');
                 $scope.fileName = ('WishesToSF_' + $scope.currentAgency.username + '_' + date + '.csv');
-                console.log(csvString);
                 var blob = new Blob([csvString], {
                     type: 'text/csv;charset=UTF-8'
                 });

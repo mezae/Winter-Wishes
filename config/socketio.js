@@ -4,7 +4,7 @@
 
 'use strict';
 
-var config = require('./env');
+var config = require('../config/env/all');
 
 // When the user disconnects.. perform this
 function onDisconnect(socket) {}
@@ -17,7 +17,7 @@ function onConnect(socket) {
     });
 
     // Insert sockets below
-    require('../api/user/users.socket').register(socket);
+    require('../app/sockets/users.server.socket').register(socket);
 }
 
 module.exports = function(socketio) {

@@ -27,7 +27,8 @@ module.exports = {
                 'public/lib/angular-ui-utils/ui-utils.js',
                 'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
                 'public/lib/d3/d3.js',
-                'public/lib/lodash/lodash.js'
+                'public/lib/lodash/lodash.js',
+                'public/lib/angular-socket-io/socket.js'
             ]
         },
         css: [

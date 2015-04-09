@@ -1,0 +1,78 @@
+/*command center*/
+.vcenter {
+  line-height: 50px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.deleteAgency {
+  position: absolute;
+  top: 0.3em;
+  right: 1.5em;
+}
+
+.editAgency {
+  position: absolute;
+  top: 5.2em;
+  right: 1.5em;
+}
+
+.evcenter {
+  line-height: 10em;
+  vertical-align: middle;
+}
+
+.emailnail {
+  height: 10em;
+}
+
+.editEtemplate {
+  position: absolute;
+  top: 10.2em;
+  right: 1.5em;
+}
+
+.thumbnail {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #ccc;
+	padding: 20px 5px;
+}
+
+div.btn-link {
+	color: #555;
+}
+
+.btn-ready {
+	color: #7b39c7;
+  border-color:#7b39c7;
+}
+
+.btn-review {
+  color: #4d92cd;
+  border-color: #4d92cd;
+}
+
+.btn-complete {
+	 color: #85c739;
+	 border-color: #85c739;
+}
+
+.btn-started {
+	color: #cd884d;
+	border-color: #cd884d;
+}
+
+.btn-empty {
+	color: #cd4d52;
+  border-color: #cd4d52;
+}
+
+a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
+	border: none;
+	box-shadow: none;
+}
+
+.btn {
+  padding: 4px 12px;
+}

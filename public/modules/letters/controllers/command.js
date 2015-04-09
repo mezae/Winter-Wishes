@@ -1,8 +1,8 @@
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
-    function($scope, $window, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
+angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users', 'socket',
+    function($scope, $window, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users, socket) {
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/').replace();
         if ($location.search()) $scope.query = $location.search();
@@ -23,13 +23,16 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
         };
 
         $scope.find = function() {
-            $scope.partners = Agencies.query();
+            Agencies.query({}, function(users) {
+                $scope.partners = users;
+                socket.syncUpdates('users', $scope.partners);
+            });
         };
 
         //Allows user to add create new accounts, consider moving to backend
         function signup(credentials) {
             $http.post('/auth/signup', credentials).success(function(response) {
-                $scope.partners.push(response);
+                console.log('new partner created');
             }).error(function(response) {
                 $scope.error = response.message;
             });
@@ -153,12 +156,15 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
         $scope.deleteAgency = function(selected) {
             var confirmation = $window.prompt('Please type DELETE to remove ' + selected.agency + '.');
             if (confirmation === 'DELETE') {
-                selected.$remove(function() {
-                    $scope.partners.splice($scope.partners.indexOf(selected), 1);
-                }, function(errorResponse) {
-                    console.log('Remove Failed');
-                });
+                $http.delete('/agency/' + selected.username);
             }
+            // if (confirmation === 'DELETE') {
+            //     selected.$remove(function() {
+            //         console.log('Removed agency');
+            //     }, function(errorResponse) {
+            //         console.log('Remove Failed');
+            //     });
+            // }
         };
 
         //Show current state of partner that user wants to edit
@@ -172,6 +178,10 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
             $scope.partner = null;
             $scope.needToUpdate = false;
         };
+
+        $scope.$on('$destroy', function() {
+            socket.unsyncUpdates('users');
+        });
 
     }
 ]);

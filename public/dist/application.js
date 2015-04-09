@@ -4,7 +4,7 @@
 var ApplicationConfiguration = (function() {
     // Init module configuration options
     var applicationModuleName = 'meanww';
-    var applicationModuleVendorDependencies = ['ngResource', 'ngCookies', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ui.utils'];
+    var applicationModuleVendorDependencies = ['ngResource', 'ngCookies', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ui.utils', 'btford.socket-io'];
 
     // Add a new vertical module
     var registerModule = function(moduleName, dependencies) {
@@ -265,8 +265,8 @@ angular.module('letters').config(['$stateProvider',
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
-    function($scope, $window, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
+angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users', 'socket',
+    function($scope, $window, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users, socket) {
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/').replace();
         if ($location.search()) $scope.query = $location.search();
@@ -287,13 +287,16 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
         };
 
         $scope.find = function() {
-            $scope.partners = Agencies.query();
+            Agencies.query({}, function(users) {
+                $scope.partners = users;
+                socket.syncUpdates('users', $scope.partners);
+            });
         };
 
         //Allows user to add create new accounts, consider moving to backend
         function signup(credentials) {
             $http.post('/auth/signup', credentials).success(function(response) {
-                $scope.partners.push(response);
+                console.log('new partner created');
             }).error(function(response) {
                 $scope.error = response.message;
             });
@@ -417,12 +420,15 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
         $scope.deleteAgency = function(selected) {
             var confirmation = $window.prompt('Please type DELETE to remove ' + selected.agency + '.');
             if (confirmation === 'DELETE') {
-                selected.$remove(function() {
-                    $scope.partners.splice($scope.partners.indexOf(selected), 1);
-                }, function(errorResponse) {
-                    console.log('Remove Failed');
-                });
+                $http.delete('/agency/' + selected.username);
             }
+            // if (confirmation === 'DELETE') {
+            //     selected.$remove(function() {
+            //         console.log('Removed agency');
+            //     }, function(errorResponse) {
+            //         console.log('Remove Failed');
+            //     });
+            // }
         };
 
         //Show current state of partner that user wants to edit
@@ -436,6 +442,10 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
             $scope.partner = null;
             $scope.needToUpdate = false;
         };
+
+        $scope.$on('$destroy', function() {
+            socket.unsyncUpdates('users');
+        });
 
     }
 ]);
@@ -532,7 +542,6 @@ angular.module('letters')
         });
 
         $scope.partners = Agencies.query(function() {
-
 
             var names = ['Not Yet Started', 'In Progress', 'Completed', 'Submitted', 'Under Review', 'Reviewed'];
             var groups = _.countBy($scope.partners, function(tf) {
@@ -719,7 +728,8 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
             $scope.currentTab = clicked;
             clicked.active = true;
             $scope.recipients = Articles.query({
-                username: $stateParams.articleId + clicked.title.charAt(0)
+                username: $stateParams.articleId + clicked.title.charAt(0),
+                limit: 50
             }, function() {
                 $scope.minAge = clicked.minAge;
                 $scope.maxAge = clicked.maxAge;
@@ -801,7 +811,8 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
         $scope.loadMore = function(records) {
             Articles.query({
                 username: $stateParams.articleId + $scope.currentTab.title.charAt(0),
-                offset: records
+                offset: records,
+                limit: 50
             }, function(letters) {
                 $q.all([$scope.recipients, letters]).then(function(data) {
                     $scope.recipients = data[0].concat(data[1]);
@@ -978,7 +989,6 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
 
                 var date = $filter('date')(new Date(), 'MM-dd');
                 $scope.fileName = ('WishesToSF_' + $scope.currentAgency.username + '_' + date + '.csv');
-                console.log(csvString);
                 var blob = new Blob([csvString], {
                     type: 'text/csv;charset=UTF-8'
                 });
@@ -1288,7 +1298,7 @@ angular.module('letters').directive('donut', ['$location',
                         if (data) {
 
                             var color = d3.scale.ordinal()
-                                .range(['#d9534f', '#f0ad4e', '#5cb85c', '#5bc0de', '#428bca']);
+                                .range(['#cd4d52', '#cd884d', '#85c739', '#4d92cd', '#7b39c7']);
 
                             var pie = d3.layout.pie()
                                 .padAngle(0.01)
@@ -1462,6 +1472,87 @@ angular.module('letters').factory('Articles', ['$resource',
         });
     }
 ]);
+/* global io */
+/* global _: false */
+'use strict';
+
+angular.module('letters')
+    .factory('socket', ['socketFactory',
+        function(socketFactory) {
+
+            // socket.io now auto-configures its connection when we ommit a connection url
+            var ioSocket = io('', {
+                // Send auth token on connection, you will need to DI the Auth service above
+                // 'query': 'token=' + Auth.getToken()
+                path: '/socket.io-client'
+            });
+
+            var socket = socketFactory({
+                ioSocket: ioSocket
+            });
+
+            return {
+                socket: socket,
+
+                /**
+                 * Register listeners to sync an array with updates on a model
+                 *
+                 * Takes the array we want to sync, the model name that socket updates are sent from,
+                 * and an optional callback function after new items are updated.
+                 *
+                 * @param {String} modelName
+                 * @param {Array} array
+                 * @param {Function} cb
+                 */
+                syncUpdates: function(modelName, array, cb) {
+                    cb = cb || angular.noop;
+
+                    /**
+                     * Syncs item creation/updates on 'model:save'
+                     */
+                    socket.on(modelName + ':save', function(item) {
+                        var oldItem = _.find(array, {
+                            _id: item._id
+                        });
+                        var index = array.indexOf(oldItem);
+                        var event = 'created';
+
+                        // replace oldItem if it exists
+                        // otherwise just add item to the collection
+                        if (oldItem) {
+                            array.splice(index, 1, item);
+                            event = 'updated';
+                        } else {
+                            array.push(item);
+                        }
+
+                        cb(event, item, array);
+                    });
+
+                    /**
+                     * Syncs removed items on 'model:remove'
+                     */
+                    socket.on(modelName + ':remove', function(item) {
+                        var event = 'deleted';
+                        _.remove(array, {
+                            _id: item._id
+                        });
+                        cb(event, item, array);
+                    });
+                },
+
+                /**
+                 * Removes listeners for a models updates on the socket
+                 *
+                 * @param modelName
+                 */
+                unsyncUpdates: function(modelName) {
+                    socket.removeAllListeners(modelName + ':save');
+                    socket.removeAllListeners(modelName + ':remove');
+                }
+            };
+        }
+    ]);
 'use strict';
 /* global d3: false */
 

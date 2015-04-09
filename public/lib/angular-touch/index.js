@@ -1,3 +1,2 @@
 require('./angular-touch');
-
-module.exports = angular-touch;
+module.exports = 'ngTouch';
