@@ -14,7 +14,7 @@
 	</div>
 
 	<div class="row">
-		<div class="col-md-3 pull-right sideb col-sm-12 col-xs-12 nga-default nga-stagger nga-slide-right" ng-show="needToUpdate">
+		<div class="col-md-3 pull-right sideb col-sm-12 col-xs-12 nga-default nga-stagger nga-slide-right hidden-print" ng-show="needToUpdate">
 			<form role="form" ng-show="!partner">
 				<div class="form-group">
 					<label class="sr-only" for="the_file">File input</label>
@@ -81,28 +81,28 @@
 
 	  <div class="row">
 		<div class="col-xs-6 col-sm-3 col-md-2 nga-default nga-stagger nga-slide-right" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results" ng-if="partner.username != 'AAA'">
-		  <div class="thumbnail " ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': partner.status == 5, 'btn-review': partner.status == 4, 'btn-complete': partner.status == 3, 'btn-started': partner.status == 1, 'btn-empty': partner.status == 0}">
+		  <div class="agency-box " ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': partner.status == 5, 'btn-review': partner.status == 4, 'btn-complete': partner.status == 3, 'btn-started': partner.status == 1, 'btn-empty': partner.status == 0}">
 			  <div class="text-center"><strong>{{partner.username}}</strong></div>
 			  <p class="text-center" ng-show="partner.status < 5 && !turn">{{partner.children + partner.teens + partner.seniors}} Letters</p>
 			  <p class="text-center" ng-show="partner.status === 5 && !turn"><rating ng-model="partner.rating.overall" readonly="true"></rating></p>
 
 			  <div class="text-center" ng-if="turn">
-			  <a href="/#!/admin/agency/{{partner.username}}" class="btn btn-link"><i class="glyphicon glyphicon-eye-open"></i></a>
+			  <a href="/#!/admin/agency/{{partner.username}}" class="btn btn-link agency-btn"><i class="glyphicon glyphicon-eye-open"></i></a>
 
-			  <button type="button" class="btn btn-link" ng-click="showSidebar(partner)"><i class="glyphicon glyphicon-pencil"></i></button>
+			  <button type="button" class="btn btn-link agency-btn" ng-click="showSidebar(partner)"><i class="glyphicon glyphicon-pencil"></i></button>
 
-			  <button type="button" class="btn btn-link" ng-click="deleteAgency(partner)"><i class="glyphicon glyphicon-trash"></i></button>
+			  <button type="button" class="btn btn-link agency-btn" ng-click="deleteAgency(partner)"><i class="glyphicon glyphicon-trash"></i></button>
 			</div>
 
-			  <!-- <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right deleteAgency" ng-click="deleteAgency(partner)"><i class="glyphicon glyphicon-remove"></i></button>
-			  <button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right editAgency" ng-click=""><i class="glyphicon glyphicon-pencil"></i></button> -->
 		  </div>
 		</div>
-		<div class="col-xs-6 col-sm-3 col-md-2">
-		  <div class="thumbnail" ng-click="showSidebar()">
+		<div class="col-xs-6 col-sm-3 col-md-2 hidden-print">
+		  <div class="agency-box" ng-click="query.status ? updateURL(true) : showSidebar()">
 			<div class="vcenter text-center">
-			  <div class="btn btn-link">
-				<i class="glyphicon glyphicon-plus"></i></div>
+			    <div class="btn btn-link" ng-class="query.status ? 'badflag' : agency-btn">
+					<i class="glyphicon glyphicon-plus" ng-hide="query.status"></i>
+					<p ng-show="query.status">Clear <i class="glyphicon glyphicon-filter"></i></p>
+				</div>
 			</div>
 		  </div>
 		</div>

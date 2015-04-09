@@ -32,11 +32,18 @@
   right: 1.5em;
 }
 
-.thumbnail {
+.agency-box {
 	border-width: 1px;
 	border-style: solid;
 	border-color: #ccc;
-	padding: 20px 5px;
+	padding: 20px 1px;
+  display: block;
+  margin-bottom: 20px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-transition: border .2s ease-in-out;
+  -o-transition: border .2s ease-in-out;
+  transition: border .2s ease-in-out;
 }
 
 div.btn-link {
@@ -73,6 +80,6 @@ a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
 	box-shadow: none;
 }
 
-.btn {
-  padding: 4px 12px;
+.agency-btn {
+  padding: 4px 6px;
 }

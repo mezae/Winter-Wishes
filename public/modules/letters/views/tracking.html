@@ -21,7 +21,7 @@
 							</tab>
 						</tabset>
 					</div>
-					<div class="col-md-3 col-sm-3 col-xs-3 text-right icons">
+					<div class="col-md-3 col-sm-3 col-xs-3 text-right icons hidden-print">
 						<button type="button" class="btn btn-lg btn-link badflag" ng-show="currentAgency.status == 4 && adminView" ng-click="returnLetters()"><i class="glyphicon glyphicon-exclamation-sign" tooltip="Return" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></button>
 
 						<button type="button" class="btn btn-lg btn-link" ng-show="(currentAgency.status == 3 || currentAgency.status == 5) && adminView" ng-click="startReview()"><i class="glyphicon glyphicon-edit" tooltip="{{currentAgency.status == 5 ? 'Oops...forgot something?' : 'Review'}}" tooltip-trigger="mouseenter"></i></button>
@@ -35,7 +35,7 @@
 		</div>
 
 	<div class="row">
-		<div class="col-md-3 pull-right sideb col-sm-12 col-xs-12" ng-hide="(adminView && currentAgency.status != 4) || (!adminView && currentAgency.status >= 3)">
+		<div class="col-md-3 pull-right sideb col-sm-12 col-xs-12 hidden-print" ng-hide="(adminView && currentAgency.status != 4) || (!adminView && currentAgency.status >= 3)">
 			<alert ng-show="!adminView && alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false"><i class="glyphicon glyphicon-warning-sign"></i> {{alert.msg}}</alert>
 
 			<div class="input-group">
@@ -83,7 +83,7 @@
 							<th class="col-md-1">Gender</th>
 							<th class="col-md-5">Gift Requested</th>
 							<th ng-show="adminView && currentAgency.status >= 4">Flag</th>
-							<th ng-show="currentAgency.status >= 5">Received</th>
+							<th class="hidden-print" ng-show="currentAgency.status >= 5">Received</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -100,7 +100,7 @@
 							<td ng-show="adminView && currentAgency.status >= 4">
 								<button type="button" class="btn btn-xs btn-link" ng-class="rec.flagged ? 'badflag' : 'goodflag'" ng-click="flagLetter(rec)" ng-disabled="currentAgency.status == 5"><i class="glyphicon glyphicon-flag"></i></button>
 							</td>
-							<td ng-show="currentAgency.status >= 5">
+							<td class="hidden-print" ng-show="currentAgency.status >= 5">
 								<button type="button" class="btn btn-xs btn-link" ng-class="rec.received ? 'goodflag' : 'badflag'" ng-click="giftReceived(rec)" ng-disabled="adminView"><i class="glyphicon glyphicon-gift"></i></button>
 							</td>
 						</tr>

@@ -278,7 +278,8 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
             msg: ''
         };
 
-        $scope.updateURL = function() {
+        $scope.updateURL = function(undo) {
+            if (undo) $scope.query.status = null;
             if ($scope.query.status) {
                 $location.search('status', $scope.query.status);
             } else {
