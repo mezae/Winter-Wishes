@@ -11,15 +11,10 @@
   right: 1.5em;
 }
 
-.editAgency {
-  position: absolute;
-  top: 5.2em;
-  right: 1.5em;
-}
-
 .evcenter {
   line-height: 10em;
   vertical-align: middle;
+  cursor: pointer;
 }
 
 .emailnail {
@@ -41,13 +36,9 @@
   margin-bottom: 20px;
   line-height: 1.42857143;
   border-radius: 4px;
-  -webkit-transition: border .2s ease-in-out;
-  -o-transition: border .2s ease-in-out;
   transition: border .2s ease-in-out;
-}
-
-div.btn-link {
-	color: #555;
+  -o-transition: border .2s ease-in-out;
+  -webkit-transition: border .2s ease-in-out;
 }
 
 .btn-ready {
@@ -81,5 +72,9 @@ a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
 }
 
 .agency-btn {
-  padding: 4px 6px;
+  padding: 4px 8px;
+}
+
+.agency-mid {
+  padding: 4px 15px;
 }

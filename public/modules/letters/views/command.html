@@ -14,7 +14,7 @@
 	</div>
 
 	<div class="row">
-		<div class="col-md-3 pull-right sideb col-sm-12 col-xs-12 nga-default nga-stagger nga-slide-right hidden-print" ng-show="needToUpdate">
+		<div class="col-md-3 pull-right col-sm-12 col-xs-12 nga-default nga-stagger nga-slide-right hidden-print" ng-show="needToUpdate">
 			<form role="form" ng-show="!partner">
 				<div class="form-group">
 					<label class="sr-only" for="the_file">File input</label>
@@ -55,7 +55,11 @@
 			</form>
 		</div>
 
-		<div ng-class="needToUpdate ? 'col-md-3 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
+
+	<div ng-class="needToUpdate ? 'col-md-9 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-12 col-sm-12 col-xs-12'">
+ 
+ 	<div class="row">
+	  	<div ng-class="needToUpdate ? 'col-md-6 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
 			<div class="form-group">
 				<div class="input-group">
 					<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
@@ -64,7 +68,7 @@
 			</div>
 		</div>
 
-		<div ng-class="needToUpdate ? 'col-md-3 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
+		<div ng-class="needToUpdate ? 'col-md-6 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
 			<div class="form-group">
 				<select class="form-control" ng-model="query.status" ng-change="updateURL()">
 					<option value="">Filter by Status</option>
@@ -76,11 +80,11 @@
 				</select>
 			</div>
 		</div>
+	</div>
 
-	<div ng-class="needToUpdate ? 'col-md-9 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-12 col-sm-12 col-xs-12'">
+	<div class="row">
 
-	  <div class="row">
-		<div class="col-xs-6 col-sm-3 col-md-2 nga-default nga-stagger nga-slide-right" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results" ng-if="partner.username != 'AAA'">
+		<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results" ng-if="partner.username != 'AAA'">
 		  <div class="agency-box " ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': partner.status == 5, 'btn-review': partner.status == 4, 'btn-complete': partner.status == 3, 'btn-started': partner.status == 1, 'btn-empty': partner.status == 0}">
 			  <div class="text-center"><strong>{{partner.username}}</strong></div>
 			  <p class="text-center" ng-show="partner.status < 5 && !turn">{{partner.children + partner.teens + partner.seniors}} Letters</p>
@@ -89,14 +93,14 @@
 			  <div class="text-center" ng-if="turn">
 			  <a href="/#!/admin/agency/{{partner.username}}" class="btn btn-link agency-btn"><i class="glyphicon glyphicon-eye-open"></i></a>
 
-			  <button type="button" class="btn btn-link agency-btn" ng-click="showSidebar(partner)"><i class="glyphicon glyphicon-pencil"></i></button>
+			  <button type="button" class="btn btn-link agency-mid" ng-click="showSidebar(partner)"><i class="glyphicon glyphicon-pencil"></i></button>
 
 			  <button type="button" class="btn btn-link agency-btn" ng-click="deleteAgency(partner)"><i class="glyphicon glyphicon-trash"></i></button>
 			</div>
 
 		  </div>
 		</div>
-		<div class="col-xs-6 col-sm-3 col-md-2 hidden-print">
+		<div class="col-xs-6 col-sm-3 hidden-print" ng-class="needToUpdate ? 'col-md-3' : ' col-md-2'">
 		  <div class="agency-box" ng-click="query.status ? updateURL(true) : showSidebar()">
 			<div class="vcenter text-center">
 			    <div class="btn btn-link" ng-class="query.status ? 'badflag' : agency-btn">

@@ -131,11 +131,11 @@ th {
   text-transform: capitalize;
 }
 
-.goodflag.btn-link {
-  color: #5cb85c;
+.goodflag {
+  color: #85c739;
 }
 
-.badflag.btn-link {
+.badflag {
   color: #d9534f;
 }
 
@@ -308,4 +308,8 @@ footer {
 .profile:focus {
   border-top: white;
   box-shadow: none;
+}
+
+@media print {
+body {-webkit-print-color-adjust: exact;}
 }
