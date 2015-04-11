@@ -400,11 +400,12 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
                         signup($scope.partner);
                     }
                 } else {
-                    $scope.partner.$update(function(partner) {
-                        console.log(partner.username + ' was updated');
-                    }, function(errorResponse) {
-                        console.log(errorResponse.data.message);
-                    });
+                    Agencies.update($scope.partner);
+                    // $scope.partner.$update(function(partner) {
+                    //     console.log(partner.username + ' was updated');
+                    // }, function(errorResponse) {
+                    //     console.log(errorResponse.data.message);
+                    // });
                 }
                 $scope.hideSidebar();
             } else {

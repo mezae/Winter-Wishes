@@ -52,22 +52,25 @@
 	<div ng-show="currentPage == 2">
 		Click <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-plus"></i></button> to begin. Then, click <input type="button" class="btn btn-primary btn-xs" value="Browse"/> and find the csv file saved on your computer. Finally, click <input type="button" class="btn btn-primary btn-xs" value="Upload"/> and the accepted agencies should appear onscreen. Each agency will be represented like this:<br/><br/>
 		<div class="row">
+
 			<div class="col-md-4 col-md-offset-4 col-sm-4 col-sm-offset-4 col-xs-6 col-xs-offset-3">
-				<div class="thumbnail">
-					<div class="caption">
-						<div class="text-center">
-							<button type="button" class="btn btn-sm btn-danger"><strong>ELM</strong></button>
-						</div>
-						<p class="text-center">100 Letters</p>
-						<button type="button" class="btn btn-xs btn-link pull-right deleteAgency">
-							<i class="glyphicon glyphicon-remove"></i></button>
-						<button type="button" class="btn btn-xs btn-link pull-right editAgency">
-							<i class="glyphicon glyphicon-pencil"></i></button>
-					</div>
+
+			  <div class="agency-box btn-empty" ng-mouseenter="turn = true" ng-mouseleave="turn = false">
+				  <div class="text-center"><strong>ELM</strong></div>
+				  <p class="text-center" ng-show="!turn">100 Letters</p>
+
+				  <div class="text-center" ng-if="turn">
+				  <a href="" class="btn btn-link agency-btn"><i class="glyphicon glyphicon-eye-open"></i></a>
+
+				  <button type="button" class="btn btn-link agency-mid" ng-click=""><i class="glyphicon glyphicon-pencil"></i></button>
+
+				  <button type="button" class="btn btn-link agency-btn" ng-click=""><i class="glyphicon glyphicon-trash"></i></button>
 				</div>
+
+			  </div>
 			</div>
 		</div>
-		<p class="text-center">The <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-remove"></i></button> and <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-pencil"></i></button> only appear when you hover over an agency.</p>
+		<p class="text-center">Hover over it to see the three possible actions.</p>
 	</div>
 
 	<div ng-show="currentPage == 3">
@@ -77,17 +80,17 @@
 	</div>
 
 	<div ng-show="currentPage == 4">	
-		Click <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-remove"></i></button> in the box of the tracking form you wish to delete. This will delete everything associated with the agency. This cannot be undone. For this reason, you will be asked to confirm that you really want to delete the selected agency.
+		Click <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-trash"></i></button> in the box of the tracking form you wish to delete. This will delete everything associated with the agency. This cannot be undone. For this reason, you will be asked to confirm that you really want to delete the selected agency.
 	</div>
 
 	<div ng-show="currentPage == 5">
-		<p>Click <button type="button" class="btn btn-xs btn-danger"><strong>ELM</strong></button> in the box of the tracking form you wish to see. You can access an individual tracking form anytime to check how much progress a particular agency contact has made. However, this feature is more useful once an agency has submitted their form and you are ready to review it. The color of the button changes based on what stage of the process the tracking form is in.<p/>
+		<p>Click <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-eye-open"></i></button> in the box of the tracking form you wish to see. You can access an individual tracking form anytime to check how much progress a particular agency contact has made. However, this feature is more useful once an agency has submitted their form and you are ready to review it. The color of the button changes based on what stage of the process the tracking form is in.<p/>
 
-		<p><button type="button" class="btn btn-xs btn-danger"><strong>ELM</strong></button> means the community partner has not yet started working on it. </p>
-		<p><button type="button" class="btn btn-xs btn-warning"><strong>ELM</strong></button> means the community partner has begun entering data. </p>
-		<p><button type="button" class="btn btn-xs btn-success"><strong>ELM</strong></button> means the community partner has submitted it and it is ready for review. </p>
-		<p><button type="button" class="btn btn-xs btn-info"><strong>ELM</strong></button> means you have begun reviewing the tracking form.</p>
-		<p><button type="button" class="btn btn-xs btn-primary"><strong>ELM</strong></button> means you have finished reviewing the tracking form.</p>
+		<p><div class="tutor-box empty"></div> the community partner has not yet started working on it. </p>
+		<p><div class="tutor-box started"></div> the community partner has begun entering data. </p>
+		<p><div class="tutor-box complete"></div> the community partner has submitted it and it is ready for review. </p>
+		<p><div class="tutor-box review"></div> you have begun reviewing the tracking form.</p>
+		<p><div class="tutor-box ready"></div> you have finished reviewing the tracking form.</p>
 	</div>
 
 	<div ng-show="currentPage == 6">

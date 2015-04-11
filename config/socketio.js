@@ -41,6 +41,8 @@ module.exports = function(socketio) {
             socket.handshake.address.address + ':' + socket.handshake.address.port :
             process.env.DOMAIN;
 
+        console.log(process.env.DOMAIN);
+
         socket.connectedAt = new Date();
 
         // Call onDisconnect.

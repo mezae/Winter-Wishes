@@ -313,3 +313,32 @@ footer {
 @media print {
 body {-webkit-print-color-adjust: exact;}
 }
+
+.tutor-box {
+  background-color: black;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.ready {
+  background-color: #7b39c7;
+
+}
+
+.review {
+  background-color: #4d92cd;
+}
+
+.complete {
+   background-color: #85c739;
+}
+
+.started {
+  background-color: #cd884d;
+}
+
+.empty {
+  background-color: #cd4d52;
+}
