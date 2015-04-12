@@ -12,6 +12,14 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
                 url: '/',
                 templateUrl: 'modules/core/views/home.html'
             })
+            .state('first', {
+                url: '/first',
+                templateUrl: 'modules/letters/views/firstLogin.html'
+            })
+            .state('confirm', {
+                url: '/first/confirm',
+                templateUrl: 'modules/letters/views/firstConfirm.html'
+            })
             .state('login', {
                 url: '/login',
                 templateUrl: 'modules/users/views/authentication/signin.client.view.html'

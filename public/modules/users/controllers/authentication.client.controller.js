@@ -8,7 +8,11 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
             if (user.username === 'AAA') {
                 $location.path('/admin');
             } else {
-                $location.path('/agency/' + user.username);
+                if (!user.zip) {
+                    $location.path('/first');
+                } else {
+                    $location.path('/agency/' + user.username);
+                }
             }
         }
 

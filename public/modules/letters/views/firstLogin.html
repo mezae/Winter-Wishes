@@ -1,0 +1,48 @@
+<section class="row" data-ng-controller="SettingsController">
+
+	<h3 class="col-md-12 text-center">Welcome</h3>
+
+	<p class="text-center">Please make sure the information below is correct</p>
+
+	<div class="col-xs-offset-2 col-xs-8 col-md-offset-4 col-md-4">
+
+		<form name="userForm" data-ng-submit="updateUserProfile(userForm.$valid)" class="signin form-horizontal" autocomplete="off">
+			<fieldset>
+
+				<div class="form-group">
+					<label for="agency" class="sr-only">Agency</label>
+					<input type="text" id="agency" name="agency" class="profile form-control" data-ng-model="user.agency" readonly>
+
+					<label for="contact" class="sr-only">Name</label>
+					<input type="text" id="contact" name="contact" class="profile form-control" data-ng-model="user.contact" placeholder="full name" required>
+
+					<label for="email" class="sr-only">Email</label>
+					<input type="email" id="email" name="email" class="profile form-control" data-ng-model="user.email" placeholder="e-mail" required>
+
+					<label for="tel" class="sr-only">Phone Number</label>
+					<input type="tel" id="tel" name="tel" class="profile form-control" ui-mask="(999) 999-9999" data-ng-model="user.phone" required>
+
+					<label for="address" class="sr-only">Address</label>
+					<input type="text" id="address" name="address" class="profile form-control" data-ng-model="user.address" placeholder="mailing address" required>
+
+					<label for="city" class="sr-only">City</label>
+					<input type="text" id="city" name="city" class="profile form-control" data-ng-model="user.city" placeholder="city" required>
+
+					<label for="zip" class="sr-only">Zip Code</label>
+					<input type="number" id="zip" name="zip" class="profile form-control" data-ng-model="user.zip" placeholder="zip code" required>
+				</div>
+
+				<div class="text-center form-group">
+					<button type="submit" class="btn btn-large btn-success">Continue</button>
+				</div>
+
+				<div data-ng-show="error" class="text-center text-danger">
+					<strong data-ng-bind="error"></strong>
+				</div>
+
+			</fieldset>
+		</form>
+
+	</div>
+
+</section>

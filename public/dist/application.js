@@ -67,6 +67,14 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
                 url: '/',
                 templateUrl: 'modules/core/views/home.html'
             })
+            .state('first', {
+                url: '/first',
+                templateUrl: 'modules/letters/views/firstLogin.html'
+            })
+            .state('confirm', {
+                url: '/first/confirm',
+                templateUrl: 'modules/letters/views/firstConfirm.html'
+            })
             .state('login', {
                 url: '/login',
                 templateUrl: 'modules/users/views/authentication/signin.client.view.html'
@@ -1749,7 +1757,11 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
             if (user.username === 'AAA') {
                 $location.path('/admin');
             } else {
-                $location.path('/agency/' + user.username);
+                if (!user.zip) {
+                    $location.path('/first');
+                } else {
+                    $location.path('/agency/' + user.username);
+                }
             }
         }
 
@@ -1844,42 +1856,43 @@ angular.module('users').controller('PasswordController', ['$scope', '$stateParam
 'use strict';
 
 angular.module('users').controller('SettingsController', ['$scope', '$http', '$location', 'Users', 'Authentication',
-	function($scope, $http, $location, Users, Authentication) {
-		$scope.user = Authentication.user;
+    function($scope, $http, $location, Users, Authentication) {
+        $scope.user = Authentication.user;
 
-		// If user is not signed in then redirect back home
-		if (!$scope.user) $location.path('/');
+        // If user is not signed in then redirect back home
+        if (!$scope.user) $location.path('/');
 
-		// Update a user profile
-		$scope.updateUserProfile = function(isValid) {
-			if (isValid) {
-				$scope.success = $scope.error = null;
-				var user = new Users($scope.user);
+        // Update a user profile
+        $scope.updateUserProfile = function(isValid) {
+            if (isValid) {
+                $scope.success = $scope.error = null;
+                var user = new Users($scope.user);
 
-				user.$update(function(response) {
-					$scope.success = true;
-					Authentication.user = response;
-				}, function(response) {
-					$scope.error = response.data.message;
-				});
-			} else {
-				$scope.submitted = true;
-			}
-		};
+                user.$update(function(response) {
+                    $scope.success = true;
+                    Authentication.user = response;
+                    $location.path('/first/confirm');
+                }, function(response) {
+                    $scope.error = response.data.message;
+                });
+            } else {
+                $scope.submitted = true;
+            }
+        };
 
-		// Change user password
-		$scope.changeUserPassword = function() {
-			$scope.success = $scope.error = null;
+        // Change user password
+        $scope.changeUserPassword = function() {
+            $scope.success = $scope.error = null;
 
-			$http.post('/users/password', $scope.passwordDetails).success(function(response) {
-				// If successful show success message and clear form
-				$scope.success = true;
-				$scope.passwordDetails = null;
-			}).error(function(response) {
-				$scope.error = response.message;
-			});
-		};
-	}
+            $http.post('/users/password', $scope.passwordDetails).success(function(response) {
+                // If successful show success message and clear form
+                $scope.success = true;
+                $scope.passwordDetails = null;
+            }).error(function(response) {
+                $scope.error = response.message;
+            });
+        };
+    }
 ]);
 'use strict';
 
