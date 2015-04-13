@@ -3,6 +3,7 @@
 angular.module('users').controller('SettingsController', ['$scope', '$http', '$location', 'Users', 'Authentication',
     function($scope, $http, $location, Users, Authentication) {
         $scope.user = Authentication.user;
+        $scope.isFirstLogin = $location.path() === '/settings/profile/first';
 
         // If user is not signed in then redirect back home
         if (!$scope.user) $location.path('/');
@@ -16,7 +17,8 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
                 user.$update(function(response) {
                     $scope.success = true;
                     Authentication.user = response;
-                    $location.path('/first/confirm');
+                    var newPage = $scope.isFirstLogin ? '/settings/profile' : '/';
+                    $location.path(newPage);
                 }, function(response) {
                     $scope.error = response.data.message;
                 });

@@ -68,12 +68,12 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
                 templateUrl: 'modules/core/views/home.html'
             })
             .state('first', {
-                url: '/first',
+                url: '/settings/profile',
                 templateUrl: 'modules/letters/views/firstLogin.html'
             })
             .state('confirm', {
-                url: '/first/confirm',
-                templateUrl: 'modules/letters/views/firstConfirm.html'
+                url: '/settings/profile/first',
+                templateUrl: 'modules/users/views/settings/edit-profile.client.view.html'
             })
             .state('login', {
                 url: '/login',
@@ -91,7 +91,9 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
     function($scope, $location, $modal, Authentication) {
         $scope.authentication = Authentication;
         $scope.isCollapsed = false;
-        var isAdmin = $scope.authentication.user.username === 'AAA' ? true : false;
+        $scope.isLoggedIn = Authentication.isLoggedIn;
+        $scope.isAdmin = Authentication.isAdmin;
+        $scope.getCurrentUser = Authentication.getCurrentUser;
 
         $scope.toggleCollapsibleMenu = function() {
             $scope.isCollapsed = !$scope.isCollapsed;
@@ -122,7 +124,7 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
                     backdrop: 'static'
                 });
             } else if ($location.path().indexOf('agency') >= 0) {
-                var template = isAdmin ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
+                var template = $scope.isAdmin ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
                 $modal.open({
                     templateUrl: template,
                     controller: 'ModalInstanceCtrl',
@@ -137,7 +139,7 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
             }
         };
 
-        if (!isAdmin && $scope.authentication.user.status === 0) $scope.showTutorial();
+        if (!$scope.isAdmin && $scope.authentication.user.status === 0) $scope.showTutorial();
     }
 ])
 
@@ -463,7 +465,7 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
 
 angular.module('letters')
 
-.controller('EmailsController', ['$scope', '$modal', '$http', '$stateParams', '$location', '$filter' , 'Authentication', 'Agencies', 'Articles', 'Users',
+.controller('EmailsController', ['$scope', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
 	function($scope, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
 		$scope.user = Authentication.user;
 
@@ -1684,68 +1686,98 @@ angular.module('letters').factory('Users', ['$resource',
 
 // Config HTTP Error Handling
 angular.module('users').config(['$httpProvider',
-	function($httpProvider) {
-		// Set the httpProvider "not authorized" interceptor
-		$httpProvider.interceptors.push(['$q', '$location', 'Authentication',
-			function($q, $location, Authentication) {
-				return {
-					responseError: function(rejection) {
-						switch (rejection.status) {
-							case 401:
-								// Deauthenticate the global user
-								Authentication.user = null;
+    function($httpProvider) {
+        // Set the httpProvider "not authorized" interceptor
+        //         $httpProvider.interceptors.push(['$rootScope', '$q', '$cookieStore', '$location',
+        //             function($rootScope, $q, $cookieStore, $location) {
+        //                 return {
+        //                     // Add authorization token to headers
+        //                     request: function(config) {
+        //                         config.headers = config.headers || {};
+        //                         if ($cookieStore.get('token')) {
+        //                             config.headers.Authorization = 'Bearer ' + $cookieStore.get('token');
+        //                         }
+        //                         return config;
+        //                     },
 
-								// Redirect to signin page
-								$location.path('signin');
-								break;
-							case 403:
-								// Add unauthorized behaviour 
-								break;
-						}
+        //                     // Intercept 401s and redirect you to login
+        //                     responseError: function(response) {
+        //                         if (response.status === 401) {
+        //                             $location.path('/login');
+        //                             // remove any stale tokens
+        //                             $cookieStore.remove('token');
+        //                             return $q.reject(response);
+        //                         } else {
+        //                             return $q.reject(response);
+        //                         }
+        //                     }
+        //                 };
+        //             }
+        //         ]);
+        //     }
+        // ]);
 
-						return $q.reject(rejection);
-					}
-				};
-			}
-		]);
-	}
+        // Set the httpProvider "not authorized" interceptor
+        $httpProvider.interceptors.push(['$q', '$location', 'Authentication',
+            function($q, $location, Authentication) {
+                return {
+                    responseError: function(rejection) {
+                        switch (rejection.status) {
+                            case 401:
+                                // Deauthenticate the global user
+                                Authentication.user = null;
+
+                                // Redirect to signin page
+                                $location.path('signin');
+                                break;
+                            case 403:
+                                // Add unauthorized behaviour 
+                                break;
+                        }
+
+                        return $q.reject(rejection);
+                    }
+                };
+            }
+        ]);
+    }
 ]);
 'use strict';
 
 // Setting up route
 angular.module('users').config(['$stateProvider',
-	function($stateProvider) {
-		// Users state routing
-		$stateProvider.
-		state('profile', {
-			url: '/settings/profile',
-			templateUrl: 'modules/users/views/settings/edit-profile.client.view.html'
-		}).
-		state('password', {
-			url: '/settings/password',
-			templateUrl: 'modules/users/views/settings/change-password.client.view.html'
-		}).
-		state('signin', {
-			url: '/signin',
-			templateUrl: 'modules/users/views/authentication/signin.client.view.html'
-		}).
-		state('forgot', {
-			url: '/password/forgot',
-			templateUrl: 'modules/users/views/password/forgot-password.client.view.html'
-		}).
-		state('reset-invalid', {
-			url: '/password/reset/invalid',
-			templateUrl: 'modules/users/views/password/reset-password-invalid.client.view.html'
-		}).
-		state('reset-success', {
-			url: '/password/reset/success',
-			templateUrl: 'modules/users/views/password/reset-password-success.client.view.html'
-		}).
-		state('reset', {
-			url: '/password/reset/:token',
-			templateUrl: 'modules/users/views/password/reset-password.client.view.html'
-		});
-	}
+    function($stateProvider) {
+        // Users state routing
+        $stateProvider.
+        state('profile', {
+            url: '/settings/profile/edit',
+            templateUrl: 'modules/users/views/settings/edit-profile.client.view.html'
+        }).
+        state('password', {
+            url: '/settings/password',
+            templateUrl: 'modules/users/views/settings/change-password.client.view.html'
+        }).
+        state('signin', {
+            url: '/signin',
+            templateUrl: 'modules/users/views/authentication/signin.client.view.html'
+        }).
+        state('forgot', {
+            url: '/password/forgot',
+            templateUrl: 'modules/users/views/password/forgot-password.client.view.html'
+        }).
+        state('reset-invalid', {
+            url: '/password/reset/invalid',
+            templateUrl: 'modules/users/views/password/reset-password-invalid.client.view.html'
+        }).
+        state('reset-success', {
+            url: '/password/reset/success',
+            templateUrl: 'modules/users/views/password/reset-password-success.client.view.html'
+        }).
+        state('reset', {
+            url: '/password/reset/:token',
+            templateUrl: 'modules/users/views/password/reset-password.client.view.html'
+        });
+    }
 ]);
 'use strict';
 
@@ -1768,7 +1800,7 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
         // If user is signed in then redirect back home
         if ($scope.user) redirect($scope.user);
 
-        $scope.signin = function() {
+        $scope.signin = function(form) {
             $http.post('/auth/signin', $scope.credentials).success(function(response) {
                 // If successful we assign the response to the global user model
                 Authentication.user = response;
@@ -1779,6 +1811,24 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
             });
         };
 
+        // $scope.signin = function(form) {
+        //     $scope.submitted = true;
+
+        //     if (form) {
+        //         console.log('yes');
+        //         Authentication.login($scope.credentials)
+        //             .then(function() {
+        //                 console.log($scope.user);
+        //                 // Logged in, redirect to home
+        //                 var newURL = $scope.isAdmin ? '/admin' : '/';
+        //                 $location.path(newURL);
+        //             })
+        //             .catch(function(err) {
+        //                 $scope.errors.other = err.message;
+        //             });
+        //     }
+        // };
+
         $scope.signup = function() {
             $http.post('/auth/signup', $scope.credentials).success(function(response) {
                 console.log('profile created');
@@ -1787,26 +1837,6 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
             });
         };
 
-        /*
-		$scope.credentials = {};
-		$scope.credentials.email = 'meza.elmer@gmail.com';
-		$scope.credentials.username = 'AAA';
-		$scope.credentials.password = 'volunteer87';
-		$scope.credentials.agency = 'New York Cares';
-		$scope.credentials.acceptance[0] = {
-			title: 'Acceptance',
-			description: 'Let accepted agencies know the good news and how they can get started',
-			subject: 'Winter Wishes 2015 Acceptance',
-			message: 'Dear {{partner}},\n\nCongratulations! Your agency has been accepted for {{letters}}.\n\nTo access your tracking form:\nGo to the <a href=\"http://localhost:3000/#!/\">Winter Wishes homepage</a>.\nUsername: {{user}}\nPassword: {{pass}}\n\nSincerely,\nThe Winter Wishes Team'
-		}
-		$scope.credentials.acceptance[1] = {
-			title: 'Reminder',
-			description: 'let agencies know that the deadline is coming up',
-			subject: 'Winter Wishes 2015 Reminder',
-			message: 'Insert message here'
-		}
-		$scope.signup();
-		*/
     }
 ]);
 'use strict';
@@ -1858,6 +1888,7 @@ angular.module('users').controller('PasswordController', ['$scope', '$stateParam
 angular.module('users').controller('SettingsController', ['$scope', '$http', '$location', 'Users', 'Authentication',
     function($scope, $http, $location, Users, Authentication) {
         $scope.user = Authentication.user;
+        $scope.isFirstLogin = $location.path() === '/settings/profile/first';
 
         // If user is not signed in then redirect back home
         if (!$scope.user) $location.path('/');
@@ -1871,7 +1902,8 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
                 user.$update(function(response) {
                     $scope.success = true;
                     Authentication.user = response;
-                    $location.path('/first/confirm');
+                    var newPage = $scope.isFirstLogin ? '/settings/profile' : '/';
+                    $location.path(newPage);
                 }, function(response) {
                     $scope.error = response.data.message;
                 });
@@ -1898,15 +1930,163 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 
 // Authentication service for user variables
 angular.module('users').factory('Authentication', [
-	function() {
-		var _this = this;
 
-		_this._data = {
-			user: window.user
-		};
+    function() {
+        var _this = this;
 
-		return _this._data;
-	}
+        _this._data = {
+            user: window.user
+        };
+
+        return _this._data;
+
+        //     var currentUser = {};
+        //     //if ($cookieStore.get('token')) {
+        //     currentUser = Users.get();
+        //     //}
+
+        //     return {
+
+        //         /**
+        //          * Authenticate user and save token
+        //          *
+        //          * @param  {Object}   user     - login info
+        //          * @param  {Function} callback - optional
+        //          * @return {Promise}
+        //          */
+        //         login: function(user, callback) {
+        //             console.log(user);
+        //             var cb = callback || angular.noop;
+        //             var deferred = $q.defer();
+
+        //             $http.post('/auth/signin', user).
+        //             success(function(data) {
+        //                 console.log(data);
+        //                 //$cookieStore.put('token', data.token);
+        //                 currentUser = Users.get();
+        //                 deferred.resolve(data);
+        //                 return cb();
+        //             }).
+        //             error(function(err) {
+        //                 this.logout();
+        //                 deferred.reject(err);
+        //                 return cb(err);
+        //             }.bind(this));
+
+        //             return deferred.promise;
+        //         },
+
+        //         /**
+        //          * Delete access token and user info
+        //          *
+        //          * @param  {Function}
+        //          */
+        //         logout: function() {
+        //             //$cookieStore.remove('token');
+        //             currentUser = {};
+        //         },
+
+        //         /**
+        //          * Create a new user
+        //          *
+        //          * @param  {Object}   user     - user info
+        //          * @param  {Function} callback - optional
+        //          * @return {Promise}
+        //          */
+        //         createUser: function(user) {
+        //             //                var cb = callback || angular.noop;
+
+        //             return Users.save(user).$promise;
+        //         },
+
+        //         /**
+        //          * Change password
+        //          *
+        //          * @param  {String}   oldPassword
+        //          * @param  {String}   newPassword
+        //          * @param  {Function} callback    - optional
+        //          * @return {Promise}
+        //          */
+        //         changePassword: function(oldPassword, newPassword, callback) {
+        //             var cb = callback || angular.noop;
+
+        //             return Users.changePassword({
+        //                 id: currentUser._id
+        //             }, {
+        //                 oldPassword: oldPassword,
+        //                 newPassword: newPassword
+        //             }, function(user) {
+        //                 return cb(user);
+        //             }, function(err) {
+        //                 return cb(err);
+        //             }).$promise;
+        //         },
+
+        //         updateProfile: function(user, callback) {
+        //             var cb = callback || angular.noop;
+
+        //             return Users.updateProfile({
+        //                 id: user._id
+        //             }, function(user) {
+        //                 return cb(user);
+        //             }, function(err) {
+        //                 return cb(err);
+        //             }).$promise;
+        //         },
+
+        //         /**
+        //          * Gets all available info on authenticated user
+        //          *
+        //          * @return {Object} user
+        //          */
+        //         getCurrentUser: function() {
+        //             return currentUser;
+        //         },
+
+        //         /**
+        //          * Check if a user is logged in
+        //          *
+        //          * @return {Boolean}
+        //          */
+        //         isLoggedIn: function() {
+        //             return currentUser.hasOwnProperty('role');
+        //         },
+
+        //         /**
+        //          * Waits for currentUser to resolve before checking if user is logged in
+        //          */
+        //         isLoggedInAsync: function(cb) {
+        //             if (currentUser.hasOwnProperty('$promise')) {
+        //                 currentUser.$promise.then(function() {
+        //                     cb(true);
+        //                 }).catch(function() {
+        //                     cb(false);
+        //                 });
+        //             } else if (currentUser.hasOwnProperty('role')) {
+        //                 cb(true);
+        //             } else {
+        //                 cb(false);
+        //             }
+        //         },
+
+        //         /**
+        //          * Check if a user is an admin
+        //          *
+        //          * @return {Boolean}
+        //          */
+        //         isAdmin: function() {
+        //             return currentUser.role === 'admin';
+        //         },
+
+        //         /**
+        //          * Get auth token
+        //          */
+        //         // getToken: function() {
+        //         //     return $cookieStore.get('token');
+        //         // }
+        //     };
+        // }
+    }
 ]);
 'use strict';
 

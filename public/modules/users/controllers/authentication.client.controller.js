@@ -19,7 +19,7 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
         // If user is signed in then redirect back home
         if ($scope.user) redirect($scope.user);
 
-        $scope.signin = function() {
+        $scope.signin = function(form) {
             $http.post('/auth/signin', $scope.credentials).success(function(response) {
                 // If successful we assign the response to the global user model
                 Authentication.user = response;
@@ -30,6 +30,24 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
             });
         };
 
+        // $scope.signin = function(form) {
+        //     $scope.submitted = true;
+
+        //     if (form) {
+        //         console.log('yes');
+        //         Authentication.login($scope.credentials)
+        //             .then(function() {
+        //                 console.log($scope.user);
+        //                 // Logged in, redirect to home
+        //                 var newURL = $scope.isAdmin ? '/admin' : '/';
+        //                 $location.path(newURL);
+        //             })
+        //             .catch(function(err) {
+        //                 $scope.errors.other = err.message;
+        //             });
+        //     }
+        // };
+
         $scope.signup = function() {
             $http.post('/auth/signup', $scope.credentials).success(function(response) {
                 console.log('profile created');
@@ -38,25 +56,5 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
             });
         };
 
-        /*
-		$scope.credentials = {};
-		$scope.credentials.email = 'meza.elmer@gmail.com';
-		$scope.credentials.username = 'AAA';
-		$scope.credentials.password = 'volunteer87';
-		$scope.credentials.agency = 'New York Cares';
-		$scope.credentials.acceptance[0] = {
-			title: 'Acceptance',
-			description: 'Let accepted agencies know the good news and how they can get started',
-			subject: 'Winter Wishes 2015 Acceptance',
-			message: 'Dear {{partner}},\n\nCongratulations! Your agency has been accepted for {{letters}}.\n\nTo access your tracking form:\nGo to the <a href=\"http://localhost:3000/#!/\">Winter Wishes homepage</a>.\nUsername: {{user}}\nPassword: {{pass}}\n\nSincerely,\nThe Winter Wishes Team'
-		}
-		$scope.credentials.acceptance[1] = {
-			title: 'Reminder',
-			description: 'let agencies know that the deadline is coming up',
-			subject: 'Winter Wishes 2015 Reminder',
-			message: 'Insert message here'
-		}
-		$scope.signup();
-		*/
     }
 ]);

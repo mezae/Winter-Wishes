@@ -2,7 +2,7 @@
 
 angular.module('letters')
 
-.controller('EmailsController', ['$scope', '$modal', '$http', '$stateParams', '$location', '$filter' , 'Authentication', 'Agencies', 'Articles', 'Users',
+.controller('EmailsController', ['$scope', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
 	function($scope, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
 		$scope.user = Authentication.user;
 

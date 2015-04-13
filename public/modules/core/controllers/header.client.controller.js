@@ -4,7 +4,9 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
     function($scope, $location, $modal, Authentication) {
         $scope.authentication = Authentication;
         $scope.isCollapsed = false;
-        var isAdmin = $scope.authentication.user.username === 'AAA' ? true : false;
+        $scope.isLoggedIn = Authentication.isLoggedIn;
+        $scope.isAdmin = Authentication.isAdmin;
+        $scope.getCurrentUser = Authentication.getCurrentUser;
 
         $scope.toggleCollapsibleMenu = function() {
             $scope.isCollapsed = !$scope.isCollapsed;
@@ -35,7 +37,7 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
                     backdrop: 'static'
                 });
             } else if ($location.path().indexOf('agency') >= 0) {
-                var template = isAdmin ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
+                var template = $scope.isAdmin ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
                 $modal.open({
                     templateUrl: template,
                     controller: 'ModalInstanceCtrl',
@@ -50,7 +52,7 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
             }
         };
 
-        if (!isAdmin && $scope.authentication.user.status === 0) $scope.showTutorial();
+        if (!$scope.isAdmin && $scope.authentication.user.status === 0) $scope.showTutorial();
     }
 ])
 
