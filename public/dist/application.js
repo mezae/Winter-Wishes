@@ -91,7 +91,7 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
     function($scope, $location, $modal, Authentication) {
         $scope.authentication = Authentication;
         $scope.isCollapsed = false;
-        $scope.isLoggedIn = Authentication.isLoggedIn;
+        $scope.isAtLogin = $location.path() === '/login';
         $scope.isAdmin = Authentication.isAdmin;
         $scope.getCurrentUser = Authentication.getCurrentUser;
 
