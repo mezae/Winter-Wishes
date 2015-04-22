@@ -1,7 +1,7 @@
 <div class="container" data-ng-controller="HeaderController">
 
 	<div class="navbar-header">
-		<button class="navbar-toggle btn btn-lg btn-link" type="button" data-ng-click="toggleCollapsibleMenu()" ng-hide="isAtLogin">
+		<button class="navbar-toggle btn btn-lg btn-link" type="button" data-ng-click="toggleCollapsibleMenu()">
 			<span class="sr-only">Toggle navigation</span>
 			<i class="glyphicon glyphicon-menu-hamburger"></i>
 		</button>
@@ -10,7 +10,7 @@
 
 	<nav class="collapse navbar-collapse" collapse="!isCollapsed" role="navigation">
 		
-		<ul class="nav navbar-nav navbar-right" ng-hide="isAtLogin">
+		<ul class="nav navbar-nav navbar-right">
 			<li ng-hide="authentication.user"><a href="/#!/login">Login</a></li>
 			<li class="dropdown" dropdown on-toggle="toggled(open)" ng-class="{open: hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-show="authentication.user">
 				<a href class="dropdown-toggle" dropdown-toggle>

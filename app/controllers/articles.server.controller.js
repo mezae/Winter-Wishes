@@ -6,6 +6,8 @@
 var mongoose = require('mongoose'),
     errorHandler = require('./errors.server.controller'),
     Letter = mongoose.model('Article'),
+    User = mongoose.model('User'),
+    async = require('async'),
     _ = require('lodash');
 
 /**
@@ -20,7 +22,7 @@ exports.create = function(req, res) {
         'track': {
             $regex: '^' + user
         }
-    }).sort('track').exec(function(err, letters) {
+    }, '-created').sort('track').exec(function(err, letters) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -123,23 +125,57 @@ exports.delete = function(req, res) {
  * List of Letters
  */
 exports.index = function(req, res) {
-    var query = req.query.username ? {
-        'track': {
-            $regex: '^' + req.query.username
-        }
-    } : {};
-    var offset = req.query.offset ? req.query.offset : '';
-    var limit = req.query.limit ? req.query.limit : '';
-
-    Letter.find(query, '-created').sort('track').skip(offset).limit(limit).exec(function(err, letters) {
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
+    if (req.query.start) {
+        User.find({
+            'status': 5,
+            'updated': {
+                $gte: new Date(req.query.start).setHours(0),
+                $lt: new Date(req.query.end).setHours(24)
+            }
+        }).exec(function(err, users) {
+            var reviewed = _.pluck(users, 'username');
+            reviewed = _.map(reviewed, function(u) {
+                return new RegExp('^' + u, 'i');
             });
-        } else {
-            res.json(letters);
-        }
-    });
+            var query = {
+                'track': {
+                    $in: reviewed
+                },
+                'name': {
+                    $ne: ''
+                }
+            };
+
+            Letter.find(query, '-__v -_id -created -updated').sort('track').exec(function(err, letters) {
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    res.json(letters);
+                }
+            });
+        });
+    } else {
+        var query = req.query.username ? {
+            'track': {
+                $regex: '^' + req.query.username
+            }
+        } : '';
+
+        var offset = req.query.offset ? req.query.offset : '';
+        var limit = req.query.limit ? req.query.limit : '';
+
+        Letter.find(query, '-created').sort('track').skip(offset).limit(limit).exec(function(err, letters) {
+            if (err) {
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            } else {
+                res.json(letters);
+            }
+        });
+    }
 };
 
 /**

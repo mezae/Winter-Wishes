@@ -9,6 +9,10 @@ angular.module('letters').config(['$stateProvider',
             url: '/admin:status',
             templateUrl: 'modules/letters/views/command.html'
         }).
+        state('adminSettings', {
+            url: '/admin/settings',
+            templateUrl: 'modules/letters/views/settings.html'
+        }).
         state('tracking', {
             url: '/admin/agency/:articleId',
             templateUrl: 'modules/letters/views/tracking.html'

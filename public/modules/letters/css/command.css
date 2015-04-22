@@ -41,12 +41,16 @@
   -webkit-transition: border .2s ease-in-out;
 }
 
+.btn {
+  background-color: white;
+}
+
 .btn-ready {
 	color: #7b39c7;
   border-color:#7b39c7;
 }
 
-.btn-review {
+.btn-review, .filename {
   color: #4d92cd;
   border-color: #4d92cd;
 }
@@ -64,6 +68,10 @@
 .btn-empty {
 	color: #cd4d52;
   border-color: #cd4d52;
+}
+
+.filename {
+  border-left: 0;
 }
 
 a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {

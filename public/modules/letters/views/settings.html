@@ -1,0 +1,41 @@
+<section data-ng-controller="myController">
+
+	<div class="row">
+
+		<div class="col-md-12">
+			<h3>Admin Settings</h3>
+
+			<h4>Download All Reviewed Letters</h4>
+		</div>
+	
+		<div class="form-group">
+		    <div class="col-md-3">
+		        <label for="formDOB" class="sr-only">Start Date</label>
+		        <p class="input-group">
+		          <input type="text" class="form-control" datepicker-popup="{{calendar.dateFormat}}" ng-model="startDate" is-open="calendar.opened.start" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="Start Date" show-button-bar="false"/>
+		          <span class="input-group-btn">
+		            <button type="button" class="btn btn-default" ng-click="calendar.open($event, 'start')"><i class="glyphicon glyphicon-calendar"></i></button>
+		          </span>
+		        </p>
+		    </div>
+		    <div class="col-md-3">
+		        <label for="formWinDate" class="sr-only">End Date</label>
+		        <p class="input-group">
+		          <input type="text" class="form-control" datepicker-popup="{{calendar.dateFormat}}" ng-model="endDate" is-open="calendar.opened.end" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="End Date" show-button-bar="false"/>
+		          <span class="input-group-btn">
+		            <button type="button" class="btn btn-default" ng-click="calendar.open($event, 'end')"><i class="glyphicon glyphicon-calendar"></i></button>
+		          </span>
+		        </p>
+		    </div>
+			<div class="col-md-3">
+				<button class='btn btn-success' ng-click="downloadCSV()">Find</button>
+			</div>
+		</div>
+		<div class="col-md-12">
+				<p ng-show="total >= 0">{{total}} letters were found
+				<a class="btn btn-lg btn-link" role="button" href="{{url}}" download="{{fileName}}" ng-show="total > 0"><i class="glyphicon glyphicon-download" tooltip="Download" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></a> </p>
+				<p ng-show="error" class="text-danger">{{error}}</p>
+		</div>
+	</div>
+
+</section>

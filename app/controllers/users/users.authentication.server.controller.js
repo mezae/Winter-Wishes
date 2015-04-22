@@ -8,12 +8,12 @@ var _ = require('lodash'),
     mongoose = require('mongoose'),
     passport = require('passport'),
     User = mongoose.model('User'),
-    Article = mongoose.model('Article');
+    Letter = mongoose.model('Article');
 
 function initRecs(code, types, recs) {
     for (var type in types) {
         _.forEach(_.range(1, types[type] + 1), function(num) {
-            var letter = new Article();
+            var letter = new Letter();
             letter.track = code + type + _.padLeft(num, 3, '0');
             letter.save(function(err) {
                 if (err) {
@@ -29,8 +29,8 @@ function initRecs(code, types, recs) {
  * Signup
  */
 exports.signup = function(req, res) {
-    // For security measurement we remove the roles from the req.body object
-    delete req.body.roles;
+    // For security measurement we remove the role from the req.body object
+    delete req.body.role;
 
     // Init Variables
     var user = new User(req.body);

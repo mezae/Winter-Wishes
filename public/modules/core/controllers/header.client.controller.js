@@ -3,10 +3,7 @@
 angular.module('core').controller('HeaderController', ['$scope', '$location', '$modal', 'Authentication',
     function($scope, $location, $modal, Authentication) {
         $scope.authentication = Authentication;
-        $scope.isCollapsed = false;
-        $scope.isAtLogin = $location.path() === '/login';
-        $scope.isAdmin = Authentication.isAdmin;
-        $scope.getCurrentUser = Authentication.getCurrentUser;
+        $scope.isAdmin = $scope.authentication.user.username === 'AAA';
 
         $scope.toggleCollapsibleMenu = function() {
             $scope.isCollapsed = !$scope.isCollapsed;
