@@ -1,5 +1,3 @@
-
-
 .home{
   background: url(christmas-snow-background.jpg);
   background-repeat: repeat;
@@ -44,10 +42,47 @@
   font-size: 2em;
 }
 
-
 .step-separator {
   border-top: 1px solid #e5e5e5;
   padding-top: 2%;
   width: 60%;
   margin: auto;
 }
+
+.ebtn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 16px;
+  font-weight: normal;
+  line-height: 2;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: black;
+  border-color: black;
+  background-color: white;
+}
+
+.btn-login {
+  color: #cd4d52;
+  border-color: #cd4d52;
+}
+
+.btn-login:hover, .btn-login:focus {
+  text-decoration: none;
+  background-color: white;
+  border: 1px solid #85c739;
+  color: #85c739;
+}
+

@@ -155,3 +155,23 @@ exports.delete = function(req, res) {
 exports.me = function(req, res) {
     res.json(req.user || null);
 };
+
+exports.reset = function(req, res) {
+    var user = req.user;
+    User.remove({
+        'username': {
+            $ne: 'AAA'
+        }
+    }, function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            Article.remove({}, function() {
+                console.log('Deleted all letters');
+            });
+            res.json(user);
+        }
+    });
+};

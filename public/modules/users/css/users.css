@@ -3,3 +3,9 @@
 		position: fixed;
 	}
 }
+
+.login-box {
+	padding: 17vh 0;
+	float: none;
+	margin: auto;
+}

@@ -542,8 +542,8 @@ angular.module('letters')
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('myController', ['$scope', '$window', '$modal', '$location', '$filter', 'Authentication', 'Articles',
-    function($scope, $window, $modal, $location, $filter, Authentication, Articles) {
+angular.module('letters').controller('myController', ['$scope', '$window', '$modal', '$location', '$filter', '$http', 'Authentication', 'Users', 'Articles',
+    function($scope, $window, $modal, $location, $filter, $http, Authentication, Users, Articles) {
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/').replace();
 
@@ -604,6 +604,15 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
                 $scope.error = 'Please enter a start date and an end date.';
             }
 
+        };
+
+        $scope.reset = function() {
+            $http.get('/users/reset').success(function(response) {
+                // If successful we assign the response to the global user model
+                Authentication.user = response;
+            }).error(function(response) {
+                $scope.error = response.message;
+            });
         };
     }
 ]);
