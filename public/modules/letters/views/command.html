@@ -20,13 +20,13 @@
 					<label class="sr-only" for="the_file">File input</label>
 					<div class="input-group">
 						<span class="input-group-btn">
-							<span class="btn btn-review btn-file">
+							<span class="btn btn-upload btn-file">
 								Browse <input type="file" id="the_file" accept=".csv" onchange="angular.element(this).scope().fileInfo(this)">
 							</span>
 						</span>
 						<input type="text" class="form-control filename col-md-4" ng-model="file.name" id="filename" readonly>
 						<span class="input-group-btn">
-						<input type="button" class="btn btn-review" ng-click="handleFileSelect()" value="Upload"/>
+						<input type="button" class="btn btn-upload" ng-click="handleFileSelect()" value="Upload"/>
 						</span>
 					</div>
 				</div>
@@ -47,9 +47,9 @@
 					<input type="number" class="profile form-control" ng-model="partner.teens" ng-disabled="partner.status >= 3" min="0" placeholder="teens">
 					<input type="number" class="profile form-control" ng-model="partner.seniors" ng-disabled="partner.status >= 3" min="0" placeholder="seniors">
 				</div>
-				<input type="button" class="btn btn-empty col-md-4 col-sm-3 col-xs-3 pull-left" ng-click="hideSidebar()" value="Cancel">
+				<input type="button" class="btn btn-cancel col-md-4 col-sm-3 col-xs-3 pull-left" ng-click="hideSidebar()" value="Cancel">
 				<div class="form-group">
-					<input type="button" class="btn btn-complete col-md-4 col-sm-3 col-xs-3 pull-right" ng-click="saveAgency()" value="Save">
+					<input type="button" class="btn btn-save col-md-4 col-sm-3 col-xs-3 pull-right" ng-click="saveAgency()" value="Save">
 				</div>
 				<br/><br/>
 			</form>

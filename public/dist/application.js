@@ -276,8 +276,8 @@ angular.module('letters').config(['$stateProvider',
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users', 'socket',
-    function($scope, $window, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users, socket) {
+angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'Articles', 'Users', 'socket',
+    function($scope, $window, $modal, $http, $stateParams, $location, Authentication, Agencies, Articles, Users, socket) {
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/').replace();
         if ($location.search()) $scope.query = $location.search();
@@ -614,6 +614,10 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
                 $scope.error = response.message;
             });
         };
+
+        $scope.allowNotifications = function() {
+            Notification.requestPermission();
+        }
     }
 ]);
 'use strict';
@@ -1615,6 +1619,22 @@ angular.module('letters')
                         } else {
                             array.push(item);
                         }
+
+                        if (item.status === 3) {
+                            var message = item.agency + ' just submitted their tracking form.';
+                            var options = {
+                                body: message,
+                                icon: 'http://img3.wikia.nocookie.net/__cb20141010004359/disney/images/4/49/Baymax_Armor_Wings_Render.png',
+                                dir: 'ltr',
+                                tag: 'submitted'
+                            };
+                            var notification = new Notification('Quick Update', options);
+
+                            notification.onclick = function() {
+                                window.open('https://winterwishes.herokuapp.com/#!/');
+                            };
+                        }
+
 
                         cb(event, item, array);
                     });

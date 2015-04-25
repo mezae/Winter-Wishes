@@ -36,8 +36,12 @@
 				<a class="btn btn-lg btn-link" role="button" href="{{url}}" download="{{fileName}}" ng-show="total > 0"><i class="glyphicon glyphicon-download" tooltip="Download" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></a> </p>
 				<p ng-show="error" class="text-danger">{{error}}</p>
 
-				<button class="btn btn-default" ng-click="reset">Reset</button>
+				<button class="btn btn-default" ng-click="reset()">Reset</button>
+				<button class="btn btn-success" ng-click="allowNotifications()">Grant Access</button>
+
 		</div>
+
+
 	</div>
 
 </section>

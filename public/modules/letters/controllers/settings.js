@@ -73,5 +73,9 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
                 $scope.error = response.message;
             });
         };
+
+        $scope.allowNotifications = function() {
+            Notification.requestPermission();
+        }
     }
 ]);

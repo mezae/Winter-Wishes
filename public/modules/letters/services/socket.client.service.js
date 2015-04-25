@@ -52,6 +52,22 @@ angular.module('letters')
                             array.push(item);
                         }
 
+                        if (item.status === 3) {
+                            var message = item.agency + ' just submitted their tracking form.';
+                            var options = {
+                                body: message,
+                                icon: 'http://img3.wikia.nocookie.net/__cb20141010004359/disney/images/4/49/Baymax_Armor_Wings_Render.png',
+                                dir: 'ltr',
+                                tag: 'submitted'
+                            };
+                            var notification = new Notification('Quick Update', options);
+
+                            notification.onclick = function() {
+                                window.open('https://winterwishes.herokuapp.com/#!/');
+                            };
+                        }
+
+
                         cb(event, item, array);
                     });
 

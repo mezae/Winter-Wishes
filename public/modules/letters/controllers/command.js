@@ -1,8 +1,8 @@
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users', 'socket',
-    function($scope, $window, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users, socket) {
+angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'Articles', 'Users', 'socket',
+    function($scope, $window, $modal, $http, $stateParams, $location, Authentication, Agencies, Articles, Users, socket) {
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/').replace();
         if ($location.search()) $scope.query = $location.search();

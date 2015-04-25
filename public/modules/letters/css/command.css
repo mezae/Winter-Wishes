@@ -35,6 +35,7 @@
   display: block;
   margin-bottom: 20px;
   line-height: 1.42857143;
+  min-height: 92px;
   border-radius: 4px;
   transition: border .2s ease-in-out;
   -o-transition: border .2s ease-in-out;
@@ -85,4 +86,26 @@ a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
 
 .agency-mid {
   padding: 4px 15px;
+}
+
+.btn-upload {
+  color: white;
+  border-color: #4d92cd;
+  background-color: #4d92cd;
+}
+
+.btn-cancel {
+  color: white;
+  border-color: #cd4d52;
+  background-color: #cd4d52;
+}
+
+.btn-save {
+  color: white;
+  border-color: #85c739;
+  background-color: #85c739;
+}
+
+.btn:hover, .btn:focus {
+  background-color: white;
 }
