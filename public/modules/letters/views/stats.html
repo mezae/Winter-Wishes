@@ -2,7 +2,7 @@
 	<div class="row">
 		<div class="col-md-12">
 
-			<div class="col-md-6">
+			<div class="col-md-6" ng-show="gifts.length > 0">
 				<h4>Most Requested Gifts</h4>
 				<donut-chart data="gifts"></donut-chart>
 			</div>
@@ -11,7 +11,7 @@
 				<donut data="status"></donut>
 			</div>
 
-			<div class="col-md-12">
+			<div class="col-md-12" ng-show="wishesAdded.length > 0">
 				<h4>Daily Activity</h4>
 				<activity data="wishesAdded"></activity>
 			</div>

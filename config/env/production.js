@@ -6,7 +6,9 @@ module.exports = {
         lib: {
             css: [
                 'public/lib/bootstrap/dist/css/bootstrap.min.css',
-                'public/lib/bootstrap/dist/css/bootstrap-theme.min.css'
+                'public/lib/bootstrap/dist/css/bootstrap-theme.min.css',
+                'public/lib/textAngular/src/textAngular.css',
+                'public/lib/font-awesome/css/font-awesome.min.css'
             ],
             js: [
                 'public/lib/angular/angular.min.js',
@@ -20,19 +22,21 @@ module.exports = {
                 'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
                 'public/lib/d3/d3.min.js',
                 'public/lib/lodash/lodash.min.js',
-                'public/lib/angular-socket-io/socket.min.js'
+                'public/lib/angular-socket-io/socket.min.js',
+                'public/lib/textAngular/dist/textAngular.min.js',
+                'public/lib/textAngular/dist/textAngular-rangy.min.js'
             ]
         },
         css: 'public/dist/application.min.css',
         js: 'public/dist/application.min.js'
     },
     mailer: {
-        from: 'The Winter Wishes Team <mezae10@gmail.com>',
+        from: 'The Winter Wishes Team <winterwishes@newyorkcares.org>',
         options: {
-            service: process.env.MAILER_SERVICE_PROVIDER || 'Mailtrap',
+            service: process.env.MAILER_SERVICE_PROVIDER,
             auth: {
-                user: process.env.MAILER_EMAIL_ID || '328212ee68d2e7a2c@mailtrap.io',
-                pass: process.env.MAILER_PASSWORD || '3c104d180787e1'
+                user: process.env.MAILER_EMAIL_ID,
+                pass: process.env.MAILER_PASSWORD
             }
         }
     }

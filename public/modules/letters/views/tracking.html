@@ -45,11 +45,11 @@
 			<br/>
 			<div class="input-group">
 				<span class="input-group-btn" ng-show="adminView" tooltip="Add blank slot and shift everything down" tooltip-trigger="mouseenter" tooltip-append-to-body="false">
-					<button type="button" class="btn btn-danger" ng-click="addBlank(current)"><i class="glyphicon glyphicon-plus"></i></button>
+					<button type="button" class="btn btn-cancel" ng-click="addBlank(current)"><i class="glyphicon glyphicon-plus"></i></button>
 				</span> 
 				<input type="text" class="form-control" ng-model="current.track" value="{{current.track}}" readonly>
 				<span class="input-group-btn" tooltip="{{adminView ? 'Delete letter and shift everything up' : 'Remove recipient from this slot'}}" tooltip-trigger="mouseenter" tooltip-append-to-body="false">
-					<button type="button" class="btn btn-danger" ng-disabled="!adminView && !current.updated" ng-click="clearForm(current)"><i ng-class="adminView ? 'glyphicon glyphicon-minus' : 'glyphicon glyphicon-trash'"></i></button>
+					<button type="button" class="btn btn-cancel" ng-disabled="!adminView && !current.updated" ng-click="clearForm(current)"><i ng-class="adminView ? 'glyphicon glyphicon-minus' : 'glyphicon glyphicon-trash'"></i></button>
 				</span> 
 			</div>
 			<form name="tform" class="letter-form" ng-class="current.updated ? 'old' : 'new'">
@@ -66,7 +66,7 @@
 				<span class="error text-danger" ng-show="tform.gift.$error.minlength">Written letter must include a gift request</span>
 
 			</form>
-			<input type="submit" class="btn btn-success btn-block" ng-disabled="tform.$invalid" ng-click="goToNext(tform)" value="Save & Continue">
+			<input type="submit" class="btn btn-save btn-block" ng-disabled="tform.$invalid" ng-click="goToNext(tform)" value="Save & Continue">
 			<div data-ng-show="error" class="text-center text-danger">
 				<strong data-ng-bind="error"></strong>
 			</div>
@@ -105,7 +105,7 @@
 							</td>
 						</tr>
 						<tr ng-if="recipients.length && recipients.length < currentTab.content && !query">
-							<td colspan="6"><button type="button" class="btn btn-sm btn-success" ng-click="loadMore(recipients.length)">Load More...</td>
+							<td colspan="6"><button type="button" class="btn btn-sm btn-save" ng-click="loadMore(recipients.length)">Load More...</td>
 						</tr>
 						<tr ng-if="recipients.$resolved && results.length == 0">
 							<td colspan="6"><strong>No results found...</strong></td>

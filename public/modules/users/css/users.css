@@ -9,3 +9,13 @@
 	float: none;
 	margin: auto;
 }
+
+.control-label {
+	font-size: 10px;
+	margin-bottom: 0;
+}
+
+.em-center {
+	float: none;
+	margin: auto;
+}

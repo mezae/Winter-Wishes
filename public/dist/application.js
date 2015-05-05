@@ -4,7 +4,7 @@
 var ApplicationConfiguration = (function() {
     // Init module configuration options
     var applicationModuleName = 'meanww';
-    var applicationModuleVendorDependencies = ['ngResource', 'ngCookies', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ui.utils', 'btford.socket-io'];
+    var applicationModuleVendorDependencies = ['ngResource', 'ngCookies', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ui.utils', 'btford.socket-io', 'textAngular'];
 
     // Add a new vertical module
     var registerModule = function(moduleName, dependencies) {
@@ -467,78 +467,82 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
 angular.module('letters')
 
 .controller('EmailsController', ['$scope', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
-	function($scope, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
-		$scope.user = Authentication.user;
+    function($scope, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
+        $scope.user = Authentication.user;
 
-		if (!$scope.user) $location.path('/');
+        if (!$scope.user) $location.path('/');
 
-		$scope.etemplate = $filter('filter')($scope.user.acceptance, {title: $stateParams.template})[0];
-		var templateIndex = $scope.user.acceptance.indexOf($scope.etemplate);
-		$scope.needToUpdate = false;
+        $scope.etemplate = $filter('filter')($scope.user.acceptance, {
+            title: $stateParams.template
+        })[0];
+        var templateIndex = $scope.user.acceptance.indexOf($scope.etemplate);
+        $scope.needToUpdate = false;
 
-		//Send e-mail based on template
-		$scope.sendEmail = function() {
-			$scope.error = null;
-			$scope.saveTemplate();
-			$http.post('/accept', $scope.user.acceptance[templateIndex]).success(function(response) {
-				$location.path('/admin/emails/success');
-			}).error(function(response) {
-				$scope.error = response.data.message;
-			});
-		};
+        //Send e-mail based on template
+        $scope.sendEmail = function() {
+            console.log('whoa');
+            $scope.error = null;
+            $scope.saveTemplate();
+            $http.post('/accept', $scope.user.acceptance[templateIndex]).success(function(response) {
+                $location.path('/admin/emails/success');
+            }).error(function(response) {
+                $scope.error = response;
+            });
+        };
 
-		//Create new template or save existing template
-		$scope.saveTemplate = function() {
-			$scope.success = $scope.error = null;
-			if(templateIndex > -1) {
-				$scope.user.acceptance[templateIndex] = $scope.etemplate;
-			}
-			else {
-				$scope.user.acceptance.push($scope.etemplate);
-			}
+        //Create new template or save existing template
+        $scope.saveTemplate = function() {
+            $scope.success = $scope.error = null;
+            if (templateIndex > -1) {
+                $scope.user.acceptance[templateIndex] = $scope.etemplate;
+            } else {
+                $scope.user.acceptance.push($scope.etemplate);
+            }
 
-			var user = new Users($scope.user);
-			user.$update(function(response) {
-				$scope.user = response;
-				$scope.success = true;
-				if($location.path() === '/admin/email') {
-					$scope.hideSidebar();
-				}
-			}, function(response) {
-				$scope.error = response.data.message;
-			});
-		};
+            //var user = new Users($scope.user);
+            Users.update($scope.user, function(response) {
+            // $scope.user = response;
+            // $scope.success = true;
+            // if ($location.path() === '/admin/email') {
+            //     $scope.hideSidebar();
+            // }
+            // }, function(response) {
+                console.log(response);
+                // $scope.error = response;
+            });
+        };
 
-		//Show current state of template that user wants to edit
-		$scope.showSidebar = function(selected) {
-			$scope.etemplate = selected;
-			templateIndex = $scope.user.acceptance.indexOf($scope.etemplate);
-			$scope.needToUpdate = true;
-		};
+        //Show current state of template that user wants to edit
+        $scope.showSidebar = function(selected) {
+            $scope.etemplate = selected;
+            templateIndex = $scope.user.acceptance.indexOf($scope.etemplate);
+            $scope.needToUpdate = true;
+        };
 
-		//Hide sidebar and clear variables
-		$scope.hideSidebar = function() {
-			$scope.etemplate = null;
-			templateIndex = null;
-			$scope.needToUpdate = false;
-		};
+        //Hide sidebar and clear variables
+        $scope.hideSidebar = function() {
+            $scope.etemplate = null;
+            templateIndex = null;
+            $scope.needToUpdate = false;
+        };
 
-		//Allow user to delete selected partner and all associated recipients
-		$scope.deleteAgency = function(selected) {
-			var confirmation = prompt('Please type DELETE to remove the ' + selected.title + ' template.');
-			if(confirmation === 'DELETE') {
-				$scope.user.acceptance.splice($scope.user.acceptance.indexOf(selected), 1);
-				var user = new Users($scope.user);
-				user.$update(function(response) {
-					$scope.user = response;
-					$scope.success = true;
-				}, function(response) {
-					$scope.error = response.data.message;
-				});
-			}
-		};
+        //Allow user to delete selected partner and all associated recipients
+        $scope.deleteAgency = function(selected) {
+            var confirmation = prompt('Please type DELETE to remove the ' + selected.title + ' template.');
+            if (confirmation === 'DELETE') {
+                $scope.user.acceptance.splice($scope.user.acceptance.indexOf(selected), 1);
+                var user = new Users($scope.user);
+                user.$update(function(response) {
+                    $scope.user = response;
+                    $scope.success = true;
+                }, function(response) {
+                    $scope.error = response.data.message;
+                });
+            }
+        };
 
-}]);
+    }
+]);
 'use strict';
 /* global _: false */
 
@@ -635,12 +639,15 @@ angular.module('letters')
             $scope.$apply();
         });
 
-        $scope.partners = Agencies.query(function() {
+        $scope.partners = Agencies.query(function(users) {
 
             var names = ['Not Yet Started', 'In Progress', 'Completed', 'Submitted', 'Under Review', 'Reviewed'];
             var groups = _.countBy($scope.partners, function(tf) {
                 return tf.status;
             });
+
+            //Remove admin
+            groups[0]--;
 
             $scope.status = [];
             _.forEach(groups, function(c, g) {
@@ -655,67 +662,72 @@ angular.module('letters')
         });
 
         $scope.letters = Articles.query(function() {
-            var useful = $filter('filter')($scope.letters, {
-                updated: '!' + null
-            });
-
-            var counts = _.countBy(useful, function(letter) {
-                return $filter('date')(letter.updated, 'yyyy-MM-dd');
-            });
-
-            var activeDays = [];
-            _.forEach(counts, function(count, date) {
-                activeDays.push(date);
-            });
-
-            activeDays = activeDays.sort(function(a, b) {
-                return b < a;
-            });
-
-            $scope.wishesAdded = [];
-            var current = activeDays[0];
-            var endDate = new Date();
-            endDate.setDate(endDate.getDate() + 1);
-            endDate = $filter('date')(endDate, 'yyyy-MM-dd');
-            while (current !== endDate) {
-                $scope.wishesAdded.push({
-                    date: current,
-                    count: counts[current] ? counts[current] : 0
+            if ($scope.letters) {
+                var useful = $filter('filter')($scope.letters, {
+                    updated: '!' + null
                 });
-                current = new Date(current);
-                current.setDate(current.getDate() + 2);
-                current = $filter('date')(current, 'yyyy-MM-dd');
-            }
 
-            var wordCounts = [];
-            var fillers = ' , a, an, and, but, or, the, this, that, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont, who, what, where, when, why, how, which, with';
+                var counts = _.countBy(useful, function(letter) {
+                    return $filter('date')(letter.updated, 'yyyy-MM-dd');
+                });
 
-            _.forEach(useful, function(letter) {
-                var words = _.words(letter.gift);
+                var activeDays = [];
+                _.forEach(counts, function(count, date) {
+                    activeDays.push(date);
+                });
 
-                _.forEach(words, function(word) {
-                    word = word.toLowerCase();
-                    if (!_.includes(fillers, word)) {
-                        var cc = _.find(wordCounts, {
-                            'name': word
-                        });
-                        if (cc) {
-                            cc.value += 1;
-                        } else {
-                            wordCounts.push({
-                                name: word,
-                                value: 1
+                activeDays = activeDays.sort(function(a, b) {
+                    return b < a;
+                });
+
+                $scope.wishesAdded = [];
+                var current = activeDays[0];
+                var endDate = new Date();
+                endDate.setDate(endDate.getDate() + 1);
+                endDate = $filter('date')(endDate, 'yyyy-MM-dd');
+                while (current !== endDate) {
+                    $scope.wishesAdded.push({
+                        date: current,
+                        count: counts[current] ? counts[current] : 0
+                    });
+                    current = new Date(current);
+                    current.setDate(current.getDate() + 2);
+                    current = $filter('date')(current, 'yyyy-MM-dd');
+                }
+
+                var wordCounts = [];
+                var fillers = ' , a, an, and, but, or, the, this, that, for, is, it, my, your, i, am, is, be, you, me, it, he, she, to, please, dont, who, what, where, when, why, how, which, with';
+
+                _.forEach(useful, function(letter) {
+                    var words = _.words(letter.gift);
+
+                    _.forEach(words, function(word) {
+                        word = word.toLowerCase();
+                        if (!_.includes(fillers, word)) {
+                            var cc = _.find(wordCounts, {
+                                'name': word
                             });
+                            if (cc) {
+                                cc.value += 1;
+                            } else {
+                                wordCounts.push({
+                                    name: word,
+                                    value: 1
+                                });
+                            }
                         }
-                    }
+                    });
                 });
-            });
 
-            var sorted = _.sortBy(wordCounts, function(word) {
-                return -word.value;
-            });
+                var sorted = _.sortBy(wordCounts, function(word) {
+                    return -word.value;
+                });
 
-            $scope.gifts = _.take(sorted, 10);
+                $scope.gifts = _.take(sorted, 10);
+            } else {
+                $scope.wishesAdded = [];
+                $scope.gifts = [];
+            }
 
         });
 

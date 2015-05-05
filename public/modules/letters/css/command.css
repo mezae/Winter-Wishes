@@ -71,10 +71,6 @@
   border-color: #cd4d52;
 }
 
-.filename {
-  border-left: 0;
-}
-
 a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
 	border: none;
 	box-shadow: none;
@@ -106,6 +102,6 @@ a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
   background-color: #85c739;
 }
 
-.btn:hover, .btn:focus {
+.btn-upload:hover, .btn-upload:focus, .btn-cancel:hover, .btn-cancel:focus, .btn-save:hover, .btn-save:focus {
   background-color: white;
 }

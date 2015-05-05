@@ -42,10 +42,16 @@
 				</div>
 
 				<div class="form-group">
-					<label>Accepted Letters</label>
-					<input type="number" class="profile form-control" ng-model="partner.children" ng-disabled="partner.status >= 3" min="0" placeholder="children">
-					<input type="number" class="profile form-control" ng-model="partner.teens" ng-disabled="partner.status >= 3" min="0" placeholder="teens">
-					<input type="number" class="profile form-control" ng-model="partner.seniors" ng-disabled="partner.status >= 3" min="0" placeholder="seniors">
+					<label ng-hide='partner.status >= 3'>Accepted Letters</label>
+
+					<label for="children" ng-class="partner.status >= 3 ? 'control-label': 'sr-only'">Accepted Children</label>
+					<input type="number" name="children" class="profile form-control" ng-model="partner.children" ng-disabled="partner.status >= 3" min="0" placeholder="children">
+
+					<label for="teens" ng-class="partner.status >= 3 ? 'control-label': 'sr-only'">Accepted Teens</label>
+					<input type="number" name="teens" class="profile form-control" ng-model="partner.teens" ng-disabled="partner.status >= 3" min="0" placeholder="teens">
+
+					<label for="seniors" ng-class="partner.status >= 3 ? 'control-label': 'sr-only'">Accepted Seniors</label>
+					<input type="number" name="seniors" class="profile form-control" ng-model="partner.seniors" ng-disabled="partner.status >= 3" min="0" placeholder="seniors">
 				</div>
 				<input type="button" class="btn btn-cancel col-md-4 col-sm-3 col-xs-3 pull-left" ng-click="hideSidebar()" value="Cancel">
 				<div class="form-group">

@@ -4,7 +4,7 @@
 var ApplicationConfiguration = (function() {
     // Init module configuration options
     var applicationModuleName = 'meanww';
-    var applicationModuleVendorDependencies = ['ngResource', 'ngCookies', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ui.utils', 'btford.socket-io'];
+    var applicationModuleVendorDependencies = ['ngResource', 'ngCookies', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ui.utils', 'btford.socket-io', 'textAngular'];
 
     // Add a new vertical module
     var registerModule = function(moduleName, dependencies) {

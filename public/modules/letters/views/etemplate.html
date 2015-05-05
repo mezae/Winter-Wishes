@@ -10,7 +10,7 @@
 
 			<div class="col-md-12">
 				
-				<form name="etemplateForm" class="form-horizontal" data-ng-submit="sendEmail()" novalidate>
+				<form name="etemplateForm" class="form-horizontal" data-ng-submit="" novalidate>
 					<fieldset>
 						<div class="form-group">
 							<label class="control-label" for="reci">To</label>
@@ -28,16 +28,22 @@
 								<input name="subject" type="text" data-ng-model="etemplate.subject" id="subject" class="form-control" required></input>
 							</div>
 						</div>
+
 						<div class="form-group">
+							<div text-angular ng-model="etemplate.message" required></div>
+						</div>
+							
+						</div>
+						<!-- <div class="form-group">
 							<label class="control-label" for="message">Message</label>
 							<div class="controls">
 								<textarea name="message" data-ng-model="etemplate.message" id="message" class="form-control" rows="15" required></textarea>
 							</div>
-						</div>
+						</div> -->
 
 						<div class="form-group">
 							<button type="button" class="btn btn-default pull-left" ng-disabled="etemplateForm.$invalid" ng-click="saveTemplate()">Save Template</button>
-							<input type="submit" class="btn btn-success pull-right" ng-disabled="etemplateForm.$invalid" value="Send">
+							<button type="submit" class="btn btn-success pull-right" ng-disabled="etemplateForm.$invalid" ng-click="sendEmail()">Send</button>
 						</div>
 						
 						<div data-ng-show="success" class="text-center text-success">
