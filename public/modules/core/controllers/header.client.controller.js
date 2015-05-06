@@ -3,7 +3,14 @@
 angular.module('core').controller('HeaderController', ['$scope', '$location', '$modal', 'Authentication',
     function($scope, $location, $modal, Authentication) {
         $scope.authentication = Authentication;
-        $scope.isAdmin = $scope.authentication.user.username === 'AAA';
+
+        $scope.isAdmin = function() {
+            return $scope.authentication.user.role === 'admin';
+        };
+
+        $scope.isActive = function(route) {
+            return route === $location.path();
+        };
 
         $scope.toggleCollapsibleMenu = function() {
             $scope.isCollapsed = !$scope.isCollapsed;
@@ -49,7 +56,7 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
             }
         };
 
-        if (!$scope.isAdmin && $scope.authentication.user.status === 0) $scope.showTutorial();
+        if (!$scope.isAdmin() && $scope.authentication.user.status === 0) $scope.showTutorial();
     }
 ])
 

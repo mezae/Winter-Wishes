@@ -14,7 +14,7 @@
 		        <p class="input-group">
 		          <input type="text" class="form-control" datepicker-popup="{{calendar.dateFormat}}" ng-model="startDate" is-open="calendar.opened.start" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="Start Date" show-button-bar="false"/>
 		          <span class="input-group-btn">
-		            <button type="button" class="btn btn-default" ng-click="calendar.open($event, 'start')"><i class="glyphicon glyphicon-calendar"></i></button>
+		            <button type="button" class="btn btn-upload" ng-click="calendar.open($event, 'start')"><i class="glyphicon glyphicon-calendar"></i></button>
 		          </span>
 		        </p>
 		    </div>
@@ -23,21 +23,46 @@
 		        <p class="input-group">
 		          <input type="text" class="form-control" datepicker-popup="{{calendar.dateFormat}}" ng-model="endDate" is-open="calendar.opened.end" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="End Date" show-button-bar="false"/>
 		          <span class="input-group-btn">
-		            <button type="button" class="btn btn-default" ng-click="calendar.open($event, 'end')"><i class="glyphicon glyphicon-calendar"></i></button>
+		            <button type="button" class="btn btn-upload" ng-click="calendar.open($event, 'end')"><i class="glyphicon glyphicon-calendar"></i></button>
 		          </span>
 		        </p>
 		    </div>
 			<div class="col-md-3">
-				<button class='btn btn-success' ng-click="downloadCSV()">Find</button>
+				<button class='btn btn-upload' ng-click="downloadCSV()">Find</button>
 			</div>
 		</div>
 		<div class="col-md-12">
-				<p ng-show="total >= 0">{{total}} letters were found
+				<p ng-show="total >= 0 && !error">{{total}} letters were found
 				<a class="btn btn-lg btn-link" role="button" href="{{url}}" download="{{fileName}}" ng-show="total > 0"><i class="glyphicon glyphicon-download" tooltip="Download" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></a> </p>
 				<p ng-show="error" class="text-danger">{{error}}</p>
 
-				<button class="btn btn-default" ng-click="reset()">Reset</button>
-				<button class="btn btn-success" ng-click="allowNotifications()">Grant Access</button>
+				<h4>Edit User Roles</h4>
+
+				<table class="table">
+					<thead>
+						<th>User</th>
+						<th>Role</th>
+					</thead>
+					<tbody>
+						<tr ng-repeat="user in users">
+							<td ng-dblclick="editRole = false">{{user.username}}</td>
+							<td ng-dblclick="editRole = true" ng-hide="editRole">{{user.role}}</td>
+							<td colspan="1" ng-show="editRole">
+								<select class="form-control" ng-model="user.role" ng-change="editRole = false">
+									<option value="admin">admin</option>
+									<option value="volunteer">volunteer</option>
+									<option value="user">user</option>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h4>Reset Data</h4>
+				<button class="btn btn-cancel" ng-click="reset()">Reset</button>
+
+				<h4>Enable Notifications</h4>
+				<button class="btn btn-save" ng-click="allowNotifications()">Enable Notifications</button>
 
 		</div>
 

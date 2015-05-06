@@ -87,18 +87,19 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="rec in recipients | filter:query as results" ng-click="goToSelected($index, tform)">
-							<td colspan="1" ng-show="rec.track == current.track && !adminView && currentAgency.status < 3"><i class="glyphicon glyphicon-pencil">...</i></td>
-							<td colspan="4" ng-show="rec.track == current.track && !adminView && currentAgency.status < 3">you are currently editing this letter</td>
-							<td class="col-md-1" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">
+						<tr ng-repeat="rec in recipients | filter:query as results" ng-click="goToSelected($index, tform)" ng-mouseenter="hover = true" ng-mouseleave="hover = false">
+							<td colspan="1" ng-show="rec.track === current.track && !adminView && currentAgency.status < 3"><i class="glyphicon glyphicon-pencil">...</i></td>
+							<td colspan="4" ng-show="rec.track === current.track && !adminView && currentAgency.status < 3">you are currently editing this letter</td>
+							<td colspan="1" ng-hide="rec.track === current.track && !adminView && currentAgency.status < 3">
 								<a ng-if="$index % 10 === 8" id="{{$index + 2}}"></a>{{rec.track}}
 							</td>
-							<td class="col-md-3 cap" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.name}}</td>
-							<td class="col-md-1" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.age}}</td>
-							<td class="col-md-1 cap" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.gender}}</td>
-							<td class="col-md-5" ng-hide="rec.track == current.track && !adminView && currentAgency.status < 3">{{rec.gift}}</td>
+							<td colspan="4" ng-show="rec.track !== current.track && hover && !adminView">click to edit this letter</td>
+							<td class="col-md-3 cap" ng-hide="(rec.track === current.track || hover) && !adminView && currentAgency.status < 3">{{rec.name}}</td>
+							<td class="col-md-1" ng-hide="(rec.track === current.track || hover) && !adminView && currentAgency.status < 3">{{rec.age}}</td>
+							<td class="col-md-1 cap" ng-hide="(rec.track === current.track || hover) && !adminView && currentAgency.status < 3">{{rec.gender}}</td>
+							<td class="col-md-5" ng-hide="(rec.track === current.track || hover) && !adminView && currentAgency.status < 3">{{rec.gift}}</td>
 							<td ng-show="adminView && currentAgency.status >= 4">
-								<button type="button" class="btn btn-xs btn-link" ng-class="rec.flagged ? 'badflag' : 'goodflag'" ng-click="flagLetter(rec)" ng-disabled="currentAgency.status == 5"><i class="glyphicon glyphicon-flag"></i></button>
+								<button type="button" class="btn btn-xs btn-link" ng-class="rec.flagged ? 'badflag' : 'goodflag'" ng-click="flagLetter(rec)" ng-disabled="currentAgency.status === 5"><i class="glyphicon glyphicon-flag"></i></button>
 							</td>
 							<td class="hidden-print" ng-show="currentAgency.status >= 5">
 								<button type="button" class="btn btn-xs btn-link" ng-class="rec.received ? 'goodflag' : 'badflag'" ng-click="giftReceived(rec)" ng-disabled="adminView"><i class="glyphicon glyphicon-gift"></i></button>

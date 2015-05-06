@@ -1,55 +1,57 @@
-<div class="container" data-ng-controller="HeaderController">
+<div class="navbar navbar-static-top" data-ng-controller="HeaderController" ng-hide="isActive('/login')">
+	<div class="container">
 
-	<div class="navbar-header">
-		<button class="navbar-toggle btn btn-lg btn-link" ng-hide="!authentication.user" type="button" data-ng-click="toggleCollapsibleMenu()">
-			<span class="sr-only">Toggle navigation</span>
-			<i class="glyphicon glyphicon-menu-hamburger"></i>
-		</button>
-		<a href="/#!/" class="navbar-brand"><img class="navbar-image" src="/modules/core/img/brand/winter_wishes_header.png"></a>
-	</div>	
+		<div class="navbar-header">
+			<button class="navbar-toggle btn btn-lg btn-link" ng-hide="!authentication.user" type="button" data-ng-click="toggleCollapsibleMenu()">
+				<span class="sr-only">Toggle navigation</span>
+				<i class="glyphicon glyphicon-menu-hamburger"></i>
+			</button>
+			<a href="/#!/" class="navbar-brand"><img class="navbar-image" src="/modules/core/img/brand/winter_wishes_header.png"></a>
+		</div>	
 
-	<nav class="collapse navbar-collapse" collapse="!isCollapsed" role="navigation">
+		<nav class="collapse navbar-collapse" collapse="!isCollapsed" role="navigation">
 
-		<ul class="nav navbar-nav navbar-right">
-			<li class="dropdown" dropdown on-toggle="toggled(open)" ng-class="{open: hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-show="authentication.user">
-				<a href class="dropdown-toggle" dropdown-toggle>
-					<span data-ng-bind="authentication.user.agency"></span> <b class="caret"></b>
-				</a>
-				<ul class="dropdown-menu" role="menu">
-					<li>
-						<a href="" ng-click="showTutorial()">
-							<i class="glyphicon glyphicon-question-sign"></i>  Tutorial
-						</a>
-					</li>
-					<li data-ng-show="authentication.user.username === 'AAA'">
-						<a href="/#!/admin/email">
-							<i class="glyphicon glyphicon-envelope"></i>  E-mail Templates
-						</a>
-					</li>
-					<li data-ng-show="authentication.user.username === 'AAA'">
-						<a href="/#!/admin/stats">
-							<i class="glyphicon glyphicon-stats"></i>  Stats for Nerds
-						</a>
-					</li>
-					<li>
-						<a href="/#!/settings/profile/edit">
-							<i class="glyphicon glyphicon-user"></i>  Edit Profile
-						</a>
-					</li>
-					<li>
-						<a href="/#!/settings/password">
-							<i class="glyphicon glyphicon-lock"></i>  Change Password
-						</a>
-					</li>
-					<li class="divider"></li>
-					<li>
-						<a href="/auth/signout">
-							<i class="glyphicon glyphicon-log-out"></i>  Signout
-						</a>
-					</li>
-				</ul>
-			</li>
-		</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="dropdown" dropdown on-toggle="toggled(open)" ng-class="{open: hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-show="authentication.user">
+					<a href class="dropdown-toggle" dropdown-toggle>
+						<span data-ng-bind="authentication.user.agency"></span> <b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu" role="menu">
+						<li>
+							<a href="" ng-click="showTutorial()">
+								<i class="glyphicon glyphicon-question-sign"></i>  Tutorial
+							</a>
+						</li>
+						<li data-ng-show="isAdmin()">
+							<a href="/#!/admin/email">
+								<i class="glyphicon glyphicon-envelope"></i>  E-mail Templates
+							</a>
+						</li>
+						<li data-ng-show="isAdmin()">
+							<a href="/#!/admin/stats">
+								<i class="glyphicon glyphicon-stats"></i>  Stats for Nerds
+							</a>
+						</li>
+						<li>
+							<a href="/#!/settings/profile/edit">
+								<i class="glyphicon glyphicon-user"></i>  Edit Profile
+							</a>
+						</li>
+						<li>
+							<a href="/#!/settings/password">
+								<i class="glyphicon glyphicon-lock"></i>  Change Password
+							</a>
+						</li>
+						<li class="divider"></li>
+						<li>
+							<a href="/auth/signout">
+								<i class="glyphicon glyphicon-log-out"></i>  Signout
+							</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
 
-	</nav>
+		</nav>
+	</div>
 </div>

@@ -90,7 +90,14 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
 angular.module('core').controller('HeaderController', ['$scope', '$location', '$modal', 'Authentication',
     function($scope, $location, $modal, Authentication) {
         $scope.authentication = Authentication;
-        $scope.isAdmin = $scope.authentication.user.username === 'AAA';
+
+        $scope.isAdmin = function() {
+            return $scope.authentication.user.role === 'admin';
+        };
+
+        $scope.isActive = function(route) {
+            return route === $location.path();
+        };
 
         $scope.toggleCollapsibleMenu = function() {
             $scope.isCollapsed = !$scope.isCollapsed;
@@ -136,7 +143,7 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
             }
         };
 
-        if (!$scope.isAdmin && $scope.authentication.user.status === 0) $scope.showTutorial();
+        if (!$scope.isAdmin() && $scope.authentication.user.status === 0) $scope.showTutorial();
     }
 ])
 
@@ -212,18 +219,6 @@ angular.module('core').controller('HomeController', ['$scope', '$location', 'Aut
         // If user is signed in then redirect back home
         if ($scope.user) redirect($scope.user);
     }
-]);
-'use strict';
-
-// Users service used for communicating with the users REST endpoint
-angular.module('core').factory('Users', ['$resource',
-	function($resource) {
-		return $resource('users', {}, {
-			update: {
-				method: 'PUT'
-			}
-		});
-	}
 ]);
 
 'use strict';
@@ -546,10 +541,12 @@ angular.module('letters')
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('myController', ['$scope', '$window', '$modal', '$location', '$filter', '$http', 'Authentication', 'Users', 'Articles',
-    function($scope, $window, $modal, $location, $filter, $http, Authentication, Users, Articles) {
+angular.module('letters').controller('myController', ['$scope', '$window', '$modal', '$location', '$filter', '$http', 'Authentication', 'Users', 'Agencies', 'Articles',
+    function($scope, $window, $modal, $location, $filter, $http, Authentication, Users, Agencies, Articles) {
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/').replace();
+
+        $scope.users = Agencies.query();
 
         $scope.startDate = null;
         $scope.endDate = null;
@@ -1754,44 +1751,6 @@ angular.module('letters').directive('donutChart', function() {
         }
     };
 });
-'use strict';
-
-// Users service used for communicating with the users REST endpoint
-angular.module('letters').factory('Users', ['$resource',
-	function($resource) {
-		return $resource('users', {}, {
-			update: {
-				method: 'PUT'
-			}
-		});
-	}
-]);
-
-// angular.module('2meanApp')
-//     .factory('User', function($resource) {
-//         return $resource('/api/users/:id/:controller', {
-//             id: '@_id'
-//         }, {
-//             changePassword: {
-//                 method: 'PUT',
-//                 params: {
-//                     controller: 'password'
-//                 }
-//             },
-//             updateProfile: {
-//                 method: 'PUT',
-//                 params: {
-//                     controller: 'profile'
-//                 }
-//             },
-//             get: {
-//                 method: 'GET',
-//                 params: {
-//                     id: 'me'
-//                 }
-//             }
-//         });
-//     });
 'use strict';
 
 // Config HTTP Error Handling

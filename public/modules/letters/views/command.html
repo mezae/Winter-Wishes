@@ -105,7 +105,7 @@
 
 	<div class="row">
 
-		<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results" ng-if="partner.username != 'AAA'">
+		<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results" ng-if="partner.role === 'user'">
 		  <div class="agency-box" ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': partner.status == 5, 'btn-review': partner.status == 4, 'btn-complete': partner.status == 3, 'btn-started': partner.status == 1, 'btn-empty': partner.status == 0}">
 			  <div class="text-center"><strong>{{partner.username}}</strong></div>
 			  <p class="text-center" ng-show="partner.status < 5 && !turn">{{partner.children + partner.teens + partner.seniors}} Letters</p>

@@ -1,10 +1,12 @@
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('myController', ['$scope', '$window', '$modal', '$location', '$filter', '$http', 'Authentication', 'Users', 'Articles',
-    function($scope, $window, $modal, $location, $filter, $http, Authentication, Users, Articles) {
+angular.module('letters').controller('myController', ['$scope', '$window', '$modal', '$location', '$filter', '$http', 'Authentication', 'Users', 'Agencies', 'Articles',
+    function($scope, $window, $modal, $location, $filter, $http, Authentication, Users, Agencies, Articles) {
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/').replace();
+
+        $scope.users = Agencies.query();
 
         $scope.startDate = null;
         $scope.endDate = null;
