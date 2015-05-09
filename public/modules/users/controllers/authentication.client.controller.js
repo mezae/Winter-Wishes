@@ -5,7 +5,7 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
         $scope.user = Authentication.user;
 
         function redirect(user) {
-            if (user.username === 'AAA') {
+            if (user.role === 'admin') {
                 $location.path('/admin');
             } else {
                 if (!user.zip) {

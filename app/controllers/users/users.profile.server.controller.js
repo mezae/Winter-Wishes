@@ -156,7 +156,7 @@ exports.me = function(req, res) {
     res.json(req.user || null);
 };
 
-exports.reset = function(req, res) {
+exports.resetData = function(req, res) {
     var user = req.user;
     User.remove({
         'username': {
