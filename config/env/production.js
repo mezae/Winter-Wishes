@@ -24,7 +24,8 @@ module.exports = {
                 'public/lib/lodash/lodash.min.js',
                 'public/lib/angular-socket-io/socket.min.js',
                 'public/lib/textAngular/dist/textAngular.min.js',
-                'public/lib/textAngular/dist/textAngular-rangy.min.js'
+                'public/lib/textAngular/dist/textAngular-rangy.min.js',
+                'public/lib/ng-file-upload/ng-file-upload.min.js'
             ]
         },
         css: 'public/dist/application.min.css',

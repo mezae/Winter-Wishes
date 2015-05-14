@@ -105,3 +105,16 @@ a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
 .btn-upload:hover, .btn-upload:focus, .btn-cancel:hover, .btn-cancel:focus, .btn-save:hover, .btn-save:focus {
   background-color: white;
 }
+
+.drop-box {
+    background: #F8F8F8;
+    border: 2px dashed #4d92cd;
+    width: 100%;
+    height: 65px;
+    text-align: center;
+    padding: 5px 0;
+
+}
+.dragover {
+    border: 2px dashed #7b39c7;
+}

@@ -16,18 +16,24 @@
 	<div class="row">
 		<div class="col-md-3 pull-right col-sm-12 col-xs-12 nga-default nga-stagger nga-slide-right hidden-print" ng-show="needToUpdate">
 			<form role="form" ng-show="!partner">
-				<div class="form-group">
-					<label class="sr-only" for="the_file">File input</label>
-					<div class="input-group">
-						<span class="input-group-btn">
-							<span class="btn btn-upload btn-file">
-								Browse <input type="file" id="the_file" accept=".csv" onchange="angular.element(this).scope().fileInfo(this)">
+				<div ngf-select ngf-drop ng-model="file" class="drop-box" 
+			        ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
+			        ngf-change="handleFileSelect($file)"
+			        accept=".csv">drop csv file here or <br/>click to upload</div>
+			    <div ngf-no-file-drop>
+			    	<div class="form-group">
+						<label class="sr-only" for="the_file">File input</label>
+						<div class="input-group">
+							<span class="input-group-btn">
+								<span class="btn btn-upload btn-file">
+									Browse <input type="file" id="the_file" accept=".csv" onchange="angular.element(this).scope().fileInfo(this)">
+								</span>
 							</span>
-						</span>
-						<input type="text" class="form-control filename col-md-4" ng-model="file.name" id="filename" readonly>
-						<span class="input-group-btn">
-						<input type="button" class="btn btn-upload" ng-click="handleFileSelect()" value="Upload"/>
-						</span>
+							<input type="text" class="form-control filename col-md-4" ng-model="file.name" id="filename" readonly>
+							<span class="input-group-btn">
+							<input type="button" class="btn btn-upload" ng-click="handleFileSelect()" value="Upload"/>
+							</span>
+						</div>
 					</div>
 				</div>
 			</form>

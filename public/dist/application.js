@@ -4,7 +4,7 @@
 var ApplicationConfiguration = (function() {
     // Init module configuration options
     var applicationModuleName = 'meanww';
-    var applicationModuleVendorDependencies = ['ngResource', 'ngCookies', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ui.utils', 'btford.socket-io', 'textAngular'];
+    var applicationModuleVendorDependencies = ['ngResource', 'ngCookies', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ui.utils', 'btford.socket-io', 'textAngular', 'ngFileUpload'];
 
     // Add a new vertical module
     var registerModule = function(moduleName, dependencies) {
@@ -324,63 +324,74 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
 
         //Allow user to upload file to add partners in bulk
         //Makes sure CSV file includes required fields, otherwise lets user which fields are missing
-        $scope.handleFileSelect = function() {
-            var file = $scope.file;
-            var reader = new FileReader();
-            reader.onload = function(file) {
-                var content = file.target.result;
-                var rows = content.split(/[\r\n|\n]+/);
-                var headers = rows.shift();
-                var required_fields = ['Agency Code', 'Agency Name', 'Contact Name', 'Contact E-mail', 'Accepted Children', 'Accepted Teens', 'Accepted Seniors'];
-                var missing_fields = [];
-
-                _.forEach(required_fields, function(field) {
-                    if (!_.includes(headers, field)) {
-                        missing_fields.push(field);
-                    }
-                });
-
-                if (missing_fields.length) {
+        $scope.handleFileSelect = function(file) {
+            console.log(file);
+            if ($scope.file[0] !== null) {
+                if ($scope.file[0].type !== 'text/csv') {
                     $scope.alert = {
                         active: true,
                         type: 'danger',
-                        msg: 'Your csv file could not be uploaded. It is missing the following columns: ' + missing_fields.join(', ') + '.'
+                        msg: 'Must be a csv file!'
                     };
                 } else {
-                    headers = headers.split(',');
-                    var code_col = headers.indexOf('Agency Code');
-                    var agency_col = headers.indexOf('Agency Name');
-                    var contact_col = headers.indexOf('Contact Name');
-                    var email_col = headers.indexOf('Contact E-mail');
-                    var child_col = headers.indexOf('Accepted Children');
-                    var teen_col = headers.indexOf('Accepted Teens');
-                    var seniors_col = headers.indexOf('Accepted Seniors');
+                    var file = $scope.file[0];
+                    var reader = new FileReader();
+                    reader.onload = function(file) {
+                        var content = file.target.result;
+                        var rows = content.split(/[\r\n|\n]+/);
+                        var headers = rows.shift();
+                        var required_fields = ['Agency Code', 'Agency Name', 'Contact Name', 'Contact E-mail', 'Accepted Children', 'Accepted Teens', 'Accepted Seniors'];
+                        var missing_fields = [];
 
-                    _.forEach(rows, function(row) {
-                        var record = row.split(',');
-                        if (!_.includes($scope.partners, record[code_col])) {
-                            var newPartner = {
-                                username: record[code_col],
-                                agency: record[agency_col],
-                                contact: record[contact_col],
-                                email: record[email_col],
-                                children: parseInt(record[child_col], 10),
-                                teens: parseInt(record[teen_col], 10),
-                                seniors: parseInt(record[seniors_col], 10)
+                        _.forEach(required_fields, function(field) {
+                            if (!_.includes(headers, field)) {
+                                missing_fields.push(field);
+                            }
+                        });
+
+                        if (missing_fields.length) {
+                            $scope.alert = {
+                                active: true,
+                                type: 'danger',
+                                msg: 'Your csv file could not be uploaded. It is missing the following columns: ' + missing_fields.join(', ') + '.'
                             };
-                            signup(newPartner);
+                        } else {
+                            headers = headers.split(',');
+                            var code_col = headers.indexOf('Agency Code');
+                            var agency_col = headers.indexOf('Agency Name');
+                            var contact_col = headers.indexOf('Contact Name');
+                            var email_col = headers.indexOf('Contact E-mail');
+                            var child_col = headers.indexOf('Accepted Children');
+                            var teen_col = headers.indexOf('Accepted Teens');
+                            var seniors_col = headers.indexOf('Accepted Seniors');
+
+                            _.forEach(rows, function(row) {
+                                var record = row.split(',');
+                                if (!_.includes($scope.partners, record[code_col])) {
+                                    var newPartner = {
+                                        username: record[code_col],
+                                        agency: record[agency_col],
+                                        contact: record[contact_col],
+                                        email: record[email_col],
+                                        children: parseInt(record[child_col], 10),
+                                        teens: parseInt(record[teen_col], 10),
+                                        seniors: parseInt(record[seniors_col], 10)
+                                    };
+                                    signup(newPartner);
+                                }
+                            });
+                            $scope.alert = {
+                                active: true,
+                                type: 'success',
+                                msg: 'Your csv file was uploaded successfully.'
+                            };
                         }
-                    });
-                    $scope.alert = {
-                        active: true,
-                        type: 'success',
-                        msg: 'Your csv file was uploaded successfully.'
                     };
+                    reader.readAsText(file);
+                    $scope.needToUpdate = false;
                 }
-            };
-            reader.readAsText(file);
-            $scope.needToUpdate = false;
-            $scope.file = null;
+                $scope.file[0] = undefined;
+            }
         };
 
         //Allows user to add/update a partner
