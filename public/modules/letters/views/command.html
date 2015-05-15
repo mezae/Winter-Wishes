@@ -15,22 +15,6 @@
 
 	<div class="row">
 		<div class="col-md-3 pull-right col-sm-12 col-xs-12 nga-default nga-stagger nga-slide-right hidden-print" ng-show="needToUpdate">
-			<form role="form" ng-show="!partner">
-				<div class="form-group">
-					<label class="sr-only" for="the_file">File input</label>
-					<div class="input-group">
-						<span class="input-group-btn">
-							<span class="btn btn-upload btn-file">
-								Browse <input type="file" id="the_file" accept=".csv" onchange="angular.element(this).scope().fileInfo(this)">
-							</span>
-						</span>
-						<input type="text" class="form-control filename col-md-4" ng-model="file.name" id="filename" readonly>
-						<span class="input-group-btn">
-						<input type="button" class="btn btn-upload" ng-click="handleFileSelect()" value="Upload"/>
-						</span>
-					</div>
-				</div>
-			</form>
 
 			<form role="form">
 				<div class="form-group">
@@ -57,7 +41,9 @@
 				<div class="form-group">
 					<input type="button" class="btn btn-save col-md-4 col-sm-3 col-xs-3 pull-right" ng-click="saveAgency()" value="Save">
 				</div>
-				<br/><br/>
+
+				<div ngf-select ngf-drop ng-model="file" ng-model-rejected="reject" class="drop-box" ng-show="!partner" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-change="handleFileSelect()" ngf-accept="'text/csv'" accept=".csv">	drop csv file here or <br/>click to browse
+			    </div>
 			</form>
 		</div>
 
@@ -75,21 +61,6 @@
 		</div>
 
 		<div ng-class="needToUpdate ? 'col-md-6 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
-<!-- 			<div class="btn-group" dropdown>
-		      <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-filter"></i> Filter by Status</button>
-		      <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle>
-		        <span class="caret"></span>
-		        <span class="sr-only">Split button!</span>
-		      </button>
-		      <ul class="dropdown-menu" role="menu">
-		        <li><a href="#">Action</a></li>
-		        <li><a href="#">Another action</a></li>
-		        <li><a href="#">Something else here</a></li>
-		        <li class="divider"></li>
-		        <li><a href="#">Separated link</a></li>
-		      </ul>
-		    </div> -->
-
 			<div class="form-group">
 				<select class="form-control" ng-model="query.status" ng-change="updateURL()">
 					<option value="">Filter by Status</option>
