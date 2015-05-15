@@ -110,11 +110,17 @@ a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
     background: #F8F8F8;
     border: 2px dashed #4d92cd;
     width: 100%;
-    height: 65px;
+    height: 90px;
     text-align: center;
-    padding: 5px 0;
-
+    padding: 20px 0;
+    margin-top: 64px;
+    margin-bottom: 20px;
 }
+
 .dragover {
-    border: 2px dashed #7b39c7;
+    border: 2px dashed #85c739;
+}
+
+.dragover-err {
+  border: 2px dashed #cd4d52;
 }

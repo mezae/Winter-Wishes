@@ -33,30 +33,16 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
         //Allows user to add create new accounts, consider moving to backend
         function signup(credentials) {
             $http.post('/auth/signup', credentials).success(function(response) {
-                console.log('new partner created');
+                console.log('new partner added');
             }).error(function(response) {
                 $scope.error = response.message;
             });
         }
 
-        $scope.fileInfo = function(element) {
-            $scope.$apply(function() {
-                $scope.file = element.files[0];
-                if ($scope.file) {
-                    if ($scope.file.name.split('.')[1].toUpperCase() !== 'CSV') {
-                        alert('Must be a csv file!');
-                        $scope.file = null;
-                        return;
-                    }
-                }
-            });
-        };
-
         //Allow user to upload file to add partners in bulk
         //Makes sure CSV file includes required fields, otherwise lets user which fields are missing
-        $scope.handleFileSelect = function(file) {
-            console.log(file);
-            if ($scope.file[0] !== null) {
+        $scope.handleFileSelect = function() {
+            if ($scope.file.length) {
                 if ($scope.file[0].type !== 'text/csv') {
                     $scope.alert = {
                         active: true,
@@ -95,9 +81,12 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
                             var teen_col = headers.indexOf('Accepted Teens');
                             var seniors_col = headers.indexOf('Accepted Seniors');
 
+                            var allUsers = _.pluck($scope.partners, 'username');
+
                             _.forEach(rows, function(row) {
                                 var record = row.split(',');
-                                if (!_.includes($scope.partners, record[code_col])) {
+
+                                if (!_.includes(allUsers, record[code_col])) {
                                     var newPartner = {
                                         username: record[code_col],
                                         agency: record[agency_col],
@@ -108,6 +97,7 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
                                         seniors: parseInt(record[seniors_col], 10)
                                     };
                                     signup(newPartner);
+                                    allUsers.push(newPartner.username);
                                 }
                             });
                             $scope.alert = {
@@ -148,11 +138,6 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
                     }
                 } else {
                     Agencies.update($scope.partner);
-                    // $scope.partner.$update(function(partner) {
-                    //     console.log(partner.username + ' was updated');
-                    // }, function(errorResponse) {
-                    //     console.log(errorResponse.data.message);
-                    // });
                 }
                 $scope.hideSidebar();
             } else {
@@ -171,13 +156,6 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
             if (confirmation === 'DELETE') {
                 $http.delete('/agency/' + selected.username);
             }
-            // if (confirmation === 'DELETE') {
-            //     selected.$remove(function() {
-            //         console.log('Removed agency');
-            //     }, function(errorResponse) {
-            //         console.log('Remove Failed');
-            //     });
-            // }
         };
 
         //Show current state of partner that user wants to edit
