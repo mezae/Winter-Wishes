@@ -124,3 +124,32 @@ a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
 .dragover-err {
   border: 2px dashed #cd4d52;
 }
+
+.page-wrap {
+  max-width: 100%; 
+  margin: 0 auto; 
+  position: relative; 
+}
+
+.addbar {
+  position: fixed;
+  width: 93%;
+  right: 4%;
+  top: 22vh;
+  overflow: auto;
+}
+
+.laddbar {
+  top: 108px;
+}
+
+@media screen and (max-width: 992px) {
+  .page-wrap {
+    position: static;
+  }
+
+  .addbar {
+    position: static;
+    width: 100%;
+  }
+}

@@ -9,7 +9,7 @@
 		</div>
 	
 		<div class="form-group">
-		    <div class="col-md-3">
+		    <div class="col-md-2">
 		        <label for="formDOB" class="sr-only">Start Date</label>
 		        <p class="input-group">
 		          <input type="text" class="form-control" datepicker-popup="{{calendar.dateFormat}}" ng-model="startDate" is-open="calendar.opened.start" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="Start Date" show-button-bar="false"/>
@@ -18,7 +18,7 @@
 		          </span>
 		        </p>
 		    </div>
-		    <div class="col-md-3">
+		    <div class="col-md-2">
 		        <label for="formWinDate" class="sr-only">End Date</label>
 		        <p class="input-group">
 		          <input type="text" class="form-control" datepicker-popup="{{calendar.dateFormat}}" ng-model="endDate" is-open="calendar.opened.end" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="End Date" show-button-bar="false"/>
@@ -31,32 +31,51 @@
 				<button class='btn btn-upload' ng-click="downloadCSV()">Find</button>
 			</div>
 		</div>
-		<div class="col-md-12">
+	</div>
+	<div class="row">
+		<div class="col-md-6">
 				<p ng-show="total >= 0 && !error">{{total}} letters were found
 				<a class="btn btn-lg btn-link" role="button" href="{{url}}" download="{{fileName}}" ng-show="total > 0"><i class="glyphicon glyphicon-download" tooltip="Download" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></a> </p>
 				<p ng-show="error" class="text-danger">{{error}}</p>
 
 				<h4>Edit User Roles</h4>
 
-				<table class="table">
-					<thead>
-						<th>User</th>
-						<th>Role</th>
-					</thead>
-					<tbody>
-						<tr ng-repeat="user in users">
-							<td ng-dblclick="editRole = false">{{user.username}}</td>
-							<td ng-dblclick="editRole = true" ng-hide="editRole">{{user.role}}</td>
-							<td colspan="1" ng-show="editRole">
-								<select class="form-control" ng-model="user.role" ng-change="editRole = false">
-									<option value="admin">admin</option>
-									<option value="volunteer">volunteer</option>
-									<option value="user">user</option>
-								</select>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+				<div class="table-responsive">
+					<table class="table table-stripes">
+						<thead>
+							<th>User</th>
+							<th>Name</th>
+							<th>Role</th>
+						</thead>
+						<tbody>
+							<tr ng-repeat="user in users" ng-if="user.role !== 'user'">
+								<td ng-dblclick="editRole = false">{{user.username}}</td>
+								<td ng-dblclick="editRole = false">{{user.contact}}</td>
+								<td ng-dblclick="editRole = true" ng-hide="editRole">{{user.role}}</td>
+								<td colspan="1" ng-show="editRole">
+									<select class="form-control" ng-model="user.role" ng-change="editRole = false">
+										<option value="admin">admin</option>
+										<option value="volunteer">volunteer</option>
+									</select>
+								</td>
+							</tr>
+							<tr ng-show="addNewAdmin">
+								<td><input type="text" placeholder="username" ng-model="credentials.username"></td>
+								<td><input type="text" placeholder="full name" ng-model="credentials.username"></td>
+								<td><input type="text" placeholder="role" ng-model="credentials.username"></td>
+							</tr>
+							<tr>
+								<td ng-hide="addNewAdmin" colspan="3">
+									<button class="btn btn-upload" ng-click="addNewAdmin = true">Add New User</button>
+								</td>
+								<td ng-show="addNewAdmin" colspan="3">
+									<button class="btn btn-cancel pull-left" ng-click="addNewAdmin = false">Cancel</button> 
+									<button class="btn btn-save pull-right" ng-click="addNewAdmin = false">Save</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 
 				<h4>Reset Data</h4>
 				<button class="btn btn-cancel" ng-click="reset()">Reset</button>
@@ -65,8 +84,6 @@
 				<button class="btn btn-save" ng-click="allowNotifications()">Enable Notifications</button>
 
 		</div>
-
-
 	</div>
 
 </section>

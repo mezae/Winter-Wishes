@@ -3,3 +3,8 @@
 .breadcrumb {
   margin-bottom: 0.6em;
 }
+
+.btn-space {
+	margin-top: 3px;
+	margin-bottom: 10px;
+}

@@ -68,12 +68,15 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
         };
 
         $scope.reset = function() {
-            $http.get('/users/reset').success(function(response) {
-                // If successful we assign the response to the global user model
-                Authentication.user = response;
-            }).error(function(response) {
-                $scope.error = response.message;
-            });
+            var confirmation = $window.prompt('Please type FOREVER to wipe all data.');
+            if (confirmation === 'FOREVER') {
+                $http.get('/users/reset').success(function(response) {
+                    // If successful we assign the response to the global user model
+                    Authentication.user = response;
+                }).error(function(response) {
+                    $scope.error = response.message;
+                });
+            }
         };
 
         $scope.allowNotifications = function() {

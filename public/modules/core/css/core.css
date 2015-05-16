@@ -165,20 +165,9 @@ th {
 }
 
 /*sidebar*/
-.sideb {
-  padding-left: 0;
-  padding-top: 4px;
-}
-
 textarea {
   resize: vertical;
   overflow: auto;
-}
-
-@media screen and (max-width: 992px) {
-  .sideb {
-    padding-left: 15px;
-  }
 }
 
 @media screen and (max-width: 320px) {
