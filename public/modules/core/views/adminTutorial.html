@@ -20,7 +20,7 @@
 				<div class="input-group col-xs-4 col-sm-4 col-md-4">
 					<input type="text" class="form-control input-sm" datepicker-popup="MM/dd/yy" ng-model="dueDate" ng-change="saveDueDate()" is-open="opened" min-date="minDate" datepicker-options="dateOptions" show-button-bar="false"/>
 					<span class="input-group-btn">
-						<button type="button" class="btn btn-primary btn-sm" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+						<button type="button" class="btn btn-upload btn-sm" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
 					</span>
 				</div>
 			</div>
@@ -45,12 +45,12 @@
 			</div>
 		</div>
 
-		<p>Download a salesforce report with these fields, and save it as a <strong>csv</strong> file. </p>
+		<p>Download a salesforce report with these fields, and save it as a <strong>csv</strong> file.</p>
 	
 	</div>
 
 	<div ng-show="currentPage == 2">
-		Click <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-plus"></i></button> to begin. Then, click <input type="button" class="btn btn-primary btn-xs" value="Browse"/> and find the csv file saved on your computer. Finally, click <input type="button" class="btn btn-primary btn-xs" value="Upload"/> and the accepted agencies should appear onscreen. Each agency will be represented like this:<br/><br/>
+		Click <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-plus"></i></button> to begin. Then, drag and drop the csv file into the dropzone or click the dropzone to use the file browser. The accepted agencies should begin to appear onscreen. Each agency will be represented like this:<br/><br/>
 		<div class="row">
 
 			<div class="col-md-4 col-md-offset-4 col-sm-4 col-sm-offset-4 col-xs-6 col-xs-offset-3">
@@ -74,7 +74,7 @@
 	</div>
 
 	<div ng-show="currentPage == 3">
-		<p>Click <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-pencil"></i></button> in the box of the tracking form you wish to edit. A form will appear populated with the current information for the agency you selected. Once you have made the necessary modifications, click <input type="button" class="btn btn-success btn-xs" value="Save"> to safeguard your changes.</p>
+		<p>Click <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-pencil"></i></button> in the box of the tracking form you wish to edit. A form will appear populated with the current information for the agency you selected. Once you have made the necessary modifications, click <input type="button" class="btn btn-save btn-xs" value="Save"> to safeguard your changes.</p>
 
 		<p>* If you forgot to add an agency, just click <button type="button" class="btn btn-xs btn-link"><i class="glyphicon glyphicon-plus"></i></button> for a blank form.</p>
 	</div>
@@ -84,7 +84,7 @@
 	</div>
 
 	<div ng-show="currentPage == 5">
-		<p>Click <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-eye-open"></i></button> in the box of the tracking form you wish to see. You can access an individual tracking form anytime to check how much progress a particular agency contact has made. However, this feature is more useful once an agency has submitted their form and you are ready to review it. The color of the button changes based on what stage of the process the tracking form is in.<p/>
+		<p>Click <button type="button" class="btn btn-xs btn-link tutor-link"><i class="glyphicon glyphicon-eye-open"></i></button> in the box of the tracking form you wish to see. You can access an individual tracking form anytime to check how much progress a particular agency contact has made. However, this feature is more useful once an agency has submitted their form and you are ready to review it. You will know when tracking form is ready for review because the color of the box will change based on what stage of the process the tracking form is in.<p/>
 
 		<p><div class="tutor-box empty"></div> the community partner has not yet started working on it. </p>
 		<p><div class="tutor-box started"></div> the community partner has begun entering data. </p>
@@ -94,9 +94,9 @@
 	</div>
 
 	<div ng-show="currentPage == 6">
-		<p>Once all the tracking forms have been created, you will need to e-mail all accepted agencies to let them know that they have been accepted into this year's Winter Wishes program and give them further instructions. For help with that, head over to the <i class="glyphicon glyphicon-envelope"></i> E-mail Templates in the main menu.</p>
+		<p>Once all the tracking forms have been created, you will need to e-mail all accepted agencies to let them know that they have been accepted into this year's Winter Wishes program and give them further instructions. For help with that, head over to the E-mail Templates via the main menu.</p>
 
-		<p>You can also access this <i class="glyphicon glyphicon-question-sign"></i> Tutorial through the main menu if you need to see it again.</p>
+		<p>You can also access this tutorial on the main menu if you need to see it again.</p>
 	</div>
 
 </div>

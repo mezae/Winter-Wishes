@@ -20,9 +20,6 @@ angular.module('letters')
                 return tf.status;
             });
 
-            //Remove admin
-            groups[0]--;
-
             $scope.status = [];
             _.forEach(groups, function(c, g) {
                 $scope.status.push({

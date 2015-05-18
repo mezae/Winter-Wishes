@@ -35,7 +35,7 @@
 		</div>
 
 	<div class="row">
-		<aside class="addbar laddbar">
+		<aside class="addbar" ng-class="adminView ? 'saddbar' : 'laddbar'">
 		<div class="col-md-3 pull-right col-sm-12 col-xs-12 hidden-print" ng-hide="(adminView && currentAgency.status != 4) || (!adminView && currentAgency.status >= 3)">
 			<alert ng-show="!adminView && alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false"><i class="glyphicon glyphicon-warning-sign"></i> {{alert.msg}}</alert>
 

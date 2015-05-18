@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('core').controller('HeaderController', ['$scope', '$location', '$modal', 'Authentication',
-    function($scope, $location, $modal, Authentication) {
+angular.module('core').controller('HeaderController', ['$scope', '$state', '$location', '$modal', 'Authentication',
+    function($scope, $state, $location, $modal, Authentication) {
         $scope.authentication = Authentication;
 
         $scope.isAdmin = function() {
@@ -18,45 +18,46 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
 
         // Collapsing the menu after navigation
         $scope.$on('$stateChangeSuccess', function() {
+            if (!$scope.isAdmin() && $scope.authentication.user.status === 0) $scope.showTutorial();
             $scope.isCollapsed = false;
         });
 
+        $scope.needTutorial = function() {
+            var needTutorial = ['command', 'tracking', 'agTracking', 'email', 'etemplate'];
+            var page = $state.current.name;
+            return needTutorial.indexOf(page) >= 0;
+        };
+
         $scope.showTutorial = function() {
-            if ($location.path() === '/admin') {
+            var page = $state.current.name;
+            if (page === 'command') {
                 $modal.open({
                     templateUrl: 'modules/core/views/adminTutorial.html',
                     controller: 'AdminModalController',
                     backdrop: 'static'
                 });
-            } else if ($location.path() === '/admin/email') {
+            } else if (page === 'email') {
                 $modal.open({
                     templateUrl: 'modules/core/views/emailTutorial.html',
                     controller: 'ModalInstanceCtrl',
                     backdrop: 'static'
                 });
-            } else if ($location.path().indexOf('/admin/email/') >= 0) {
+            } else if (page === 'etemplate') {
                 $modal.open({
                     templateUrl: 'modules/core/views/etemplateTutorial.html',
                     controller: 'ModalInstanceCtrl',
                     backdrop: 'static'
                 });
-            } else if ($location.path().indexOf('agency') >= 0) {
-                var template = $scope.isAdmin ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
+            } else if (page === 'tracking' || page === 'agTracking') {
+                var template = $scope.isAdmin() ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
                 $modal.open({
                     templateUrl: template,
                     controller: 'ModalInstanceCtrl',
                     backdrop: 'static'
                 });
-            } else {
-                $modal.open({
-                    size: 'sm',
-                    templateUrl: 'modules/core/views/noTutorial.html',
-                    controller: 'ModalInstanceCtrl'
-                });
             }
         };
 
-        if (!$scope.isAdmin() && $scope.authentication.user.status === 0) $scope.showTutorial();
     }
 ])
 
@@ -101,14 +102,15 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
     }
 ])
 
-.controller('ModalInstanceCtrl', ['$scope', '$filter', '$modalInstance', 'Agencies',
-    function($scope, $filter, $modalInstance, Agencies) {
-        Agencies.query(function(users) {
-            var admin = _.find(users, {
-                'username': 'AAA'
+.controller('ModalInstanceCtrl', ['$state', '$scope', '$filter', '$modalInstance', 'Agencies',
+    function($state, $scope, $filter, $modalInstance, Agencies) {
+        if ($state.current.name === 'agTracking') {
+            Agencies.query({
+                role: 'admin'
+            }, function(admin) {
+                $scope.dueDate = $filter('date')(admin[0].due, 'fullDate');
             });
-            $scope.dueDate = $filter('date')(admin.due, 'fullDate');
-        });
+        }
 
         $scope.ok = function() {
             $modalInstance.close();

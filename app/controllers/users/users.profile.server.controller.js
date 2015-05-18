@@ -12,7 +12,12 @@ var _ = require('lodash'),
 
 //Allows admin access to all community partner accounts
 exports.list = function(req, res) {
-    User.find({}, '-salt -password -acceptance -created -provider -roles').exec(function(err, users) {
+    var query =
+        req.query.role ? req.query : {
+            role: 'user'
+        };
+    User.find(query,
+        '-salt -password -acceptance -created -provider -role').exec(function(err, users) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -159,8 +164,8 @@ exports.me = function(req, res) {
 exports.resetData = function(req, res) {
     var user = req.user;
     User.remove({
-        'username': {
-            $ne: 'AAA'
+        'role': {
+            $ne: 'admin'
         }
     }, function(err) {
         if (err) {

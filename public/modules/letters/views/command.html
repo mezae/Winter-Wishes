@@ -63,6 +63,7 @@
 		</div>
 
 		<div ng-class="needToUpdate ? 'col-md-6 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
+			
 			<div class="form-group">
 				<select class="form-control" ng-model="query.status" ng-change="updateURL()">
 					<option value="">Filter by Status</option>
@@ -78,7 +79,7 @@
 
 	<div class="row inline">
 
-		<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results" ng-if="partner.role === 'user'">
+		<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results">
 		  <div class="agency-box" ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': partner.status == 5, 'btn-review': partner.status == 4, 'btn-complete': partner.status == 3, 'btn-started': partner.status == 1, 'btn-empty': partner.status == 0}">
 			  <div class="text-center"><strong>{{partner.username}}</strong></div>
 			  <p class="text-center" ng-show="partner.status < 5 && !turn">{{partner.children + partner.teens + partner.seniors}} Letters</p>

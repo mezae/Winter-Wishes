@@ -21,19 +21,21 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
             } else {
                 $scope.currentAgency = $scope.user;
                 init();
-                Agencies.query(function(users) {
-                    var admin = _.find(users, {
-                        'username': 'AAA'
-                    });
-                    var due = $filter('date')(admin.due, 'MM/dd/yy');
-
-                    if ($scope.currentAgency.status < 3) showCountdown(admin.due);
+                Agencies.query({
+                    role: 'admin'
+                }, function(admin) {
+                    if ($scope.currentAgency.status < 3) showCountdown(admin[0].due);
                 });
             }
         };
 
         function showCountdown(deadline) {
             var countdown = dateDiff(new Date(), new Date(deadline));
+            $scope.alert = {
+                active: false,
+                type: null,
+                msg: null
+            }
             if (countdown === 14) {
                 $scope.alert = {
                     type: 'warning',
@@ -65,7 +67,7 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
                     msg: countdown + ' days left'
                 };
             }
-            $scope.alert.active = $scope.alert.msg.length;
+            $scope.alert.active = $scope.alert.msg !== null;
         }
 
         function init() {

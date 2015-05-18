@@ -23,10 +23,6 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
             .state('login', {
                 url: '/login',
                 templateUrl: 'modules/users/views/authentication/signin.client.view.html'
-            })
-            .state('admin', {
-                url: '/admin',
-                templateUrl: 'modules/letters/views/command.html'
             });
     }
 ]);

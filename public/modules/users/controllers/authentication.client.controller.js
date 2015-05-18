@@ -1,15 +1,15 @@
 'use strict';
 
-angular.module('users').controller('AuthenticationController', ['$scope', '$http', '$location', 'Authentication',
-    function($scope, $http, $location, Authentication) {
+angular.module('users').controller('AuthenticationController', ['$scope', '$http', '$state', '$location', 'Authentication',
+    function($scope, $http, $state, $location, Authentication) {
         $scope.user = Authentication.user;
 
         function redirect(user) {
             if (user.role === 'admin') {
                 $location.path('/admin');
             } else {
-                if (!user.zip) {
-                    $location.path('/first');
+                if (user.status === 0) {
+                    $state.go('first');
                 } else {
                     $location.path('/agency/' + user.username);
                 }
@@ -23,8 +23,9 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
             $http.post('/auth/signin', $scope.credentials).success(function(response) {
                 // If successful we assign the response to the global user model
                 Authentication.user = response;
+                $scope.user = Authentication.user;
                 // And redirect to appropriate page
-                redirect(response);
+                redirect($scope.user);
             }).error(function(response) {
                 $scope.error = response.message;
             });

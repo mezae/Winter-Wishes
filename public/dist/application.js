@@ -78,17 +78,13 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
             .state('login', {
                 url: '/login',
                 templateUrl: 'modules/users/views/authentication/signin.client.view.html'
-            })
-            .state('admin', {
-                url: '/admin',
-                templateUrl: 'modules/letters/views/command.html'
             });
     }
 ]);
 'use strict';
 
-angular.module('core').controller('HeaderController', ['$scope', '$location', '$modal', 'Authentication',
-    function($scope, $location, $modal, Authentication) {
+angular.module('core').controller('HeaderController', ['$scope', '$state', '$location', '$modal', 'Authentication',
+    function($scope, $state, $location, $modal, Authentication) {
         $scope.authentication = Authentication;
 
         $scope.isAdmin = function() {
@@ -105,45 +101,46 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
 
         // Collapsing the menu after navigation
         $scope.$on('$stateChangeSuccess', function() {
+            if (!$scope.isAdmin() && $scope.authentication.user.status === 0) $scope.showTutorial();
             $scope.isCollapsed = false;
         });
 
+        $scope.needTutorial = function() {
+            var needTutorial = ['command', 'tracking', 'agTracking', 'email', 'etemplate'];
+            var page = $state.current.name;
+            return needTutorial.indexOf(page) >= 0;
+        };
+
         $scope.showTutorial = function() {
-            if ($location.path() === '/admin') {
+            var page = $state.current.name;
+            if (page === 'command') {
                 $modal.open({
                     templateUrl: 'modules/core/views/adminTutorial.html',
                     controller: 'AdminModalController',
                     backdrop: 'static'
                 });
-            } else if ($location.path() === '/admin/email') {
+            } else if (page === 'email') {
                 $modal.open({
                     templateUrl: 'modules/core/views/emailTutorial.html',
                     controller: 'ModalInstanceCtrl',
                     backdrop: 'static'
                 });
-            } else if ($location.path().indexOf('/admin/email/') >= 0) {
+            } else if (page === 'etemplate') {
                 $modal.open({
                     templateUrl: 'modules/core/views/etemplateTutorial.html',
                     controller: 'ModalInstanceCtrl',
                     backdrop: 'static'
                 });
-            } else if ($location.path().indexOf('agency') >= 0) {
-                var template = $scope.isAdmin ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
+            } else if (page === 'tracking' || page === 'agTracking') {
+                var template = $scope.isAdmin() ? 'modules/core/views/reviewTutorial.html' : 'modules/core/views/agencyTutorial.html';
                 $modal.open({
                     templateUrl: template,
                     controller: 'ModalInstanceCtrl',
                     backdrop: 'static'
                 });
-            } else {
-                $modal.open({
-                    size: 'sm',
-                    templateUrl: 'modules/core/views/noTutorial.html',
-                    controller: 'ModalInstanceCtrl'
-                });
             }
         };
 
-        if (!$scope.isAdmin() && $scope.authentication.user.status === 0) $scope.showTutorial();
     }
 ])
 
@@ -188,14 +185,15 @@ angular.module('core').controller('HeaderController', ['$scope', '$location', '$
     }
 ])
 
-.controller('ModalInstanceCtrl', ['$scope', '$filter', '$modalInstance', 'Agencies',
-    function($scope, $filter, $modalInstance, Agencies) {
-        Agencies.query(function(users) {
-            var admin = _.find(users, {
-                'username': 'AAA'
+.controller('ModalInstanceCtrl', ['$state', '$scope', '$filter', '$modalInstance', 'Agencies',
+    function($state, $scope, $filter, $modalInstance, Agencies) {
+        if ($state.current.name === 'agTracking') {
+            Agencies.query({
+                role: 'admin'
+            }, function(admin) {
+                $scope.dueDate = $filter('date')(admin[0].due, 'fullDate');
             });
-            $scope.dueDate = $filter('date')(admin.due, 'fullDate');
-        });
+        }
 
         $scope.ok = function() {
             $modalInstance.close();
@@ -209,7 +207,7 @@ angular.module('core').controller('HomeController', ['$scope', '$location', 'Aut
         $scope.user = Authentication.user;
 
         function redirect(user) {
-            if (user.username === 'AAA') {
+            if (user.role === 'admin') {
                 $location.path('/admin');
             } else {
                 $location.path('/agency/' + user.username);
@@ -296,6 +294,7 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
         $scope.find = function() {
             Agencies.query({}, function(users) {
                 $scope.partners = users;
+
                 socket.syncUpdates('users', $scope.partners);
             });
         };
@@ -635,9 +634,6 @@ angular.module('letters')
                 return tf.status;
             });
 
-            //Remove admin
-            groups[0]--;
-
             $scope.status = [];
             _.forEach(groups, function(c, g) {
                 $scope.status.push({
@@ -745,19 +741,21 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
             } else {
                 $scope.currentAgency = $scope.user;
                 init();
-                Agencies.query(function(users) {
-                    var admin = _.find(users, {
-                        'username': 'AAA'
-                    });
-                    var due = $filter('date')(admin.due, 'MM/dd/yy');
-
-                    if ($scope.currentAgency.status < 3) showCountdown(admin.due);
+                Agencies.query({
+                    role: 'admin'
+                }, function(admin) {
+                    if ($scope.currentAgency.status < 3) showCountdown(admin[0].due);
                 });
             }
         };
 
         function showCountdown(deadline) {
             var countdown = dateDiff(new Date(), new Date(deadline));
+            $scope.alert = {
+                active: false,
+                type: null,
+                msg: null
+            }
             if (countdown === 14) {
                 $scope.alert = {
                     type: 'warning',
@@ -789,7 +787,7 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
                     msg: countdown + ' days left'
                 };
             }
-            $scope.alert.active = $scope.alert.msg.length;
+            $scope.alert.active = $scope.alert.msg !== null;
         }
 
         function init() {
@@ -1842,16 +1840,16 @@ angular.module('users').config(['$stateProvider',
 ]);
 'use strict';
 
-angular.module('users').controller('AuthenticationController', ['$scope', '$http', '$location', 'Authentication',
-    function($scope, $http, $location, Authentication) {
+angular.module('users').controller('AuthenticationController', ['$scope', '$http', '$state', '$location', 'Authentication',
+    function($scope, $http, $state, $location, Authentication) {
         $scope.user = Authentication.user;
 
         function redirect(user) {
             if (user.role === 'admin') {
                 $location.path('/admin');
             } else {
-                if (!user.zip) {
-                    $location.path('/first');
+                if (user.status === 0) {
+                    $state.go('first');
                 } else {
                     $location.path('/agency/' + user.username);
                 }
@@ -1865,8 +1863,9 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
             $http.post('/auth/signin', $scope.credentials).success(function(response) {
                 // If successful we assign the response to the global user model
                 Authentication.user = response;
+                $scope.user = Authentication.user;
                 // And redirect to appropriate page
-                redirect(response);
+                redirect($scope.user);
             }).error(function(response) {
                 $scope.error = response.message;
             });

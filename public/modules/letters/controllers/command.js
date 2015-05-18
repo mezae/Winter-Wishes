@@ -26,6 +26,7 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
         $scope.find = function() {
             Agencies.query({}, function(users) {
                 $scope.partners = users;
+
                 socket.syncUpdates('users', $scope.partners);
             });
         };
