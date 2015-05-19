@@ -136,7 +136,7 @@ a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
   width: 93%;
   right: 4%;
   top: 22vh;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .laddbar {

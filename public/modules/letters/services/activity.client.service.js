@@ -17,15 +17,16 @@ angular.module('letters').directive('activity', function() {
                 },
                 width = element.clientWidth - margin.left - margin.right,
                 height = 300 - margin.top - margin.bottom;
+            var count = 0;
 
             scope.$watch('data', function(data) {
-                if (data) {
+                if (data && count < 1) {
+                    count++;
                     var parseDate = d3.time.format('%Y-%m-%d').parse;
                     var formatTime = d3.time.format('%B %e'); // Format tooltip date / time
 
                     data.forEach(function(d) {
                         d.date = parseDate(d.date);
-
                     });
 
                     var x = d3.time.scale()

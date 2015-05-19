@@ -6,7 +6,9 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/').replace();
 
-        $scope.users = Agencies.query();
+        $scope.users = Agencies.query({
+            role: 'admin'
+        });
 
         $scope.startDate = null;
         $scope.endDate = null;

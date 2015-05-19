@@ -534,7 +534,9 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
         $scope.user = Authentication.user;
         if (!$scope.user) $location.path('/').replace();
 
-        $scope.users = Agencies.query();
+        $scope.users = Agencies.query({
+            role: 'admin'
+        });
 
         $scope.startDate = null;
         $scope.endDate = null;
@@ -627,11 +629,11 @@ angular.module('letters')
             $scope.$apply();
         });
 
-        $scope.partners = Agencies.query(function(users) {
+        Agencies.query(function(users) {
 
             var names = ['Not Yet Started', 'In Progress', 'Completed', 'Submitted', 'Under Review', 'Reviewed'];
-            var groups = _.countBy($scope.partners, function(tf) {
-                return tf.status;
+            var groups = _.countBy(users, function(form) {
+                return form.status;
             });
 
             $scope.status = [];
@@ -640,18 +642,14 @@ angular.module('letters')
                     status: g,
                     name: names[g],
                     count: c,
-                    percent: (c / $scope.partners.length * 100).toFixed(1) + '%'
+                    percent: (c / users.length * 100).toFixed(1) + '%'
                 });
             });
 
         });
 
-        $scope.letters = Articles.query(function() {
-            if ($scope.letters) {
-                var useful = $filter('filter')($scope.letters, {
-                    updated: '!' + null
-                });
-
+        Articles.query(function(useful) {
+            if (useful.length > 0) {
                 var counts = _.countBy(useful, function(letter) {
                     return $filter('date')(letter.updated, 'yyyy-MM-dd');
                 });
@@ -672,7 +670,7 @@ angular.module('letters')
                 endDate = $filter('date')(endDate, 'yyyy-MM-dd');
                 while (current !== endDate) {
                     $scope.wishesAdded.push({
-                        date: current,
+                        date: String(current),
                         count: counts[current] ? counts[current] : 0
                     });
                     current = new Date(current);
@@ -1189,15 +1187,16 @@ angular.module('letters').directive('activity', function() {
                 },
                 width = element.clientWidth - margin.left - margin.right,
                 height = 300 - margin.top - margin.bottom;
+            var count = 0;
 
             scope.$watch('data', function(data) {
-                if (data) {
+                if (data && count < 1) {
+                    count++;
                     var parseDate = d3.time.format('%Y-%m-%d').parse;
                     var formatTime = d3.time.format('%B %e'); // Format tooltip date / time
 
                     data.forEach(function(d) {
                         d.date = parseDate(d.date);
-
                     });
 
                     var x = d3.time.scale()

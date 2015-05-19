@@ -13,11 +13,11 @@ angular.module('letters')
             $scope.$apply();
         });
 
-        $scope.partners = Agencies.query(function(users) {
+        Agencies.query(function(users) {
 
             var names = ['Not Yet Started', 'In Progress', 'Completed', 'Submitted', 'Under Review', 'Reviewed'];
-            var groups = _.countBy($scope.partners, function(tf) {
-                return tf.status;
+            var groups = _.countBy(users, function(form) {
+                return form.status;
             });
 
             $scope.status = [];
@@ -26,18 +26,14 @@ angular.module('letters')
                     status: g,
                     name: names[g],
                     count: c,
-                    percent: (c / $scope.partners.length * 100).toFixed(1) + '%'
+                    percent: (c / users.length * 100).toFixed(1) + '%'
                 });
             });
 
         });
 
-        $scope.letters = Articles.query(function() {
-            if ($scope.letters) {
-                var useful = $filter('filter')($scope.letters, {
-                    updated: '!' + null
-                });
-
+        Articles.query(function(useful) {
+            if (useful.length > 0) {
                 var counts = _.countBy(useful, function(letter) {
                     return $filter('date')(letter.updated, 'yyyy-MM-dd');
                 });
@@ -58,7 +54,7 @@ angular.module('letters')
                 endDate = $filter('date')(endDate, 'yyyy-MM-dd');
                 while (current !== endDate) {
                     $scope.wishesAdded.push({
-                        date: current,
+                        date: String(current),
                         count: counts[current] ? counts[current] : 0
                     });
                     current = new Date(current);

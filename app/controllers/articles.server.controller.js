@@ -157,11 +157,18 @@ exports.index = function(req, res) {
             });
         });
     } else {
-        var query = req.query.username ? {
-            'track': {
-                $regex: '^' + req.query.username
-            }
-        } : '';
+        var query = req.query;
+        if (req.query !== {}) {
+            query = req.query.username ? {
+                'track': {
+                    $regex: '^' + req.query.username
+                }
+            } : {
+                updated: {
+                    $ne: ''
+                }
+            };
+        }
 
         var offset = req.query.offset ? req.query.offset : '';
         var limit = req.query.limit ? req.query.limit : '';
