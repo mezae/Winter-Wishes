@@ -43,8 +43,6 @@
 					<input type="button" class="btn btn-save col-md-4 col-sm-3 col-xs-3 pull-right" ng-click="saveAgency()" value="Save">
 				</div>
 
-				<div ngf-select ngf-drop ng-model="file" ng-model-rejected="reject" class="drop-box" ng-show="!partner" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-change="handleFileSelect()" ngf-accept="'text/csv'" accept=".csv">	drop csv file here or <br/>click to browse
-			    </div>
 			</form>
 		</div>
 		</aside>
@@ -52,60 +50,81 @@
 
 	<div ng-class="needToUpdate ? 'col-md-9 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-12 col-sm-12 col-xs-12'">
  
- 	<div class="row">
-	  	<div ng-class="needToUpdate ? 'col-md-6 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
-			<div class="form-group">
-				<div class="input-group">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-					<input type="search" class="form-control" ng-model="query.username" placeholder="Search by Agency Code"/>
+	 	<div class="row" ng-if="(partners.length > 0 && !needToUpdate) || (needToUpdate && partner)">
+		  	
+		  	<!-- Search by Agency Code -->
+		  	<div ng-class="needToUpdate ? 'col-md-6 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
+				<div class="form-group">
+					<div class="input-group">
+						<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+						<input type="search" class="form-control" ng-model="query.username" placeholder="Search by Agency Code"/>
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<div ng-class="needToUpdate ? 'col-md-6 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
-			
-			<div class="form-group">
-				<select class="form-control" ng-model="query.status" ng-change="updateURL()">
-					<option value="">Filter by Status</option>
-					<option value="0">Not Yet Started</option>
-					<option value="1">In Progress</option>
-					<option value="3">Submitted</option>
-					<option value="4">Under Review</option>
-					<option value="5">Reviewed</option>
-				</select>
-			</div>
-		</div>
-	</div>
-
-	<div class="row inline">
-
-		<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results">
-		  <div class="agency-box" ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': partner.status == 5, 'btn-review': partner.status == 4, 'btn-complete': partner.status == 3, 'btn-started': partner.status == 1, 'btn-empty': partner.status == 0}">
-			  <div class="text-center"><strong>{{partner.username}}</strong></div>
-			  <p class="text-center" ng-show="partner.status < 5 && !turn">{{partner.children + partner.teens + partner.seniors}} Letters</p>
-			  <p class="text-center" ng-show="partner.status === 5 && !turn"><rating ng-model="partner.rating.overall" readonly="true"></rating></p>
-
-			  <div class="text-center" ng-if="turn">
-			  <a href="/#!/admin/agency/{{partner.username}}" class="btn btn-link agency-btn"><i class="glyphicon glyphicon-eye-open"></i></a>
-
-			  <button type="button" class="btn btn-link agency-mid" ng-click="showSidebar(partner)"><i class="glyphicon glyphicon-pencil"></i></button>
-
-			  <button type="button" class="btn btn-link agency-btn" ng-click="deleteAgency(partner)"><i class="glyphicon glyphicon-trash"></i></button>
-			</div>
-
-		  </div>
-		</div>
-		<div class="col-xs-6 col-sm-3 hidden-print" ng-class="needToUpdate ? 'col-md-3' : ' col-md-2'">
-		  <div class="agency-box" ng-click="query.status ? updateURL(true) : showSidebar()">
-			<div class="vcenter text-center">
-			    <div class="btn btn-link" ng-class="query.status ? 'badflag' : agency-btn">
-					<i class="glyphicon glyphicon-plus" ng-hide="query.status"></i>
-					<p ng-show="query.status">Clear <i class="glyphicon glyphicon-filter"></i></p>
+			<!-- Filter by Status -->
+			<div ng-class="needToUpdate ? 'col-md-6 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">		
+				<div class="form-group">
+					<select class="form-control" ng-model="query.status" ng-change="updateURL()">
+						<option value="">Filter by Status</option>
+						<option value="0">Not Yet Started</option>
+						<option value="1">In Progress</option>
+						<option value="3">Submitted</option>
+						<option value="4">Under Review</option>
+						<option value="5">Reviewed</option>
+					</select>
 				</div>
 			</div>
-		  </div>
+
+			<!-- Add Users OR Clear Filter -->
+			<div class="col-md-2 col-sm-6 col-xs-12">
+				<button class="btn col-md-12" 
+					ng-class="query.status ? 'btn-cancel' : 'btn-upload pull-right'" 
+					ng-show="partners.length > 0 && !needToUpdate" 
+					ng-click="query.status ? updateURL(true) : showSidebar()">
+						<i class="glyphicon" ng-class="query.status ? 'glyphicon-filter' : 'glyphicon-plus'"></i> {{query.status ? 'Clear Filter' : 'Add Users'}}
+				</button>
+			</div>
 		</div>
-	  </div>
+
+		<div class="row inline">
+
+			<!-- File Dropzone -->
+			<div class="col-md-12" ng-show="user.status === 0 || partners.length === 0 || needToUpdate">
+				<div ngf-select ngf-drop ng-model="file" ng-model-rejected="reject" class="drop-box" ng-show="!partner" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-change="handleFileSelect()" ngf-accept="'text/csv'" accept=".csv">
+					<p class="lead">drop csv file here or <br/>click to browse<p>
+			    </div>
+		    </div>
+
+		    <!-- Agency Boxes -->
+			<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results" ng-if="partner.role !== 'admin'">
+
+				<div class="agency-box" ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': partner.status == 5, 'btn-review': partner.status == 4, 'btn-complete': partner.status == 3, 'btn-started': partner.status == 1, 'btn-empty': partner.status == 0}">
+
+					<div class="text-center">
+						<strong>{{partner.username}}</strong>
+					</div>
+					
+					<p class="text-center" ng-show="partner.status < 5 && !turn">
+						{{partner.children + partner.teens + partner.seniors}} Letters
+					</p>
+
+					<p class="text-center" ng-show="partner.status === 5 && !turn">
+						<rating ng-model="partner.rating.overall" readonly="true"></rating>
+					</p>
+
+					<div class="text-center" ng-if="turn">
+						<a href="/#!/admin/agency/{{partner.username}}" class="btn btn-link agency-btn"><i class="glyphicon glyphicon-eye-open"></i></a>
+
+						<button type="button" class="btn btn-link agency-mid" ng-click="showSidebar(partner)"><i class="glyphicon glyphicon-pencil"></i></button>
+
+						<button type="button" class="btn btn-link agency-btn" ng-click="deleteAgency(partner)"><i class="glyphicon glyphicon-trash"></i></button>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
 	</div>
 
   </div>

@@ -24,11 +24,12 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
         };
 
         $scope.find = function() {
-            Agencies.query({}, function(users) {
-                $scope.partners = users;
-
-                socket.syncUpdates('users', $scope.partners);
-            });
+            if ($scope.user.status > 0) {
+                Agencies.query({}, function(users) {
+                    $scope.partners = users;
+                    socket.syncUpdates('users', $scope.partners);
+                });
+            }
         };
 
         //Allows user to add create new accounts, consider moving to backend
@@ -104,8 +105,11 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
                             $scope.alert = {
                                 active: true,
                                 type: 'success',
-                                msg: 'Your csv file was uploaded successfully.'
+                                msg: 'Great! Your tracking forms will appear shortly...'
                             };
+                            $scope.user.status = 1;
+                            Users.update($scope.user);
+                            $scope.find();
                         }
                     };
                     reader.readAsText(file);

@@ -18,7 +18,7 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', '$loc
 
         // Collapsing the menu after navigation
         $scope.$on('$stateChangeSuccess', function() {
-            if (!$scope.isAdmin() && $scope.authentication.user.status === 0) $scope.showTutorial();
+            if ($scope.authentication.user.status === 0) $scope.showTutorial();
             $scope.isCollapsed = false;
         });
 

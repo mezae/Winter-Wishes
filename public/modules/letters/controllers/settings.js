@@ -75,6 +75,8 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
                 $http.get('/users/reset').success(function(response) {
                     // If successful we assign the response to the global user model
                     Authentication.user = response;
+                    $scope.user.status = 0;
+                    Users.update($scope.user);
                 }).error(function(response) {
                     $scope.error = response.message;
                 });
@@ -83,6 +85,6 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
 
         $scope.allowNotifications = function() {
             Notification.requestPermission();
-        }
+        };
     }
 ]);

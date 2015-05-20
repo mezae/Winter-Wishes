@@ -101,7 +101,7 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', '$loc
 
         // Collapsing the menu after navigation
         $scope.$on('$stateChangeSuccess', function() {
-            if (!$scope.isAdmin() && $scope.authentication.user.status === 0) $scope.showTutorial();
+            if ($scope.authentication.user.status === 0) $scope.showTutorial();
             $scope.isCollapsed = false;
         });
 
@@ -292,11 +292,12 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
         };
 
         $scope.find = function() {
-            Agencies.query({}, function(users) {
-                $scope.partners = users;
-
-                socket.syncUpdates('users', $scope.partners);
-            });
+            if ($scope.user.status > 0) {
+                Agencies.query({}, function(users) {
+                    $scope.partners = users;
+                    socket.syncUpdates('users', $scope.partners);
+                });
+            }
         };
 
         //Allows user to add create new accounts, consider moving to backend
@@ -372,8 +373,11 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
                             $scope.alert = {
                                 active: true,
                                 type: 'success',
-                                msg: 'Your csv file was uploaded successfully.'
+                                msg: 'Great! Your tracking forms will appear shortly...'
                             };
+                            $scope.user.status = 1;
+                            Users.update($scope.user);
+                            $scope.find();
                         }
                     };
                     reader.readAsText(file);
@@ -603,6 +607,8 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
                 $http.get('/users/reset').success(function(response) {
                     // If successful we assign the response to the global user model
                     Authentication.user = response;
+                    $scope.user.status = 0;
+                    Users.update($scope.user);
                 }).error(function(response) {
                     $scope.error = response.message;
                 });
@@ -611,7 +617,7 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
 
         $scope.allowNotifications = function() {
             Notification.requestPermission();
-        }
+        };
     }
 ]);
 'use strict';
