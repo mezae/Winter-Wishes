@@ -12,27 +12,34 @@ var _ = require('lodash'),
 
 //Allows admin access to all community partner accounts
 exports.list = function(req, res) {
-    var query =
-        req.query.role ? req.query : {
-            role: 'user'
-        };
-    User.find(query,
-        '-salt -password -acceptance -created -provider -role').exec(function(err, users) {
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.json(users);
-        }
-    });
+    if (req.query.role || req.user.role === 'admin') {
+        var query =
+            req.query.role ? req.query : {
+                role: 'user'
+            };
+        var sell = req.query.role ? 'due -_id' : '-salt -password -acceptance -created -provider -role';
+        User.find(query).select(sell).exec(function(err, users) {
+            if (err) {
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            } else {
+                res.json(users);
+            }
+        });
+    } else {
+        return res.status(403).send({
+            message: 'User is not authorized'
+        });
+    }
 };
 
 //Allows admin access to individual community partner accounts
 exports.agencyByID = function(req, res, next, id) {
+    var fields = req.user.role === 'admin' ? 'agency children teens seniors' : '';
     User.findOne({
         username: id
-    }, '-salt -password -created -provider').exec(function(err, agency) {
+    }, fields).exec(function(err, agency) {
         if (err) return next(err);
         if (!agency) return next(new Error('Failed to load article ' + id));
         req.user = agency;

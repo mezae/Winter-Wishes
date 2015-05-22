@@ -4,7 +4,8 @@
 angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'Articles', 'Users', 'socket',
     function($scope, $window, $modal, $http, $stateParams, $location, Authentication, Agencies, Articles, Users, socket) {
         $scope.user = Authentication.user;
-        if (!$scope.user) $location.path('/').replace();
+
+        if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
         if ($location.search()) $scope.query = $location.search();
 
         $scope.needToUpdate = false; //helps hide sidebar when it's not needed

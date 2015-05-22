@@ -12,10 +12,9 @@ module.exports = function(app) {
     // Setting up the users profile api
     app.route('/users/me').get(users.me);
     app.route('/users').put(users.update);
-    app.route('/users/reset').get(users.resetData);
+    app.route('/users/reset').get(users.hasAuthorization('admin'), users.resetData);
 
-    app.route('/agency')
-        .get(users.requiresLogin, users.list);
+    app.route('/agency').get(users.requiresLogin, users.list);
 
     app.route('/agency/:agencyId')
         .get(users.requiresLogin, users.read)
@@ -33,7 +32,7 @@ module.exports = function(app) {
     app.route('/auth/signin').post(users.signin);
     app.route('/auth/signout').get(users.signout);
 
-    app.route('/accept').post(users.sendAcceptance);
+    app.route('/accept').post(users.hasAuthorization('admin'), users.sendAcceptance);
 
     // Finish by binding the user middleware
     app.param('agencyId', users.agencyByID);

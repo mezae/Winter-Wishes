@@ -87,38 +87,40 @@
 			</div>
 		</div>
 
-		<div class="row inline">
-
-			<!-- File Dropzone -->
+		<div class="row">
+		<!-- File Dropzone -->
 			<div class="col-md-12" ng-show="user.status === 0 || partners.length === 0 || needToUpdate">
 				<div ngf-select ngf-drop ng-model="file" ng-model-rejected="reject" class="drop-box" ng-show="!partner" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-change="handleFileSelect()" ngf-accept="'text/csv'" accept=".csv">
 					<p class="lead">drop csv file here or <br/>click to browse<p>
 			    </div>
 		    </div>
+		</div>
 
-		    <!-- Agency Boxes -->
-			<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="partner in partners | orderBy: 'username' | filter:query as results" ng-if="partner.role !== 'admin'">
+		<div class="row inline" ng-if="!needToUpdate || (needToUpdate && partner)">
 
-				<div class="agency-box" ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': partner.status == 5, 'btn-review': partner.status == 4, 'btn-complete': partner.status == 3, 'btn-started': partner.status == 1, 'btn-empty': partner.status == 0}">
+		    <!-- Community Partner Boxes -->
+			<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="cp in partners | orderBy: 'username' | filter:query as results" ng-if="!cp.hasOwnProperty('role')">
+
+				<div class="agency-box" ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': cp.status == 5, 'btn-review': cp.status == 4, 'btn-complete': cp.status == 3, 'btn-started': cp.status == 1, 'btn-empty': cp.status == 0}">
 
 					<div class="text-center">
-						<strong>{{partner.username}}</strong>
+						<strong>{{cp.username}}</strong>
 					</div>
 					
-					<p class="text-center" ng-show="partner.status < 5 && !turn">
-						{{partner.children + partner.teens + partner.seniors}} Letters
+					<p class="text-center" ng-show="cp.status < 5 && !turn">
+						{{cp.children + cp.teens + cp.seniors}} Letters
 					</p>
 
-					<p class="text-center" ng-show="partner.status === 5 && !turn">
-						<rating ng-model="partner.rating.overall" readonly="true"></rating>
+					<p class="text-center" ng-show="cp.status === 5 && !turn">
+						<rating ng-model="cp.rating.overall" readonly="true"></rating>
 					</p>
 
 					<div class="text-center" ng-if="turn">
-						<a href="/#!/admin/agency/{{partner.username}}" class="btn btn-link agency-btn"><i class="glyphicon glyphicon-eye-open"></i></a>
+						<a href="/#!/admin/agency/{{cp.username}}" class="btn btn-link agency-btn"><i class="glyphicon glyphicon-eye-open"></i></a>
 
-						<button type="button" class="btn btn-link agency-mid" ng-click="showSidebar(partner)"><i class="glyphicon glyphicon-pencil"></i></button>
+						<button type="button" class="btn btn-link agency-mid" ng-click="showSidebar(cp)"><i class="glyphicon glyphicon-pencil"></i></button>
 
-						<button type="button" class="btn btn-link agency-btn" ng-click="deleteAgency(partner)"><i class="glyphicon glyphicon-trash"></i></button>
+						<button type="button" class="btn btn-link agency-btn" ng-click="deleteAgency(cp)"><i class="glyphicon glyphicon-trash"></i></button>
 					</div>
 
 				</div>

@@ -157,6 +157,7 @@ exports.index = function(req, res) {
             });
         });
     } else {
+        var fields = req.user.role === 'admin' ? '-created' : '-created -flagged';
         var query = req.query;
         if (req.query !== {}) {
             query = req.query.username ? {
@@ -173,7 +174,7 @@ exports.index = function(req, res) {
         var offset = req.query.offset ? req.query.offset : '';
         var limit = req.query.limit ? req.query.limit : '';
 
-        Letter.find(query, '-created').sort('track').skip(offset).limit(limit).exec(function(err, letters) {
+        Letter.find(query, fields).sort('track').skip(offset).limit(limit).exec(function(err, letters) {
             if (err) {
                 return res.status(400).send({
                     message: errorHandler.getErrorMessage(err)

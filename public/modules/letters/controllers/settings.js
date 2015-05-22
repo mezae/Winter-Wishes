@@ -4,7 +4,7 @@
 angular.module('letters').controller('myController', ['$scope', '$window', '$modal', '$location', '$filter', '$http', 'Authentication', 'Users', 'Agencies', 'Articles',
     function($scope, $window, $modal, $location, $filter, $http, Authentication, Users, Agencies, Articles) {
         $scope.user = Authentication.user;
-        if (!$scope.user) $location.path('/').replace();
+        if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
 
         $scope.users = Agencies.query({
             role: 'admin'

@@ -66,8 +66,21 @@ exports.signin = function(req, res, next) {
             res.status(400).send(info);
         } else {
             // Remove sensitive data before login
+            user.provider = undefined;
             user.password = undefined;
             user.salt = undefined;
+            user.rating = undefined;
+            user.created = undefined;
+
+            if (user.role === 'admin') {
+                user.username = undefined;
+                user.children = undefined;
+                user.teens = undefined;
+                user.seniors = undefined;
+                user.updated = undefined;
+            } else {
+                user.acceptance = undefined;
+            }
 
             req.login(user, function(err) {
                 if (err) {
