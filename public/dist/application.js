@@ -48,6 +48,10 @@ ApplicationConfiguration.registerModule('core');
 'use strict';
 
 // Use Applicaion configuration module to register a new module
+ApplicationConfiguration.registerModule('emails');
+'use strict';
+
+// Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('letters');
 'use strict';
 
@@ -218,6 +222,157 @@ angular.module('core').controller('HomeController', ['$scope', '$location', 'Aut
         if ($scope.user) redirect($scope.user);
     }
 ]);
+// 'use strict';
+
+// // Setting up route
+// angular.module('letters').config(['$stateProvider',
+//     function($stateProvider) {
+//         // Letters state routing
+//         $stateProvider.
+//         state('command', {
+//             url: '/admin:status',
+//             templateUrl: 'modules/letters/views/command.html'
+//         }).
+//         state('adminSettings', {
+//             url: '/admin/settings',
+//             templateUrl: 'modules/letters/views/settings.html'
+//         }).
+//         state('tracking', {
+//             url: '/admin/agency/:articleId',
+//             templateUrl: 'modules/letters/views/tracking.html'
+//         }).
+//         state('agTracking', {
+//             url: '/agency/:articleId',
+//             templateUrl: 'modules/letters/views/tracking.html'
+//         }).
+//         state('email', {
+//             url: '/admin/email',
+//             templateUrl: 'modules/letters/views/emails.html'
+//         }).
+//         state('etemplate', {
+//             url: '/admin/email/:template',
+//             templateUrl: 'modules/letters/views/etemplate.html'
+//         }).
+//         state('email-success', {
+//             url: '/admin/emails/success',
+//             templateUrl: 'modules/letters/views/esent.html'
+//         }).
+//         state('stats', {
+//             url: '/admin/stats',
+//             templateUrl: 'modules/letters/views/stats.html'
+//         });
+//     }
+// ]);
+'use strict';
+
+angular.module('emails')
+
+.controller('EmailsController', ['$scope', '$window', '$location', 'Authentication', 'Emails',
+    function($scope, $window, $location, Authentication, Emails) {
+
+        $scope.find = function() {
+            $scope.user = Authentication.user;
+
+            if (!$scope.user || $scope.user.role === 'user') {
+                $location.path('/');
+            } else {
+                $scope.emails = Emails.query();
+                $scope.needToUpdate = false;
+            }
+        };
+
+        //Create new template or save existing template
+        $scope.createTemplate = function() {
+            var email = new Emails($scope.etemplate);
+            email.$save(function(template) {
+                $scope.emails.push(template);
+                $scope.hideSidebar();
+            });
+        };
+
+        //Allow user to delete selected partner and all associated recipients
+        $scope.deleteTemplate = function(selected) {
+            var confirmation = $window.prompt('Please type DELETE to remove the ' + selected.title + ' template.');
+            if (confirmation === 'DELETE') {
+                selected.$remove(function(template) {
+                    _.remove($scope.emails, selected);
+                });
+            }
+        };
+
+        //Show current state of template that user wants to edit
+        $scope.showSidebar = function(selected) {
+            $scope.etemplate = selected;
+            $scope.needToUpdate = true;
+        };
+
+        //Hide sidebar and clear variables
+        $scope.hideSidebar = function() {
+            $scope.etemplate = null;
+            $scope.needToUpdate = false;
+        };
+
+    }
+]);
+'use strict';
+
+angular.module('emails')
+
+.controller('EmailController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Emails',
+    function($scope, $http, $stateParams, $location, Authentication, Emails) {
+        $scope.user = Authentication.user;
+
+        $scope.findOne = function() {
+            $scope.user = Authentication.user;
+
+            if (!$scope.user) {
+                $location.path('/');
+            } else {
+                $scope.etemplate = Emails.get({
+                    emailId: $stateParams.template
+                });
+            }
+        };
+
+        //Update existing template
+        $scope.saveTemplate = function() {
+            $scope.success = $scope.error = null;
+
+            Emails.update($scope.etemplate, function(response) {
+                $scope.etemplate = response;
+                $scope.success = true;
+            }, function(response) {
+                $scope.error = response;
+            });
+        };
+
+        //Send e-mail based on template
+        $scope.sendEmail = function() {
+            $scope.error = null;
+            $scope.saveTemplate();
+            $http.post('/accept', $scope.etemplate).success(function(response) {
+                $location.path('/admin/emails/success');
+            }).error(function(response) {
+                $scope.error = response;
+            });
+        };
+
+    }
+]);
+'use strict';
+
+//Emails service used for communicating with the emails REST endpoints
+angular.module('emails').factory('Emails', ['$resource',
+    function($resource) {
+        return $resource('emails/:emailId/:controller', {
+            emailId: '@_id'
+        }, {
+            update: {
+                method: 'PUT'
+            }
+        });
+    }
+]);
 
 'use strict';
 
@@ -250,15 +405,15 @@ angular.module('letters').config(['$stateProvider',
         }).
         state('email', {
             url: '/admin/email',
-            templateUrl: 'modules/letters/views/emails.html'
+            templateUrl: 'modules/emails/views/emails.html'
         }).
         state('etemplate', {
             url: '/admin/email/:template',
-            templateUrl: 'modules/letters/views/etemplate.html'
+            templateUrl: 'modules/emails/views/etemplate.html'
         }).
         state('email-success', {
             url: '/admin/emails/success',
-            templateUrl: 'modules/letters/views/esent.html'
+            templateUrl: 'modules/emails/views/esent.html'
         }).
         state('stats', {
             url: '/admin/stats',
@@ -272,7 +427,8 @@ angular.module('letters').config(['$stateProvider',
 angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'Articles', 'Users', 'socket',
     function($scope, $window, $modal, $http, $stateParams, $location, Authentication, Agencies, Articles, Users, socket) {
         $scope.user = Authentication.user;
-        if (!$scope.user) $location.path('/').replace();
+
+        if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
         if ($location.search()) $scope.query = $location.search();
 
         $scope.needToUpdate = false; //helps hide sidebar when it's not needed
@@ -450,93 +606,12 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
     }
 ]);
 'use strict';
-
-angular.module('letters')
-
-.controller('EmailsController', ['$scope', '$modal', '$http', '$stateParams', '$location', '$filter', 'Authentication', 'Agencies', 'Articles', 'Users',
-    function($scope, $modal, $http, $stateParams, $location, $filter, Authentication, Agencies, Articles, Users) {
-        $scope.user = Authentication.user;
-
-        if (!$scope.user) $location.path('/');
-
-        $scope.etemplate = $filter('filter')($scope.user.acceptance, {
-            title: $stateParams.template
-        })[0];
-        var templateIndex = $scope.user.acceptance.indexOf($scope.etemplate);
-        $scope.needToUpdate = false;
-
-        //Send e-mail based on template
-        $scope.sendEmail = function() {
-            console.log('whoa');
-            $scope.error = null;
-            $scope.saveTemplate();
-            $http.post('/accept', $scope.user.acceptance[templateIndex]).success(function(response) {
-                $location.path('/admin/emails/success');
-            }).error(function(response) {
-                $scope.error = response;
-            });
-        };
-
-        //Create new template or save existing template
-        $scope.saveTemplate = function() {
-            $scope.success = $scope.error = null;
-            if (templateIndex > -1) {
-                $scope.user.acceptance[templateIndex] = $scope.etemplate;
-            } else {
-                $scope.user.acceptance.push($scope.etemplate);
-            }
-
-            //var user = new Users($scope.user);
-            Users.update($scope.user, function(response) {
-            // $scope.user = response;
-            // $scope.success = true;
-            // if ($location.path() === '/admin/email') {
-            //     $scope.hideSidebar();
-            // }
-            // }, function(response) {
-                console.log(response);
-                // $scope.error = response;
-            });
-        };
-
-        //Show current state of template that user wants to edit
-        $scope.showSidebar = function(selected) {
-            $scope.etemplate = selected;
-            templateIndex = $scope.user.acceptance.indexOf($scope.etemplate);
-            $scope.needToUpdate = true;
-        };
-
-        //Hide sidebar and clear variables
-        $scope.hideSidebar = function() {
-            $scope.etemplate = null;
-            templateIndex = null;
-            $scope.needToUpdate = false;
-        };
-
-        //Allow user to delete selected partner and all associated recipients
-        $scope.deleteAgency = function(selected) {
-            var confirmation = prompt('Please type DELETE to remove the ' + selected.title + ' template.');
-            if (confirmation === 'DELETE') {
-                $scope.user.acceptance.splice($scope.user.acceptance.indexOf(selected), 1);
-                var user = new Users($scope.user);
-                user.$update(function(response) {
-                    $scope.user = response;
-                    $scope.success = true;
-                }, function(response) {
-                    $scope.error = response.data.message;
-                });
-            }
-        };
-
-    }
-]);
-'use strict';
 /* global _: false */
 
 angular.module('letters').controller('myController', ['$scope', '$window', '$modal', '$location', '$filter', '$http', 'Authentication', 'Users', 'Agencies', 'Articles',
     function($scope, $window, $modal, $location, $filter, $http, Authentication, Users, Agencies, Articles) {
         $scope.user = Authentication.user;
-        if (!$scope.user) $location.path('/').replace();
+        if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
 
         $scope.users = Agencies.query({
             role: 'admin'

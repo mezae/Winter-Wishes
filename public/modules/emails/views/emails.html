@@ -1,4 +1,4 @@
-<section data-ng-controller="EmailsController">
+<section data-ng-controller="EmailsController" data-ng-init="find()">
 
 	<div class="row">
 		<div class="col-md-12">
@@ -26,7 +26,7 @@
 					</div>
 					<input type="button" class="btn btn-danger col-md-4 col-sm-3 col-xs-3 pull-left" ng-click="hideSidebar()" value="Cancel">
 					<div class="form-group">
-						<input type="button" class="btn btn-success col-md-4 col-sm-3 col-xs-3 pull-right" ng-disabled="etemplateForm.$invalid" ng-click="saveTemplate()" value="Save">
+						<input type="button" class="btn btn-success col-md-4 col-sm-3 col-xs-3 pull-right" ng-disabled="etemplateForm.$invalid" ng-click="createTemplate()" value="Save">
 					</div>
 					<br/><br/>
 					<div data-ng-show="error" class="text-danger">
@@ -40,15 +40,15 @@
 		<div ng-class="needToUpdate ? 'col-md-9 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-12 col-sm-12 col-xs-12'">
 
 			<div class="row">
-				<div class="col-xs-12 col-sm-6 col-md-4" ng-repeat="template in user.acceptance">
+				<div class="col-xs-12 col-sm-6 col-md-4" ng-repeat="template in emails">
 					<div class="thumbnail" ng-mouseenter="turn = true" ng-mouseleave="turn = false">
 						<div class="caption emailnail">
 							<div class="text-center">
-								<a href="/#!/admin/email/{{template.title}}"><h5>{{template.title}}<h5></a>
+								<a href="/#!/admin/email/{{template._id}}"><h5>{{template.title}}<h5></a>
 							</div>
 							<p class="text-center">{{template.description}}</p>
 
-							<button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right deleteAgency" ng-click="deleteAgency(template)"><i class="glyphicon glyphicon-remove"></i></button>
+							<button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right deleteAgency" ng-click="deleteTemplate(template)"><i class="glyphicon glyphicon-remove"></i></button>
 							<button type="button" ng-if="turn" class="btn btn-xs btn-link pull-right editEtemplate" ng-click="showSidebar(template)"><i class="glyphicon glyphicon-pencil"></i></button>
 						</div>
 					</div>

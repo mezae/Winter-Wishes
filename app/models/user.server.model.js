@@ -83,9 +83,6 @@ var UserSchema = new Schema({
             decoration: 0
         }
     },
-    acceptance: {
-        type: Array
-    },
     salt: {
         type: String
     },

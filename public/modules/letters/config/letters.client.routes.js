@@ -23,15 +23,15 @@ angular.module('letters').config(['$stateProvider',
         }).
         state('email', {
             url: '/admin/email',
-            templateUrl: 'modules/letters/views/emails.html'
+            templateUrl: 'modules/emails/views/emails.html'
         }).
         state('etemplate', {
             url: '/admin/email/:template',
-            templateUrl: 'modules/letters/views/etemplate.html'
+            templateUrl: 'modules/emails/views/etemplate.html'
         }).
         state('email-success', {
             url: '/admin/emails/success',
-            templateUrl: 'modules/letters/views/esent.html'
+            templateUrl: 'modules/emails/views/esent.html'
         }).
         state('stats', {
             url: '/admin/stats',
