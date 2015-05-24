@@ -424,8 +424,8 @@ angular.module('letters').config(['$stateProvider',
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'Articles', 'Users', 'socket',
-    function($scope, $window, $modal, $http, $stateParams, $location, Authentication, Agencies, Articles, Users, socket) {
+angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'Users', 'socket',
+    function($scope, $window, $modal, $http, $stateParams, $location, Authentication, Agencies, Users, socket) {
         $scope.user = Authentication.user;
 
         if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
@@ -465,6 +465,15 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
             });
         }
 
+        function signups(file) {
+            $http.post('/auth/signups', file).success(function(response) {
+                $scope.find();
+                $scope.alert = null;
+            }).error(function(response) {
+                $scope.error = response.message;
+            });
+        }
+
         //Allow user to upload file to add partners in bulk
         //Makes sure CSV file includes required fields, otherwise lets user which fields are missing
         $scope.handleFileSelect = function() {
@@ -498,42 +507,14 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
                                 msg: 'Your csv file could not be uploaded. It is missing the following columns: ' + missing_fields.join(', ') + '.'
                             };
                         } else {
-                            headers = headers.split(',');
-                            var code_col = headers.indexOf('Agency Code');
-                            var agency_col = headers.indexOf('Agency Name');
-                            var contact_col = headers.indexOf('Contact Name');
-                            var email_col = headers.indexOf('Contact E-mail');
-                            var child_col = headers.indexOf('Accepted Children');
-                            var teen_col = headers.indexOf('Accepted Teens');
-                            var seniors_col = headers.indexOf('Accepted Seniors');
-
-                            var allUsers = _.pluck($scope.partners, 'username');
-
-                            _.forEach(rows, function(row) {
-                                var record = row.split(',');
-
-                                if (!_.includes(allUsers, record[code_col])) {
-                                    var newPartner = {
-                                        username: record[code_col],
-                                        agency: record[agency_col],
-                                        contact: record[contact_col],
-                                        email: record[email_col],
-                                        children: parseInt(record[child_col], 10),
-                                        teens: parseInt(record[teen_col], 10),
-                                        seniors: parseInt(record[seniors_col], 10)
-                                    };
-                                    signup(newPartner);
-                                    allUsers.push(newPartner.username);
-                                }
-                            });
                             $scope.alert = {
                                 active: true,
-                                type: 'success',
+                                type: 'info',
                                 msg: 'Great! Your tracking forms will appear shortly...'
                             };
-                            $scope.user.status = 1;
-                            Users.update($scope.user);
-                            $scope.find();
+                            signups({
+                                file: content
+                            });
                         }
                     };
                     reader.readAsText(file);

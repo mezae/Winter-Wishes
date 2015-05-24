@@ -77,13 +77,15 @@
 			</div>
 
 			<!-- Add Users OR Clear Filter -->
-			<div class="col-md-2 col-sm-6 col-xs-12">
-				<button class="btn col-md-12" 
-					ng-class="query.status ? 'btn-cancel' : 'btn-upload pull-right'" 
-					ng-show="partners.length > 0 && !needToUpdate" 
-					ng-click="query.status ? updateURL(true) : showSidebar()">
-						<i class="glyphicon" ng-class="query.status ? 'glyphicon-filter' : 'glyphicon-plus'"></i> {{query.status ? 'Clear Filter' : 'Add Users'}}
-				</button>
+			<div class="col-md-2 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<button class="btn btn-block" 
+						ng-class="query.status ? 'btn-cancel' : 'btn-upload'" 
+						ng-show="partners.length > 0 && !needToUpdate" 
+						ng-click="query.status ? updateURL(true) : showSidebar()">
+							<i ng-class="query.status ? 'fa fa-filter' : 'fa fa-user-plus'"></i> {{query.status ? 'Clear Filter' : 'Add Users'}}
+					</button>
+				</div>
 			</div>
 		</div>
 

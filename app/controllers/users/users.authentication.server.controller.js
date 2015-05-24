@@ -37,7 +37,6 @@ exports.signup = function(req, res) {
     var message = null;
 
     // Add missing user fields
-    user.provider = 'local';
     user.password = 'volunteer87';
 
     // Then save the user 
@@ -53,6 +52,69 @@ exports.signup = function(req, res) {
                 'S': user.seniors
             }, []);
             res.json(user);
+        }
+    });
+};
+
+exports.signups = function(req, res) {
+    var content = req.body.file;
+    var rows = content.split(/[\r\n|\n]+/);
+    var headers = rows.shift().split(',');
+    var code_col = headers.indexOf('Agency Code');
+    var agency_col = headers.indexOf('Agency Name');
+    var contact_col = headers.indexOf('Contact Name');
+    var email_col = headers.indexOf('Contact E-mail');
+    var child_col = headers.indexOf('Accepted Children');
+    var teen_col = headers.indexOf('Accepted Teens');
+    var seniors_col = headers.indexOf('Accepted Seniors');
+
+    User.find({}, 'username -_id').exec(function(err, users) {
+        if (err) {
+            console.log('something went wrong');
+        } else {
+            var partners = _.pluck(users, 'username');
+
+            _.forEach(rows, function(row) {
+                var record = row.split(',');
+
+                if (!_.includes(partners, record[code_col])) {
+                    var newPartner = new User({
+                        username: record[code_col],
+                        agency: record[agency_col],
+                        contact: record[contact_col],
+                        email: record[email_col],
+                        children: record[child_col] ? parseInt(record[child_col], 10) : 0,
+                        teens: record[teen_col] ? parseInt(record[teen_col], 10) : 0,
+                        seniors: record[seniors_col] ? parseInt(record[seniors_col], 10) : 0,
+                        password: 'volunteer87'
+                    });
+                    newPartner.save(function(err) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            initRecs(newPartner.username, {
+                                'C': newPartner.children,
+                                'T': newPartner.teens,
+                                'S': newPartner.seniors
+                            }, []);
+                        }
+                    });
+                    partners.push(newPartner.username);
+                }
+            });
+
+            var admin = req.user;
+            admin.status = 1;
+            admin.updated = Date.now();
+
+            admin.save(function(err) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    res.json(admin);
+                }
+            });
+
         }
     });
 };
@@ -78,8 +140,6 @@ exports.signin = function(req, res, next) {
                 user.teens = undefined;
                 user.seniors = undefined;
                 user.updated = undefined;
-            } else {
-                user.acceptance = undefined;
             }
 
             req.login(user, function(err) {

@@ -88,7 +88,7 @@ var UserSchema = new Schema({
     },
     provider: {
         type: String,
-        required: 'Provider is required'
+        default: 'local'
     },
     role: {
         type: String,

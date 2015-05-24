@@ -7,7 +7,7 @@
 
 .content {
   padding-top: 0.5em;
-  padding-bottom: 1.5em;
+  padding-bottom: 0.5em;
 }
 
 .ng-invalid.ng-dirty {
@@ -57,18 +57,6 @@ h2 {
 
 td {
   cursor: pointer;
-}
-
-/*tracking forms*/
-@media screen and (min-width: 992px) {
-  .makeScroll {
-    height: 75.8vh;
-    width: auto;
-  }
-
-  .scrollContent {
-    overflow:auto;
-  }
 }
 
 .nav-tabs {
