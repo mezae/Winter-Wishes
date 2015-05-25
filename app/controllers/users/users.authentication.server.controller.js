@@ -38,6 +38,9 @@ exports.signup = function(req, res) {
 
     // Add missing user fields
     user.password = 'volunteer87';
+    if (user.children === null) user.children = 0;
+    if (user.teens === null) user.teens = 0;
+    if (user.seniors === null) user.seniors = 0;
 
     // Then save the user 
     user.save(function(err) {

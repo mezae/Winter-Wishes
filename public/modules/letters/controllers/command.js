@@ -114,34 +114,22 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
         //Allows user to add/update a partner
         $scope.saveAgency = function() {
             $scope.alert.active = false;
-            if (typeof $scope.partner.children === 'undefined') $scope.partner.children = 0;
-            if (typeof $scope.partner.teens === 'undefined') $scope.partner.teens = 0;
-            if (typeof $scope.partner.seniors === 'undefined') $scope.partner.seniors = 0;
-            var lettersTotal = $scope.partner.children + $scope.partner.teens + $scope.partner.seniors;
-            if (lettersTotal > 0) {
-                if ($scope.isNewAgency) {
-                    if (_.find($scope.partners, {
-                        'username': $scope.partner.username
-                    })) {
-                        $scope.alert = {
-                            active: true,
-                            type: 'danger',
-                            msg: $scope.partner.username + ' already exists. Please edit the existing copy to avoid duplicates.'
-                        };
-                    } else {
-                        signup($scope.partner);
-                    }
+            if ($scope.isNewAgency) {
+                if (_.find($scope.partners, {
+                    'username': $scope.partner.username
+                })) {
+                    $scope.alert = {
+                        active: true,
+                        type: 'danger',
+                        msg: $scope.partner.username + ' already exists. Please edit the existing copy to avoid duplicates.'
+                    };
                 } else {
-                    Agencies.update($scope.partner);
+                    signup($scope.partner);
                 }
-                $scope.hideSidebar();
             } else {
-                $scope.alert = {
-                    active: true,
-                    type: 'danger',
-                    msg: 'A tracking form must include at least one letter.'
-                };
+                Agencies.update($scope.partner);
             }
+            $scope.hideSidebar();
         };
 
 

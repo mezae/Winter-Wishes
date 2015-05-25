@@ -424,8 +424,8 @@ angular.module('letters').config(['$stateProvider',
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('ArticlesController', ['$scope', '$window', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'Users', 'socket',
-    function($scope, $window, $modal, $http, $stateParams, $location, Authentication, Agencies, Users, socket) {
+angular.module('letters').controller('CommandController', ['$scope', '$window', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
+    function($scope, $window, $http, $stateParams, $location, Authentication, Agencies, socket) {
         $scope.user = Authentication.user;
 
         if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
@@ -456,25 +456,35 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
             }
         };
 
-        //Allows user to add create new accounts, consider moving to backend
+        //Allows admin to create new accounts
         function signup(credentials) {
             $http.post('/auth/signup', credentials).success(function(response) {
                 console.log('new partner added');
             }).error(function(response) {
-                $scope.error = response.message;
+                $scope.alert = {
+                    active: true,
+                    type: 'danger',
+                    msg: response.message
+                };
             });
         }
 
+        //Allows admin to create multiple new accounts
         function signups(file) {
             $http.post('/auth/signups', file).success(function(response) {
+                $scope.user = response;
                 $scope.find();
-                $scope.alert = null;
+                $scope.alert.active = false;
             }).error(function(response) {
-                $scope.error = response.message;
+                $scope.alert = {
+                    active: true,
+                    type: 'danger',
+                    msg: response.message
+                };
             });
         }
 
-        //Allow user to upload file to add partners in bulk
+        //Allow user to upload file to add accounts in bulk
         //Makes sure CSV file includes required fields, otherwise lets user which fields are missing
         $scope.handleFileSelect = function() {
             if ($scope.file.length) {
@@ -527,36 +537,22 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
         //Allows user to add/update a partner
         $scope.saveAgency = function() {
             $scope.alert.active = false;
-            var lettersTotal = 0;
-            _.forEach([$scope.partner.children, $scope.partner.teens, $scope.partner.seniors], function(type) {
-                if (type) {
-                    lettersTotal += type;
-                }
-            });
-            if (lettersTotal > 0) {
-                if ($scope.isNewAgency) {
-                    if (_.find($scope.partners, {
-                        'username': $scope.partner.username
-                    })) {
-                        $scope.alert = {
-                            active: true,
-                            type: 'danger',
-                            msg: $scope.partner.username + ' already exists. Please edit the existing copy to avoid duplicates.'
-                        };
-                    } else {
-                        signup($scope.partner);
-                    }
+            if ($scope.isNewAgency) {
+                if (_.find($scope.partners, {
+                    'username': $scope.partner.username
+                })) {
+                    $scope.alert = {
+                        active: true,
+                        type: 'danger',
+                        msg: $scope.partner.username + ' already exists. Please edit the existing copy to avoid duplicates.'
+                    };
                 } else {
-                    Agencies.update($scope.partner);
+                    signup($scope.partner);
                 }
-                $scope.hideSidebar();
             } else {
-                $scope.alert = {
-                    active: true,
-                    type: 'danger',
-                    msg: 'A tracking form must include at least one letter.'
-                };
+                Agencies.update($scope.partner);
             }
+            $scope.hideSidebar();
         };
 
 
@@ -588,6 +584,7 @@ angular.module('letters').controller('ArticlesController', ['$scope', '$window',
 ]);
 'use strict';
 /* global _: false */
+/* global Notification: false */
 
 angular.module('letters').controller('myController', ['$scope', '$window', '$modal', '$location', '$filter', '$http', 'Authentication', 'Users', 'Agencies', 'Articles',
     function($scope, $window, $modal, $location, $filter, $http, Authentication, Users, Agencies, Articles) {
@@ -672,7 +669,29 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
         };
 
         $scope.allowNotifications = function() {
-            Notification.requestPermission();
+            // Let's check if the browser supports notifications
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notification");
+            }
+
+            // Let's check whether notification permissions have alredy been granted
+            else if (Notification.permission === "granted") {
+                // If it's okay let's create a notification
+                var notification = new Notification("Hi there!");
+            }
+
+            // Otherwise, we need to ask the user for permission
+            else if (Notification.permission !== 'denied') {
+                Notification.requestPermission(function(permission) {
+                    // If the user accepts, let's create a notification
+                    if (permission === "granted") {
+                        var notification = new Notification("Hi there!");
+                    }
+                });
+            }
+
+            // At last, if the user has denied notifications, and you 
+            // want to be respectful there is no need to bother them any more.
         };
     }
 ]);

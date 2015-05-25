@@ -2,53 +2,58 @@
 <section class="page-wrap" data-ng-controller="CommandController" data-ng-init="find()">
 
 	<div class="row">
-
 		<div class="col-md-12">
 			<h2>Command Center</h2>
 		</div>
-
-		<div class="col-md-12">
-			<alert ng-show="alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false">{{alert.msg}}</alert>
-		</div>
-		
 	</div>
 
 	<div class="row">
+
+		<!-- Agency Profile Fixed Sidebar -->
 		<aside class="addbar">
-		<div class="col-md-3 pull-right col-sm-12 col-xs-12 nga-default nga-stagger nga-slide-right hidden-print" ng-show="needToUpdate">
+			<div class="col-md-3 pull-right col-sm-12 col-xs-12 nga-default nga-stagger nga-slide-right hidden-print" ng-show="needToUpdate">
 
-			<form role="form">
-				<div class="form-group">
-					<label>Agency Info</label>
-					<input type="text"  class="profile form-control" id="agency" ng-disabled="!isNewAgency" ng-model="partner.username" placeholder="agency code">
-					<input type="text" class="profile form-control" ng-model="partner.agency" placeholder="agency name">
-					<input type="text" class="profile form-control" ng-model="partner.contact" placeholder="contact name">
-					<input type="email" class="profile form-control" ng-model="partner.email" placeholder="contact email">
-				</div>
+				<form role="form" name="agencyProfile" ng-submit="saveAgency()" novalidate>
 
-				<div class="form-group">
-					<label ng-hide='partner.status >= 3'>Accepted Letters</label>
+					<div class="form-group">
+						<label>Agency Info</label>
 
-					<label for="children" ng-class="partner.status >= 3 ? 'control-label': 'sr-only'">Accepted Children</label>
-					<input type="number" name="children" class="profile form-control" ng-model="partner.children" ng-disabled="partner.status >= 3" min="0" placeholder="children">
+						<input type="text"  class="profile form-control" id="agency" ng-disabled="!isNewAgency" ng-model="partner.username" placeholder="agency code" ng-pattern="/^[A-Z]{3}$/" required>
+						<input type="text" class="profile form-control" ng-model="partner.agency" placeholder="agency name" required>
+						<input type="text" class="profile form-control" ng-model="partner.contact" placeholder="contact name" required>
+						<input type="email" class="profile form-control" ng-model="partner.email" placeholder="contact email" required>
+					</div>
 
-					<label for="teens" ng-class="partner.status >= 3 ? 'control-label': 'sr-only'">Accepted Teens</label>
-					<input type="number" name="teens" class="profile form-control" ng-model="partner.teens" ng-disabled="partner.status >= 3" min="0" placeholder="teens">
+					<div class="form-group">
+						<label ng-hide='partner.status >= 3'>Accepted Letters</label>
 
-					<label for="seniors" ng-class="partner.status >= 3 ? 'control-label': 'sr-only'">Accepted Seniors</label>
-					<input type="number" name="seniors" class="profile form-control" ng-model="partner.seniors" ng-disabled="partner.status >= 3" min="0" placeholder="seniors">
-				</div>
-				<input type="button" class="btn btn-cancel col-md-4 col-sm-3 col-xs-3 pull-left" ng-click="hideSidebar()" value="Cancel">
-				<div class="form-group">
-					<input type="button" class="btn btn-save col-md-4 col-sm-3 col-xs-3 pull-right" ng-click="saveAgency()" value="Save">
-				</div>
+						<label for="children" ng-class="partner.status >= 3 ? 'control-label': 'sr-only'">Accepted Children</label>
+						<input type="number" name="children" class="profile form-control" ng-model="partner.children" ng-disabled="partner.status >= 3" min="0" placeholder="children" ng-required="!partner.teens && !partner.seniors">
 
-			</form>
-		</div>
+						<label for="teens" ng-class="partner.status >= 3 ? 'control-label': 'sr-only'">Accepted Teens</label>
+						<input type="number" name="teens" class="profile form-control" ng-model="partner.teens" ng-disabled="partner.status >= 3" min="0" placeholder="teens">
+
+						<label for="seniors" ng-class="partner.status >= 3 ? 'control-label': 'sr-only'">Accepted Seniors</label>
+						<input type="number" name="seniors" class="profile form-control" ng-model="partner.seniors" ng-disabled="partner.status >= 3" min="0" placeholder="seniors">
+					</div>
+
+					<input type="button" class="btn btn-cancel col-md-4 col-sm-3 col-xs-3 pull-left" ng-click="hideSidebar()" value="Cancel">
+					<div class="form-group">
+						<button type="submit" class="btn btn-save col-md-4 col-sm-3 col-xs-3 pull-right" ng-disabled="agencyProfile.$invalid">Save</button>
+					</div>
+
+				</form>
+			</div>
 		</aside>
 
 
 	<div ng-class="needToUpdate ? 'col-md-9 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-12 col-sm-12 col-xs-12'">
+
+		<div class="row">
+			<div class="col-md-12">
+				<alert ng-show="alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false">{{alert.msg}}</alert>
+			</div>
+		</div>	
  
 	 	<div class="row" ng-if="(partners.length > 0 && !needToUpdate) || (needToUpdate && partner)">
 		  	

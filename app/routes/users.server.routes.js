@@ -28,8 +28,8 @@ module.exports = function(app) {
     app.route('/auth/reset/:token').post(users.reset);
 
     // Setting up the users authentication api
-    app.route('/auth/signup').post(users.signup);
-    app.route('/auth/signups').post(users.signups);
+    app.route('/auth/signup').post(users.hasAuthorization('admin'), users.signup);
+    app.route('/auth/signups').post(users.hasAuthorization('admin'), users.signups);
     app.route('/auth/signin').post(users.signin);
     app.route('/auth/signout').get(users.signout);
 
