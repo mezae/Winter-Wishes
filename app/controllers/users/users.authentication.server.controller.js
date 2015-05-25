@@ -51,6 +51,13 @@ exports.signup = function(req, res) {
                 'T': user.teens,
                 'S': user.seniors
             }, []);
+
+            user.salt = undefined;
+            user.password = undefined;
+            user.provider = undefined;
+            user.role = undefined;
+            user.created = undefined;
+
             res.json(user);
         }
     });
@@ -103,15 +110,23 @@ exports.signups = function(req, res) {
                 }
             });
 
-            var admin = req.user;
-            admin.status = 1;
-            admin.updated = Date.now();
+            console.log(req.user);
+            var user = req.user;
+            user.status = 1;
+            user.updated = Date.now();
 
-            admin.save(function(err) {
+            user.save(function(err) {
                 if (err) {
                     console.log(err);
                 } else {
-                    res.json(admin);
+                    user.provider = undefined;
+                    user.created = undefined;
+                    user.children = undefined;
+                    user.teens = undefined;
+                    user.seniors = undefined;
+                    user.updated = undefined;
+                    user.rating = undefined;
+                    res.json(user);
                 }
             });
 

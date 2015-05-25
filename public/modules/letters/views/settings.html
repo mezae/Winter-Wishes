@@ -3,9 +3,93 @@
 	<div class="row">
 
 		<div class="col-md-12">
-			<h3>Admin Settings</h3>
+			<h3>Admin Settings - Experimental (not quite ready)</h3>
+		</div>
+	</div>
 
-			<h4>Download All Reviewed Letters</h4>
+	<div class="row inline">
+
+		<div class="col-xs-6 col-sm-3 col-md-2">
+			<div class="agency-box" ng-click="setting = 'duedate'">
+				<div class="text-center">
+					<i class="fa fa-calendar fa-2x"></i>
+				</div>
+				<p class="text-center">
+					Due Date
+				</p>
+			</div>
+		</div>
+
+		<div class="col-xs-6 col-sm-3 col-md-2">
+			<div class="agency-box" ng-click="setting = 'download'">
+				<div class="text-center">
+					<i class="fa fa-cloud-download fa-2x"></i>
+				</div>
+				<p class="text-center">
+					Data
+				</p>
+			</div>
+		</div>
+
+		<div class="col-xs-6 col-sm-3 col-md-2">
+			<div class="agency-box" ng-click="setting = 'admins'">
+				<div class="text-center">
+					<i class="fa fa-users fa-2x"></i>
+				</div>
+				<p class="text-center">
+					Admin Users
+				</p>
+			</div>
+		</div>
+
+		<div class="col-xs-6 col-sm-3 col-md-2">
+			<div class="agency-box" ng-click="setting = 'notify'">
+				<div class="text-center">
+					<i class="fa fa-bell-o fa-2x"></i>
+				</div>
+				<p class="text-center">
+					Notifications
+				</p>
+			</div>
+		</div>
+
+		<div class="col-xs-6 col-sm-3 col-md-2">
+			<div class="agency-box" ng-click="setting = 'reset'">
+				<div class="text-center">
+					<i class="fa fa-eraser fa-2x"></i>
+				</div>
+				<p class="text-center">
+					Reset
+				</p>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="row" ng-if="setting === 'duedate'">
+
+		<div class="col-md-12">
+			<p>Change Due Date</p>
+		</div>
+	
+		<div class="form-group">
+		    <div class="col-md-2">
+		        <label for="formDOB" class="sr-only">Due Date</label>
+		        <p class="input-group">
+		          <input type="text" class="form-control" ng-model="user.due" datepicker-popup="{{calendar.dateFormat}}" ng-model="startDate" is-open="calendar.opened.start" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="Start Date" show-button-bar="false"/>
+		          <span class="input-group-btn">
+		            <button type="button" class="btn btn-upload" ng-click="calendar.open($event, 'start')"><i class="glyphicon glyphicon-calendar"></i></button>
+		          </span>
+		        </p>
+		    </div>
+
+		</div>
+	</div>
+
+	<div class="row" ng-if="setting === 'download'">
+
+		<div class="col-md-12">
+			<p>Download Reviewed Letters</p>
 		</div>
 	
 		<div class="form-group">
@@ -32,13 +116,13 @@
 			</div>
 		</div>
 	</div>
-	<div class="row">
+	<div class="row" ng-if="setting === 'admins'">
 		<div class="col-md-6">
 				<p ng-show="total >= 0 && !error">{{total}} letters were found
 				<a class="btn btn-lg btn-link" role="button" href="{{url}}" download="{{fileName}}" ng-show="total > 0"><i class="glyphicon glyphicon-download" tooltip="Download" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></a> </p>
 				<p ng-show="error" class="text-danger">{{error}}</p>
 
-				<h4>Edit User Roles</h4>
+				<p>Add/Remove Admin Accounts</p>
 
 				<div class="table-responsive">
 					<table class="table table-stripes">
@@ -77,13 +161,19 @@
 					</table>
 				</div>
 
-				<h4>Reset Data</h4>
-				<button class="btn btn-cancel" ng-click="reset()">Reset</button>
-
-				<h4>Enable Notifications</h4>
-				<button class="btn btn-save" ng-click="allowNotifications()">Enable Notifications</button>
-
 		</div>
-	</div>
+		</div>
+
+		<div ng-if="setting === 'reset'">
+			<p>Delete All Tracking Form Data</p>
+			<button class="btn btn-cancel" ng-click="reset()">Reset</button>
+		</div>
+
+		<div ng-if="setting === 'notify'">
+			<p>Enable/Disable Notifications</p>
+			<button class="btn btn-save" ng-click="allowNotifications()">Enable Notifications</button>
+		</div>
+
+	
 
 </section>

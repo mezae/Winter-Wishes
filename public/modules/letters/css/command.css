@@ -164,6 +164,6 @@ a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
   height: 34px;
 }
 
-.btn-padding {
-  
+select option[default] {
+    color: #ccc;
 }

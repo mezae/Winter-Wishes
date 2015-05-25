@@ -1,5 +1,5 @@
 
-<section class="page-wrap" data-ng-controller="ArticlesController" data-ng-init="find()">
+<section class="page-wrap" data-ng-controller="CommandController" data-ng-init="find()">
 
 	<div class="row">
 
@@ -66,7 +66,7 @@
 			<div ng-class="needToUpdate ? 'col-md-6 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">		
 				<div class="form-group">
 					<select class="form-control" ng-model="query.status" ng-change="updateURL()">
-						<option value="">Filter by Status</option>
+						<option value="" selected disabled>Filter by Status</option>
 						<option value="0">Not Yet Started</option>
 						<option value="1">In Progress</option>
 						<option value="3">Submitted</option>

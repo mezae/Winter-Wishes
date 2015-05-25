@@ -17,8 +17,8 @@ exports.list = function(req, res) {
             req.query.role ? req.query : {
                 role: 'user'
             };
-        var sell = req.query.role ? 'due -_id' : '-salt -password -acceptance -created -provider -role';
-        User.find(query).select(sell).exec(function(err, users) {
+        var select = req.query.role && req.user.role !== 'admin' ? 'due -_id' : '-salt -password -created -provider -role';
+        User.find(query, select).exec(function(err, users) {
             if (err) {
                 return res.status(400).send({
                     message: errorHandler.getErrorMessage(err)
@@ -36,7 +36,8 @@ exports.list = function(req, res) {
 
 //Allows admin access to individual community partner accounts
 exports.agencyByID = function(req, res, next, id) {
-    var fields = req.user.role === 'admin' ? 'agency children teens seniors' : '';
+    var fields = '';
+    // var fields = req.user.role === 'admin' ? 'agency children teens seniors' : '';
     User.findOne({
         username: id
     }, fields).exec(function(err, agency) {
@@ -130,6 +131,9 @@ exports.update = function(req, res) {
                     'T': user.teens,
                     'S': user.seniors
                 }, letters);
+
+                user.provider = undefined;
+                user.created = undefined;
                 res.json(user);
             });
         }
@@ -153,6 +157,7 @@ exports.delete = function(req, res) {
                 }, function() {
                     console.log('Deleted all of ' + user.agency + '\'s letters');
                 });
+
                 res.json(user);
             }
         });
