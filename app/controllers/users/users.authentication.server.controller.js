@@ -7,6 +7,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     passport = require('passport'),
+    async = require('async'),
     User = mongoose.model('User'),
     Letter = mongoose.model('Article');
 
@@ -25,6 +26,33 @@ function initRecs(code, types, recs) {
     console.log('Created letters for ' + code);
 }
 
+exports.addAdmin = function(req, res) {
+    // Init Variables
+    var user = new User(req.body);
+    var message = null;
+
+    // Add missing user fields
+    user.password = process.env.ADMIN_PW;
+    user.role = 'admin';
+
+    // Then save the user 
+    user.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+
+            user.salt = undefined;
+            user.password = undefined;
+            user.provider = undefined;
+            user.created = undefined;
+
+            res.json(user);
+        }
+    });
+};
+
 /**
  * Signup
  */
@@ -37,7 +65,7 @@ exports.signup = function(req, res) {
     var message = null;
 
     // Add missing user fields
-    user.password = 'volunteer87';
+    user.password = process.env.USER_PW;
     if (user.children === null) user.children = 0;
     if (user.teens === null) user.teens = 0;
     if (user.seniors === null) user.seniors = 0;
@@ -58,8 +86,12 @@ exports.signup = function(req, res) {
             user.salt = undefined;
             user.password = undefined;
             user.provider = undefined;
-            user.role = undefined;
             user.created = undefined;
+            user.children = undefined;
+            user.teens = undefined;
+            user.seniors = undefined;
+            user.updated = undefined;
+            user.rating = undefined;
 
             res.json(user);
         }
@@ -67,16 +99,8 @@ exports.signup = function(req, res) {
 };
 
 exports.signups = function(req, res) {
-    var content = req.body.file;
-    var rows = content.split(/[\r\n|\n]+/);
-    var headers = rows.shift().split(',');
-    var code_col = headers.indexOf('Agency Code');
-    var agency_col = headers.indexOf('Agency Name');
-    var contact_col = headers.indexOf('Contact Name');
-    var email_col = headers.indexOf('Contact E-mail');
-    var child_col = headers.indexOf('Accepted Children');
-    var teen_col = headers.indexOf('Accepted Teens');
-    var seniors_col = headers.indexOf('Accepted Seniors');
+    var rows = req.body.file;
+    var headers = req.body.headers;
 
     User.find({}, 'username -_id').exec(function(err, users) {
         if (err) {
@@ -85,17 +109,18 @@ exports.signups = function(req, res) {
             var partners = _.pluck(users, 'username');
 
             _.forEach(rows, function(row) {
+
                 var record = row.split(',');
 
-                if (!_.includes(partners, record[code_col])) {
+                if (!_.includes(partners, record[headers.code_col])) {
                     var newPartner = new User({
-                        username: record[code_col],
-                        agency: record[agency_col],
-                        contact: record[contact_col],
-                        email: record[email_col],
-                        children: record[child_col] ? parseInt(record[child_col], 10) : 0,
-                        teens: record[teen_col] ? parseInt(record[teen_col], 10) : 0,
-                        seniors: record[seniors_col] ? parseInt(record[seniors_col], 10) : 0,
+                        username: record[headers.code_col],
+                        agency: record[headers.agency_col],
+                        contact: record[headers.contact_col],
+                        email: record[headers.email_col],
+                        children: record[headers.child_col] ? parseInt(record[headers.child_col], 10) : 0,
+                        teens: record[headers.teen_col] ? parseInt(record[headers.teen_col], 10) : 0,
+                        seniors: record[headers.seniors_col] ? parseInt(record[headers.seniors_col], 10) : 0,
                         password: 'volunteer87'
                     });
                     newPartner.save(function(err) {
@@ -111,28 +136,31 @@ exports.signups = function(req, res) {
                     });
                     partners.push(newPartner.username);
                 }
+
             });
 
-            console.log(req.user);
-            var user = req.user;
-            user.status = 1;
-            user.updated = Date.now();
+            if (req.body.isLast) {
+                var user = req.user;
+                user.status = 1;
+                user.updated = Date.now();
 
-            user.save(function(err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    user.provider = undefined;
-                    user.created = undefined;
-                    user.children = undefined;
-                    user.teens = undefined;
-                    user.seniors = undefined;
-                    user.updated = undefined;
-                    user.rating = undefined;
-                    res.json(user);
-                }
-            });
-
+                user.save(function(err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        user.provider = undefined;
+                        user.created = undefined;
+                        user.children = undefined;
+                        user.teens = undefined;
+                        user.seniors = undefined;
+                        user.updated = undefined;
+                        user.rating = undefined;
+                        res.json(user);
+                    }
+                });
+            } else {
+                res.send(200);
+            }
         }
     });
 };

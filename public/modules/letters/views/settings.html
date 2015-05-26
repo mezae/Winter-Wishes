@@ -3,14 +3,14 @@
 	<div class="row">
 
 		<div class="col-md-12">
-			<h3>Admin Settings - Experimental (not quite ready)</h3>
+			<h3>Admin Settings</h3>
 		</div>
 	</div>
 
 	<div class="row inline">
 
 		<div class="col-xs-6 col-sm-3 col-md-2">
-			<div class="agency-box" ng-click="setting = 'duedate'">
+			<div class="agency-box" ng-click="viewData('duedate')">
 				<div class="text-center">
 					<i class="fa fa-calendar fa-2x"></i>
 				</div>
@@ -21,7 +21,7 @@
 		</div>
 
 		<div class="col-xs-6 col-sm-3 col-md-2">
-			<div class="agency-box" ng-click="setting = 'download'">
+			<div class="agency-box" ng-click="viewData('download')">
 				<div class="text-center">
 					<i class="fa fa-cloud-download fa-2x"></i>
 				</div>
@@ -32,7 +32,7 @@
 		</div>
 
 		<div class="col-xs-6 col-sm-3 col-md-2">
-			<div class="agency-box" ng-click="setting = 'admins'">
+			<div class="agency-box" ng-click="viewAdmins()">
 				<div class="text-center">
 					<i class="fa fa-users fa-2x"></i>
 				</div>
@@ -43,7 +43,7 @@
 		</div>
 
 		<div class="col-xs-6 col-sm-3 col-md-2">
-			<div class="agency-box" ng-click="setting = 'notify'">
+			<div class="agency-box" ng-click="viewNotifications()">
 				<div class="text-center">
 					<i class="fa fa-bell-o fa-2x"></i>
 				</div>
@@ -76,9 +76,9 @@
 		    <div class="col-md-2">
 		        <label for="formDOB" class="sr-only">Due Date</label>
 		        <p class="input-group">
-		          <input type="text" class="form-control" ng-model="user.due" datepicker-popup="{{calendar.dateFormat}}" ng-model="startDate" is-open="calendar.opened.start" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="Start Date" show-button-bar="false"/>
+		          <input type="text" class="form-control" datepicker-popup="{{calendar.dateFormat}}" ng-model="user.due" ng-change="saveDueDate()" is-open="calendar.opened.due" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="Due Date" show-button-bar="false"/>
 		          <span class="input-group-btn">
-		            <button type="button" class="btn btn-upload" ng-click="calendar.open($event, 'start')"><i class="glyphicon glyphicon-calendar"></i></button>
+		            <button type="button" class="btn btn-upload" ng-click="calendar.open($event, 'due')"><i class="glyphicon glyphicon-calendar"></i></button>
 		          </span>
 		        </p>
 		    </div>
@@ -96,7 +96,7 @@
 		    <div class="col-md-2">
 		        <label for="formDOB" class="sr-only">Start Date</label>
 		        <p class="input-group">
-		          <input type="text" class="form-control" datepicker-popup="{{calendar.dateFormat}}" ng-model="startDate" is-open="calendar.opened.start" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="Start Date" show-button-bar="false"/>
+		          <input type="text" class="form-control" datepicker-popup="{{calendar.dateFormat}}" ng-model="calendar.startDate" is-open="calendar.opened.start" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="Start Date" show-button-bar="false"/>
 		          <span class="input-group-btn">
 		            <button type="button" class="btn btn-upload" ng-click="calendar.open($event, 'start')"><i class="glyphicon glyphicon-calendar"></i></button>
 		          </span>
@@ -105,7 +105,7 @@
 		    <div class="col-md-2">
 		        <label for="formWinDate" class="sr-only">End Date</label>
 		        <p class="input-group">
-		          <input type="text" class="form-control" datepicker-popup="{{calendar.dateFormat}}" ng-model="endDate" is-open="calendar.opened.end" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="End Date" show-button-bar="false"/>
+		          <input type="text" class="form-control" datepicker-popup="{{calendar.dateFormat}}" ng-model="calendar.endDate" is-open="calendar.opened.end" datepicker-options="calendar.dateOptions" close-text="Close" placeholder="End Date" show-button-bar="false"/>
 		          <span class="input-group-btn">
 		            <button type="button" class="btn btn-upload" ng-click="calendar.open($event, 'end')"><i class="glyphicon glyphicon-calendar"></i></button>
 		          </span>
@@ -114,29 +114,33 @@
 			<div class="col-md-3">
 				<button class='btn btn-upload' ng-click="downloadCSV()">Find</button>
 			</div>
-		</div>
-	</div>
-	<div class="row" ng-if="setting === 'admins'">
-		<div class="col-md-6">
+
+			<div class="col-md-6">
 				<p ng-show="total >= 0 && !error">{{total}} letters were found
 				<a class="btn btn-lg btn-link" role="button" href="{{url}}" download="{{fileName}}" ng-show="total > 0"><i class="glyphicon glyphicon-download" tooltip="Download" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></a> </p>
 				<p ng-show="error" class="text-danger">{{error}}</p>
-
-				<p>Add/Remove Admin Accounts</p>
+			</div>
+		</div>
+	</div>
+	<div class="row" ng-if="setting === 'admins'">
+		<div class="col-md-8">
+				<p>Add/Remove Admin Accounts - Experimental (not quite ready)</p>
 
 				<div class="table-responsive">
 					<table class="table table-stripes">
 						<thead>
 							<th>User</th>
 							<th>Name</th>
+							<th>Email</th>
 							<th>Role</th>
 						</thead>
 						<tbody>
 							<tr ng-repeat="user in users" ng-if="user.role !== 'user'">
 								<td ng-dblclick="editRole = false">{{user.username}}</td>
 								<td ng-dblclick="editRole = false">{{user.contact}}</td>
+								<td ng-dblclick="editRole = false">{{user.email}}</td>
 								<td ng-dblclick="editRole = true" ng-hide="editRole">{{user.role}}</td>
-								<td colspan="1" ng-show="editRole">
+								<td colspan="3" ng-show="editRole">
 									<select class="form-control" ng-model="user.role" ng-change="editRole = false">
 										<option value="admin">admin</option>
 										<option value="volunteer">volunteer</option>
@@ -144,17 +148,22 @@
 								</td>
 							</tr>
 							<tr ng-show="addNewAdmin">
-								<td><input type="text" placeholder="username" ng-model="credentials.username"></td>
-								<td><input type="text" placeholder="full name" ng-model="credentials.username"></td>
-								<td><input type="text" placeholder="role" ng-model="credentials.username"></td>
+								<td><input type="text" class="form-control profile" placeholder="username" ng-model="credentials.username"></td>
+								<td><input type="text" class="form-control profile" placeholder="full name" ng-model="credentials.contact"></td>
+								<td><input type="text" class="form-control profile" placeholder="email" ng-model="credentials.email"></td>
+								<td><select class="form-control" ng-model="credentials.role">
+										<option value="admin">admin</option>
+										<option value="volunteer">volunteer</option>
+									</select>
+								</td>
 							</tr>
 							<tr>
-								<td ng-hide="addNewAdmin" colspan="3">
+								<td ng-hide="addNewAdmin" colspan="4">
 									<button class="btn btn-upload" ng-click="addNewAdmin = true">Add New User</button>
 								</td>
-								<td ng-show="addNewAdmin" colspan="3">
+								<td ng-show="addNewAdmin" colspan="4">
 									<button class="btn btn-cancel pull-left" ng-click="addNewAdmin = false">Cancel</button> 
-									<button class="btn btn-save pull-right" ng-click="addNewAdmin = false">Save</button>
+									<button class="btn btn-save pull-right" ng-click="saveAdmin()">Save</button>
 								</td>
 							</tr>
 						</tbody>
@@ -165,13 +174,18 @@
 		</div>
 
 		<div ng-if="setting === 'reset'">
-			<p>Delete All Tracking Form Data</p>
+			<p>Delete All Tracking Form Data - wipes all data to start a new Winter Wishes year</p>
 			<button class="btn btn-cancel" ng-click="reset()">Reset</button>
 		</div>
 
 		<div ng-if="setting === 'notify'">
-			<p>Enable/Disable Notifications</p>
-			<button class="btn btn-save" ng-click="allowNotifications()">Enable Notifications</button>
+			<div ng-if="!permission">
+				<p>Desktop Notifications - receive an alert when an agency submits their tracking form</p>
+				<button class="btn btn-save" ng-click="allowNotifications()">Enable Notifications</button>
+			</div>
+			<div ng-if="permission">
+				Desktop Notifications have already been enabled.
+			</div>
 		</div>
 
 	

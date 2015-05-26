@@ -51,11 +51,16 @@
 
 		<div class="row">
 			<div class="col-md-12">
-				<alert ng-show="alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false">{{alert.msg}}</alert>
+				<alert ng-show="alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false">		{{alert.msg}}
+				</alert>
+
+				<progressbar class="progress-striped active" max="newUsers" value="partners.length" type="success" ng-if="newUsers > 0 && partners.length < newUsers && partners.length > 1">
+					{{partners.length}}/{{newUsers}}
+				</progressbar>
 			</div>
 		</div>	
  
-	 	<div class="row" ng-if="(partners.length > 0 && !needToUpdate) || (needToUpdate && partner)">
+	 	<div class="row" ng-if="(user.status > 0 && partners.length > 0 && !needToUpdate) || (needToUpdate && partner)">
 		  	
 		  	<!-- Search by Agency Code -->
 		  	<div ng-class="needToUpdate ? 'col-md-6 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
@@ -106,7 +111,7 @@
 		<div class="row inline" ng-if="!needToUpdate || (needToUpdate && partner)">
 
 		    <!-- Community Partner Boxes -->
-			<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="cp in partners | orderBy: 'username' | filter:query as results" ng-if="!cp.hasOwnProperty('role')">
+			<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="cp in partners | orderBy: 'username' | filter:query as results" ng-if="cp.role === 'user'">
 
 				<div class="agency-box" ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': cp.status == 5, 'btn-review': cp.status == 4, 'btn-complete': cp.status == 3, 'btn-started': cp.status == 1, 'btn-empty': cp.status == 0}">
 

@@ -1,8 +1,8 @@
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('CommandController', ['$scope', '$window', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
-    function($scope, $window, $http, $stateParams, $location, Authentication, Agencies, socket) {
+angular.module('letters').controller('CommandController', ['$scope', '$window', '$interval', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
+    function($scope, $window, $interval, $http, $stateParams, $location, Authentication, Agencies, socket) {
         $scope.user = Authentication.user;
 
         if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
@@ -25,12 +25,10 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
         };
 
         $scope.find = function() {
-            if ($scope.user.status > 0) {
-                Agencies.query({}, function(users) {
-                    $scope.partners = users;
-                    socket.syncUpdates('users', $scope.partners);
-                });
-            }
+            Agencies.query({}, function(users) {
+                $scope.partners = users;
+                socket.syncUpdates('users', $scope.partners);
+            });
         };
 
         //Allows admin to create new accounts
@@ -49,8 +47,7 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
         //Allows admin to create multiple new accounts
         function signups(file) {
             $http.post('/auth/signups', file).success(function(response) {
-                $scope.user = response;
-                $scope.find();
+                if (response !== 'OK') $scope.user = response;
                 $scope.alert.active = false;
             }).error(function(response) {
                 $scope.alert = {
@@ -59,6 +56,32 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
                     msg: response.message
                 };
             });
+        }
+
+        function findMissingFields(headers) {
+            var required_fields = ['Agency Code', 'Agency Name', 'Contact Name', 'Contact E-mail', 'Accepted Children', 'Accepted Teens', 'Accepted Seniors'];
+            var missing_fields = [];
+            _.forEach(required_fields, function(field) {
+                if (!_.includes(headers, field)) {
+                    missing_fields.push(field);
+                }
+            });
+            return missing_fields;
+        }
+
+        function processBatch(rows, headers) {
+            var rowCount = rows.length;
+            if (rowCount > 0) {
+                var batchQuantity = rowCount > 50 ? 50 : rowCount;
+                var batch = rows.splice(0, batchQuantity);
+
+                signups({
+                    headers: headers,
+                    file: batch,
+                    isLast: rows.length === 0
+                });
+            }
+            return rows;
         }
 
         //Allow user to upload file to add accounts in bulk
@@ -78,15 +101,7 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
                         var content = file.target.result;
                         var rows = content.split(/[\r\n|\n]+/);
                         var headers = rows.shift();
-                        var required_fields = ['Agency Code', 'Agency Name', 'Contact Name', 'Contact E-mail', 'Accepted Children', 'Accepted Teens', 'Accepted Seniors'];
-                        var missing_fields = [];
-
-                        _.forEach(required_fields, function(field) {
-                            if (!_.includes(headers, field)) {
-                                missing_fields.push(field);
-                            }
-                        });
-
+                        var missing_fields = findMissingFields(headers);
                         if (missing_fields.length) {
                             $scope.alert = {
                                 active: true,
@@ -94,14 +109,28 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
                                 msg: 'Your csv file could not be uploaded. It is missing the following columns: ' + missing_fields.join(', ') + '.'
                             };
                         } else {
+                            headers = headers.split(',');
+                            headers = {
+                                code_col: headers.indexOf('Agency Code'),
+                                agency_col: headers.indexOf('Agency Name'),
+                                contact_col: headers.indexOf('Contact Name'),
+                                email_col: headers.indexOf('Contact E-mail'),
+                                child_col: headers.indexOf('Accepted Children'),
+                                teen_col: headers.indexOf('Accepted Teens'),
+                                seniors_col: headers.indexOf('Accepted Seniors')
+                            };
+
                             $scope.alert = {
                                 active: true,
                                 type: 'info',
                                 msg: 'Great! Your tracking forms will appear shortly...'
                             };
-                            signups({
-                                file: content
-                            });
+                            $scope.newUsers = rows.length;
+
+                            rows = processBatch(rows, headers);
+                            $interval(function() {
+                                rows = processBatch(rows, headers);
+                            }, 28000, Math.ceil($scope.newUsers / 50));
                         }
                     };
                     reader.readAsText(file);

@@ -2,8 +2,8 @@
 /* global _: false */
 /* global Notification: false */
 
-angular.module('letters').controller('myController', ['$scope', '$window', '$modal', '$location', '$filter', '$http', 'Authentication', 'Users', 'Agencies', 'Articles',
-    function($scope, $window, $modal, $location, $filter, $http, Authentication, Users, Agencies, Articles) {
+angular.module('letters').controller('myController', ['$scope', '$window', '$location', '$filter', '$http', 'Authentication', 'Users', 'Agencies', 'Articles',
+    function($scope, $window, $location, $filter, $http, Authentication, Users, Agencies, Articles) {
         $scope.user = Authentication.user;
         if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
 
@@ -11,36 +11,58 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
             role: 'admin'
         });
 
-        $scope.startDate = null;
-        $scope.endDate = null;
+        $scope.viewData = function(tab) {
+            $scope.setting = tab;
 
-        $scope.calendar = {
-            opened: {},
-            dateFormat: 'MM/dd/yyyy',
-            dateOptions: {
-                showWeeks: false
-            },
-            open: function($event, calID) {
-                $event.preventDefault();
-                $event.stopPropagation();
-                $scope.calendar.opened[calID] = true;
-            }
+            $scope.calendar = {
+                startDate: null,
+                endDate: null,
+                opened: {},
+                dateFormat: 'MM/dd/yyyy',
+                dateOptions: {
+                    showWeeks: false
+                },
+                open: function($event, calID) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                    $scope.calendar.opened[calID] = true;
+                }
+            };
+        };
+
+        $scope.saveDueDate = function() {
+            var user = new Users($scope.user);
+            user.$update(function(response) {
+                $scope.user = response;
+            }, function(response) {
+                console.log(response.data.message);
+            });
+        };
+
+        $scope.viewAdmins = function() {
+            $scope.setting = 'admins';
+            $scope.credentials = {};
+        };
+
+        $scope.viewNotifications = function() {
+            $scope.setting = 'notify';
+            $scope.permission = Notification.permission === 'granted';
         };
 
         //Helps create a downloadable csv version of the tracking form
         $scope.downloadCSV = function() {
             $scope.error = null;
             $scope.total = null;
-            if ($scope.startDate && $scope.endDate) {
-                if ($scope.startDate > $scope.endDate) {
+            if ($scope.calendar.startDate && $scope.calendar.endDate) {
+                if ($scope.calendar.startDate > $scope.calendar.endDate) {
                     $scope.error = 'Start date must come before or be equal to end date.';
                 } else {
                     var headers = ['track', 'type', 'name', 'age', 'gender', 'gift'];
                     headers.push('flagged');
                     var csvString = headers.join(',') + '\r\n';
                     var Recipients = Articles.query({
-                        start: $scope.startDate,
-                        end: $scope.endDate
+                        start: $scope.calendar.startDate,
+                        end: $scope.calendar.endDate
                     }, function() {
                         $scope.total = Recipients.length;
                         _.forEach(Recipients, function(letter) {
@@ -70,6 +92,38 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
 
         };
 
+        //Allows admin to create new accounts
+        function signup(credentials) {
+            $http.post('/auth/newadmin', credentials).success(function(response) {
+                console.log('new admin added');
+                $scope.newAdmin = false;
+            }).error(function(response) {
+                $scope.alert = {
+                    active: true,
+                    type: 'danger',
+                    msg: response.message
+                };
+            });
+        }
+
+        $scope.saveAdmin = function() {
+            console.log($scope.credentials);
+            signup($scope.credentials);
+        };
+
+        $scope.allowNotifications = function() {
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notification");
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission(function(permission) {
+                    if (permission === 'granted') {
+                        $scope.permission = true;
+                        var notification = new Notification('Hi there!');
+                    }
+                });
+            }
+        };
+
         $scope.reset = function() {
             var confirmation = $window.prompt('Please type FOREVER to wipe all data.');
             if (confirmation === 'FOREVER') {
@@ -82,32 +136,6 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
                     $scope.error = response.message;
                 });
             }
-        };
-
-        $scope.allowNotifications = function() {
-            // Let's check if the browser supports notifications
-            if (!("Notification" in window)) {
-                alert("This browser does not support desktop notification");
-            }
-
-            // Let's check whether notification permissions have alredy been granted
-            else if (Notification.permission === "granted") {
-                // If it's okay let's create a notification
-                var notification = new Notification("Hi there!");
-            }
-
-            // Otherwise, we need to ask the user for permission
-            else if (Notification.permission !== 'denied') {
-                Notification.requestPermission(function(permission) {
-                    // If the user accepts, let's create a notification
-                    if (permission === "granted") {
-                        var notification = new Notification("Hi there!");
-                    }
-                });
-            }
-
-            // At last, if the user has denied notifications, and you 
-            // want to be respectful there is no need to bother them any more.
         };
     }
 ]);

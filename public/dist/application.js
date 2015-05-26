@@ -424,8 +424,8 @@ angular.module('letters').config(['$stateProvider',
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('CommandController', ['$scope', '$window', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
-    function($scope, $window, $http, $stateParams, $location, Authentication, Agencies, socket) {
+angular.module('letters').controller('CommandController', ['$scope', '$window', '$interval', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
+    function($scope, $window, $interval, $http, $stateParams, $location, Authentication, Agencies, socket) {
         $scope.user = Authentication.user;
 
         if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
@@ -448,12 +448,10 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
         };
 
         $scope.find = function() {
-            if ($scope.user.status > 0) {
-                Agencies.query({}, function(users) {
-                    $scope.partners = users;
-                    socket.syncUpdates('users', $scope.partners);
-                });
-            }
+            Agencies.query({}, function(users) {
+                $scope.partners = users;
+                socket.syncUpdates('users', $scope.partners);
+            });
         };
 
         //Allows admin to create new accounts
@@ -472,8 +470,7 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
         //Allows admin to create multiple new accounts
         function signups(file) {
             $http.post('/auth/signups', file).success(function(response) {
-                $scope.user = response;
-                $scope.find();
+                if (response !== 'OK') $scope.user = response;
                 $scope.alert.active = false;
             }).error(function(response) {
                 $scope.alert = {
@@ -482,6 +479,32 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
                     msg: response.message
                 };
             });
+        }
+
+        function findMissingFields(headers) {
+            var required_fields = ['Agency Code', 'Agency Name', 'Contact Name', 'Contact E-mail', 'Accepted Children', 'Accepted Teens', 'Accepted Seniors'];
+            var missing_fields = [];
+            _.forEach(required_fields, function(field) {
+                if (!_.includes(headers, field)) {
+                    missing_fields.push(field);
+                }
+            });
+            return missing_fields;
+        }
+
+        function processBatch(rows, headers) {
+            var rowCount = rows.length;
+            if (rowCount > 0) {
+                var batchQuantity = rowCount > 50 ? 50 : rowCount;
+                var batch = rows.splice(0, batchQuantity);
+
+                signups({
+                    headers: headers,
+                    file: batch,
+                    isLast: rows.length === 0
+                });
+            }
+            return rows;
         }
 
         //Allow user to upload file to add accounts in bulk
@@ -501,15 +524,7 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
                         var content = file.target.result;
                         var rows = content.split(/[\r\n|\n]+/);
                         var headers = rows.shift();
-                        var required_fields = ['Agency Code', 'Agency Name', 'Contact Name', 'Contact E-mail', 'Accepted Children', 'Accepted Teens', 'Accepted Seniors'];
-                        var missing_fields = [];
-
-                        _.forEach(required_fields, function(field) {
-                            if (!_.includes(headers, field)) {
-                                missing_fields.push(field);
-                            }
-                        });
-
+                        var missing_fields = findMissingFields(headers);
                         if (missing_fields.length) {
                             $scope.alert = {
                                 active: true,
@@ -517,14 +532,28 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
                                 msg: 'Your csv file could not be uploaded. It is missing the following columns: ' + missing_fields.join(', ') + '.'
                             };
                         } else {
+                            headers = headers.split(',');
+                            headers = {
+                                code_col: headers.indexOf('Agency Code'),
+                                agency_col: headers.indexOf('Agency Name'),
+                                contact_col: headers.indexOf('Contact Name'),
+                                email_col: headers.indexOf('Contact E-mail'),
+                                child_col: headers.indexOf('Accepted Children'),
+                                teen_col: headers.indexOf('Accepted Teens'),
+                                seniors_col: headers.indexOf('Accepted Seniors')
+                            };
+
                             $scope.alert = {
                                 active: true,
                                 type: 'info',
                                 msg: 'Great! Your tracking forms will appear shortly...'
                             };
-                            signups({
-                                file: content
-                            });
+                            $scope.newUsers = rows.length;
+
+                            rows = processBatch(rows, headers);
+                            $interval(function() {
+                                rows = processBatch(rows, headers);
+                            }, 28000, Math.ceil($scope.newUsers / 50));
                         }
                     };
                     reader.readAsText(file);
@@ -586,8 +615,8 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
 /* global _: false */
 /* global Notification: false */
 
-angular.module('letters').controller('myController', ['$scope', '$window', '$modal', '$location', '$filter', '$http', 'Authentication', 'Users', 'Agencies', 'Articles',
-    function($scope, $window, $modal, $location, $filter, $http, Authentication, Users, Agencies, Articles) {
+angular.module('letters').controller('myController', ['$scope', '$window', '$location', '$filter', '$http', 'Authentication', 'Users', 'Agencies', 'Articles',
+    function($scope, $window, $location, $filter, $http, Authentication, Users, Agencies, Articles) {
         $scope.user = Authentication.user;
         if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
 
@@ -595,36 +624,58 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
             role: 'admin'
         });
 
-        $scope.startDate = null;
-        $scope.endDate = null;
+        $scope.viewData = function(tab) {
+            $scope.setting = tab;
 
-        $scope.calendar = {
-            opened: {},
-            dateFormat: 'MM/dd/yyyy',
-            dateOptions: {
-                showWeeks: false
-            },
-            open: function($event, calID) {
-                $event.preventDefault();
-                $event.stopPropagation();
-                $scope.calendar.opened[calID] = true;
-            }
+            $scope.calendar = {
+                startDate: null,
+                endDate: null,
+                opened: {},
+                dateFormat: 'MM/dd/yyyy',
+                dateOptions: {
+                    showWeeks: false
+                },
+                open: function($event, calID) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                    $scope.calendar.opened[calID] = true;
+                }
+            };
+        };
+
+        $scope.saveDueDate = function() {
+            var user = new Users($scope.user);
+            user.$update(function(response) {
+                $scope.user = response;
+            }, function(response) {
+                console.log(response.data.message);
+            });
+        };
+
+        $scope.viewAdmins = function() {
+            $scope.setting = 'admins';
+            $scope.credentials = {};
+        };
+
+        $scope.viewNotifications = function() {
+            $scope.setting = 'notify';
+            $scope.permission = Notification.permission === 'granted';
         };
 
         //Helps create a downloadable csv version of the tracking form
         $scope.downloadCSV = function() {
             $scope.error = null;
             $scope.total = null;
-            if ($scope.startDate && $scope.endDate) {
-                if ($scope.startDate > $scope.endDate) {
+            if ($scope.calendar.startDate && $scope.calendar.endDate) {
+                if ($scope.calendar.startDate > $scope.calendar.endDate) {
                     $scope.error = 'Start date must come before or be equal to end date.';
                 } else {
                     var headers = ['track', 'type', 'name', 'age', 'gender', 'gift'];
                     headers.push('flagged');
                     var csvString = headers.join(',') + '\r\n';
                     var Recipients = Articles.query({
-                        start: $scope.startDate,
-                        end: $scope.endDate
+                        start: $scope.calendar.startDate,
+                        end: $scope.calendar.endDate
                     }, function() {
                         $scope.total = Recipients.length;
                         _.forEach(Recipients, function(letter) {
@@ -654,6 +705,38 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
 
         };
 
+        //Allows admin to create new accounts
+        function signup(credentials) {
+            $http.post('/auth/newadmin', credentials).success(function(response) {
+                console.log('new admin added');
+                $scope.newAdmin = false;
+            }).error(function(response) {
+                $scope.alert = {
+                    active: true,
+                    type: 'danger',
+                    msg: response.message
+                };
+            });
+        }
+
+        $scope.saveAdmin = function() {
+            console.log($scope.credentials);
+            signup($scope.credentials);
+        };
+
+        $scope.allowNotifications = function() {
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notification");
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission(function(permission) {
+                    if (permission === 'granted') {
+                        $scope.permission = true;
+                        var notification = new Notification('Hi there!');
+                    }
+                });
+            }
+        };
+
         $scope.reset = function() {
             var confirmation = $window.prompt('Please type FOREVER to wipe all data.');
             if (confirmation === 'FOREVER') {
@@ -666,32 +749,6 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$mod
                     $scope.error = response.message;
                 });
             }
-        };
-
-        $scope.allowNotifications = function() {
-            // Let's check if the browser supports notifications
-            if (!("Notification" in window)) {
-                alert("This browser does not support desktop notification");
-            }
-
-            // Let's check whether notification permissions have alredy been granted
-            else if (Notification.permission === "granted") {
-                // If it's okay let's create a notification
-                var notification = new Notification("Hi there!");
-            }
-
-            // Otherwise, we need to ask the user for permission
-            else if (Notification.permission !== 'denied') {
-                Notification.requestPermission(function(permission) {
-                    // If the user accepts, let's create a notification
-                    if (permission === "granted") {
-                        var notification = new Notification("Hi there!");
-                    }
-                });
-            }
-
-            // At last, if the user has denied notifications, and you 
-            // want to be respectful there is no need to bother them any more.
         };
     }
 ]);

@@ -17,27 +17,8 @@ User.count({
             role: 'admin',
             username: 'AAA',
             email: 'meza.elmer@gmail.com',
-            password: 'wwadmin2015',
+            password: process.env.ADMIN_PW,
             agency: 'New York Cares',
-            acceptance: [{
-                target: 'ALL',
-                title: 'Acceptance',
-                description: 'let agencies know that they have been accepted into this year\'s program',
-                subject: 'Winter Wishes 2015 Acceptance',
-                message: 'Dear {{partner}},\n\nCongratulations! Your agency has been accepted for {{letters}}.\n\nTo access your tracking form:\nGo to the <a href=\"http://localhost:3000/#!/\">Winter Wishes homepage</a>.\nUsername: {{user}}\nPassword: {{pass}}\n\nSincerely,\nThe Winter Wishes Team'
-            }, {
-                title: 'Reminder',
-                description: 'let agencies know that the deadline is coming up',
-                subject: 'Tracking Form is due in 1 week',
-                message: 'Dear {{partner}},\n\nPlease keep in mind that tracking forms and letters must be submitted by October 5th.',
-                target: 'NYS'
-            }, {
-                message: 'Thank your for participating in this year\'s Winter Wishes program! Oh,I almost forgot...',
-                description: 'thank everyone for their participation in this year \'s program',
-                title: 'Thanks',
-                subject: 'Thank You!',
-                target: 'None'
-            }],
             contact: 'Elmer Meza',
 
         }, {
