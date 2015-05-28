@@ -47,7 +47,10 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
         //Allows admin to create multiple new accounts
         function signups(file) {
             $http.post('/auth/signups', file).success(function(response) {
-                if (response !== 'OK') $scope.user = response;
+                if (response !== 'OK') {
+                    $scope.user = response;
+                    $scope.fileDone = true;
+                }
                 $scope.alert.active = false;
             }).error(function(response) {
                 $scope.alert = {
@@ -125,6 +128,7 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
                                 type: 'info',
                                 msg: 'Great! Your tracking forms will appear shortly...'
                             };
+                            $scope.oldUsers = $scope.partners.length;
                             $scope.newUsers = rows.length;
 
                             rows = processBatch(rows, headers);
@@ -175,11 +179,13 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
             $scope.isNewAgency = selected ? false : true;
             $scope.partner = selected;
             $scope.needToUpdate = true;
+            $scope.startSearch = false;
         };
 
         $scope.hideSidebar = function() {
             $scope.partner = null;
             $scope.needToUpdate = false;
+            if ($scope.query.username || $scope.query.status) $scope.startSearch = true;
         };
 
         $scope.$on('$destroy', function() {

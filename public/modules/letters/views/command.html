@@ -2,8 +2,16 @@
 <section class="page-wrap" data-ng-controller="CommandController" data-ng-init="find()">
 
 	<div class="row">
-		<div class="col-md-12">
+		<div class="col-md-9 col-sm-9 col-xs-8">
 			<h2>Command Center</h2>
+		</div>
+		<div class="col-md-3 col-sm-3 col-xs-4 text-right hidden-print" ng-show="partners.length > 0 && !needToUpdate">
+			<button class="btn btn-lg btn-link" ng-click="startSearch = !startSearch">
+				<i class="fa fa-search"></i>
+			</button>
+			<button class="btn btn-lg btn-link" ng-click="showSidebar()">
+				<i class="fa fa-user-plus"></i>
+			</button>
 		</div>
 	</div>
 
@@ -54,13 +62,13 @@
 				<alert ng-show="alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false">		{{alert.msg}}
 				</alert>
 
-				<progressbar class="progress-striped active" max="newUsers" value="partners.length" type="success" ng-if="newUsers > 0 && partners.length < newUsers && partners.length > 1">
-					{{partners.length}}/{{newUsers}}
+				<progressbar class="progress-striped active" max="newUsers" value="partners.length - oldUsers" type="success" ng-if="(newUsers > 0 && partners.length - oldUsers < newUsers && partners.length - oldUsers > 1)" ng-hide="fileDone">
+					{{partners.length - oldUsers}}/{{newUsers}}
 				</progressbar>
 			</div>
 		</div>	
  
-	 	<div class="row" ng-if="(user.status > 0 && partners.length > 0 && !needToUpdate) || (needToUpdate && partner)">
+	 	<div class="row" ng-if="startSearch">
 		  	
 		  	<!-- Search by Agency Code -->
 		  	<div ng-class="needToUpdate ? 'col-md-6 pull-left col-sm-12 clearfix col-xs-12 clearfix' : 'col-md-4 col-sm-6 col-xs-12'">
@@ -87,13 +95,11 @@
 			</div>
 
 			<!-- Add Users OR Clear Filter -->
-			<div class="col-md-2 col-sm-12 col-xs-12">
+			<div class="col-md-2 col-sm-12 col-xs-12" ng-show="query.status">
 				<div class="form-group">
-					<button class="btn btn-block" 
-						ng-class="query.status ? 'btn-cancel' : 'btn-upload'" 
-						ng-show="partners.length > 0 && !needToUpdate" 
-						ng-click="query.status ? updateURL(true) : showSidebar()">
-							<i ng-class="query.status ? 'fa fa-filter' : 'fa fa-user-plus'"></i> {{query.status ? 'Clear Filter' : 'Add Users'}}
+					<button class="btn btn-block btn-cancel" 
+						ng-click="updateURL(true)">
+							<i class="fa fa-filter"></i> Clear Filter
 					</button>
 				</div>
 			</div>
@@ -108,7 +114,7 @@
 		    </div>
 		</div>
 
-		<div class="row inline" ng-if="!needToUpdate || (needToUpdate && partner)">
+		<div class="row inline" ng-show="!needToUpdate || (needToUpdate && partner)">
 
 		    <!-- Community Partner Boxes -->
 			<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="cp in partners | orderBy: 'username' | filter:query as results" ng-if="cp.role === 'user'">

@@ -55,6 +55,8 @@ h2 {
   margin-top: 5px;
 }
 
+
+
 td {
   cursor: pointer;
 }
@@ -159,6 +161,10 @@ textarea {
 }
 
 @media screen and (max-width: 320px) {
+  h2 {
+    font-size: 20px;
+  }
+
   .btn-lg, .btn-group-lg>.btn {
     padding: 2px 5px;
   }
