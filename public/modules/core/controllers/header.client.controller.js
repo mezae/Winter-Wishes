@@ -12,14 +12,28 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', '$loc
             return route === $location.path();
         };
 
-        $scope.toggleCollapsibleMenu = function() {
-            $scope.isCollapsed = !$scope.isCollapsed;
+        $scope.menuOpened = false;
+
+        $scope.toggleMenu = function(event) {
+            $scope.menuOpened = !($scope.menuOpened);
+
+            // Important part in the implementation
+            // Stopping event propagation means window.onclick won't get called when someone clicks
+            // on the menu div. Without this, menu will be hidden immediately
+            event.stopPropagation();
         };
 
-        // Collapsing the menu after navigation
+        window.onclick = function() {
+            if ($scope.menuOpened) {
+                $scope.menuOpened = false;
+
+                // You should let angular know about the update that you have made, so that it can refresh the UI
+                $scope.$apply();
+            }
+        };
+
         $scope.$on('$stateChangeSuccess', function() {
             if ($scope.authentication.user.status === 0) $scope.showTutorial();
-            $scope.isCollapsed = false;
         });
 
         $scope.needTutorial = function() {

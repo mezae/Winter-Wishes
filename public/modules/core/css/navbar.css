@@ -20,3 +20,129 @@
 .navbar-brand {
   padding: 4px 15px;
 }
+
+.nav-tog {
+	float: right;
+}
+
+.nvg {
+	position: fixed;
+	top: 0;
+	right: 0;
+	height: 97.1%;
+	z-index: 1000;
+}
+
+.navbar-toggle {
+	margin-right: 0;
+}
+
+@media (min-width: 768px) {
+	.navbar-toggle {
+	  display: block;
+	  float: right;
+	}
+}
+
+.main-menu i {
+	position: relative;
+	display: table-cell;
+	width: 60px;
+	height: 36px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.main-menu {
+	background:#fbfbfb;
+	border-right:1px solid #e5e5e5;
+	position:absolute;
+	top:0;
+	bottom:0;
+	height:100%;
+	right:0;
+	width:190px;
+	-webkit-transition:width .05s linear;
+	transition:width .05s linear;
+	-webkit-transform:translateZ(0) scale(1,1);
+	z-index:1000;
+}
+
+.main-menu>ul {
+	margin:10px 0;
+}
+
+.main-menu li {
+	position:relative;
+	display:block;
+	width:190px;
+}
+
+.main-menu li>a {
+position:relative;
+display:table;
+border-collapse:collapse;
+border-spacing:0;
+color:#999;
+ font-family: arial;
+font-size: 14px;
+text-decoration:none;
+-webkit-transform:translateZ(0) scale(1,1);
+-webkit-transition:all .1s linear;
+transition:all .1s linear;
+  
+}
+
+.main-menu .nav-icon {
+position:relative;
+display:table-cell;
+width:60px;
+height:36px;
+text-align:center;
+vertical-align:middle;
+font-size:18px;
+}
+
+.main-menu .nav-text {
+position:relative;
+display:table-cell;
+vertical-align:middle;
+width:150px;
+}
+
+.main-menu>ul.logout {
+position:absolute;
+left:0;
+bottom:0;
+}
+
+.no-touch .scrollable.hover {
+overflow-y:hidden;
+}
+
+.no-touch .scrollable.hover:hover {
+overflow-y:auto;
+overflow:visible;
+}
+
+a:hover,a:focus {
+text-decoration:none;
+}
+
+.navi {
+-webkit-user-select:none;
+-moz-user-select:none;
+-ms-user-select:none;
+-o-user-select:none;
+user-select:none;
+}
+
+.navi ul,.navi li {
+outline:0;
+margin:0;
+padding:0;
+}
+.main-menu li:hover>a,.navi.main-menu li.active>a,.dropdown-menu>li>a:hover,.dropdown-menu>li>a:focus,.dropdown-menu>.active>a,.dropdown-menu>.active>a:hover,.dropdown-menu>.active>a:focus,.no-touch .dashboard-page nav.dashboard-menu ul li:hover a,.dashboard-page nav.dashboard-menu ul li.active a {
+color:#fff;
+background-color:#5fa2db;
+}

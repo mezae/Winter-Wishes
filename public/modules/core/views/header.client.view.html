@@ -1,62 +1,98 @@
 <div class="navbar navbar-static-top" data-ng-controller="HeaderController" ng-hide="isActive('/login')">
 	<div class="container">
 
-		<div class="navbar-header">
-			<button class="navbar-toggle btn btn-lg btn-link" ng-hide="!authentication.user" type="button" data-ng-click="toggleCollapsibleMenu()">
-				<span class="sr-only">Toggle navigation</span>
-				<i class="glyphicon glyphicon-menu-hamburger"></i>
-			</button>
-			<a href="/#!/" class="navbar-brand"><img class="navbar-image" src="/modules/core/img/brand/winter_wishes_header.png"></a>
-		</div>	
+		<div class="row">
+			<div class="col-md-12">
+				<a href="/#!/" class="navbar-brand"><img class="navbar-image" src="/modules/core/img/brand/winter_wishes_header.png"></a>
 
-		<nav class="collapse navbar-collapse" collapse="!isCollapsed" role="navigation">
+				<button class="navbar-toggle btn btn-lg btn-link" ng-if="authentication.user" type="button" data-ng-click="toggleMenu($event)">
+					<span class="sr-only">Toggle navigation</span>
+					<i class="glyphicon glyphicon-menu-hamburger"></i>
+				</button>
+			</div>
+		</div>
 
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown" dropdown on-toggle="toggled(open)" ng-class="{open: hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-show="authentication.user">
-					<a href class="dropdown-toggle" dropdown-toggle>
-						<span data-ng-bind="authentication.user.agency"></span> <b class="caret"></b>
-					</a>
-					<ul class="dropdown-menu" role="menu">
-						<li>
-							<a href="" data-ng-show="needTutorial()" data-ng-click="showTutorial()">
-								<i class="fa fa-question-circle"></i>  Tutorial
-							</a>
-						</li>
-						<li data-ng-show="isAdmin()">
-							<a href="/#!/admin/email">
-								<i class="fa fa-envelope"></i>  E-mail Templates
-							</a>
-						</li>
-						<li data-ng-show="isAdmin()">
-							<a href="/#!/admin/stats">
-								<i class="fa fa-bar-chart"></i>  Stats for Nerds
-							</a>
-						</li>
-						<li>
-							<a href="/#!/settings/profile/edit">
-								<i class="fa fa-user"></i>  Edit Profile
-							</a>
-						</li>
-						<li>
-							<a href="/#!/settings/password">
-								<i class="fa fa-key"></i> Change Password
-							</a>
-						</li>
-						<li data-ng-show="isAdmin()">
-							<a href="/#!/admin/settings">
-								<i class="fa fa-cog"></i> Settings
-							</a>
-						</li>
-						<li class="divider"></li>
-						<li>
-							<a href="/auth/signout">
-								<i class="fa fa-sign-out"></i>  Signout
-							</a>
-						</li>
-					</ul>
-				</li>
-			</ul>
+		<div class="nvg" ng-show="menuOpened">
+			<div class="navi main-menu">
+	            <ul>
+	                <li>
+	                    <a href="/#!/">
+	                        <i class="fa fa-home fa-2x"></i>
+	                        <span class="nav-text">
+	                            Home
+	                        </span>
+	                    </a>
+	                  
+	                </li>
+	                <li data-ng-show="isAdmin()">
+						<a href="/#!/admin/email">
+	                        <i class="fa fa-envelope fa-2x"></i>
+	                        <span class="nav-text">
+	                            E-mail Templates
+	                        </span>
+	                    </a>
+	                    
+	                </li>
+	                
+	                <li data-ng-show="isAdmin()">
+						<a href="/#!/admin/stats">
+	                        <i class="fa fa-bar-chart-o fa-2x"></i>
+	                        <span class="nav-text">
+	                            Stats for Nerds
+	                        </span>
+	                    </a>
+	                </li>
 
-		</nav>
+	                <li>
+						<a href="/#!/settings/profile/edit">
+							<i class="fa fa-user fa-2x"></i>
+							<span class="nav-text">
+	                            Edit Profile
+	                        </span>
+						</a>
+					</li>
+
+					<li>
+						<a href="/#!/settings/password">
+							<i class="fa fa-key fa-2x"></i> 
+							<span class="nav-text">
+	                            Change Password
+	                        </span>
+						</a>
+					</li>
+
+	                <li data-ng-show="isAdmin()">
+						<a href="/#!/admin/settings">
+	                       <i class="fa fa-cog fa-2x"></i>
+	                        <span class="nav-text">
+	                            Settings
+	                        </span>
+	                    </a>
+	                </li>
+
+	                <li>
+	                    <a href="" data-ng-show="needTutorial()" data-ng-click="showTutorial()">
+	                       <i class="fa fa-question-circle fa-2x"></i>
+	                        <span class="nav-text">
+	                            Help
+	                        </span>
+	                    </a>
+	                </li>
+
+	            </ul>
+
+	            <ul class="logout">
+	                <li>
+	                   <a href="/auth/signout">
+	                         <i class="fa fa-sign-out fa-2x"></i>
+	                        <span class="nav-text">
+	                            Logout
+	                        </span>
+	                    </a>
+	                </li>  
+	            </ul>
+	        </div>
+	    </div>
+
 	</div>
 </div>

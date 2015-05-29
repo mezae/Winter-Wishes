@@ -105,7 +105,7 @@
 			</div>
 		</div>
 
-		<div class="row">
+		<div class="row hidden-xs">
 		<!-- File Dropzone -->
 			<div class="col-md-12" ng-show="user.status === 0 || partners.length === 0 || needToUpdate">
 				<div ngf-select ngf-drop ng-model="file" ng-model-rejected="reject" class="drop-box" ng-show="!partner" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-change="handleFileSelect()" ngf-accept="'text/csv'" accept=".csv">

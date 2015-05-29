@@ -110,11 +110,9 @@ a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
     background: #f5f6fc;
     border: 2px dashed #4d92cd;
     width: 100%;
-    height: 78.5vh;
+    height: 80.5vh;
     text-align: center;
     padding: 32vh 0;
-    margin-top: 10px;
-    margin-bottom: 20px;
 }
 
 .dragover {
@@ -137,7 +135,6 @@ a.btn-ready, a.btn-review, a.btn-complete, a.btn-started, a.btn-empty {
   position: fixed;
   width: 93%;
   right: 4%;
-  top: 116px;
   overflow: hidden;
 }
 
