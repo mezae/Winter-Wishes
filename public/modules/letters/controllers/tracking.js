@@ -7,7 +7,8 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
 
         if (!$scope.user) $location.path('/');
 
-        $scope.adminView = $scope.user.role === 'admin';
+        $scope.adminView = $scope.user.role !== 'user';
+        $scope.userView = $scope.user.role === 'user';
         var currentIndex = 0;
 
         //Helps initialize page by finding the appropriate letters

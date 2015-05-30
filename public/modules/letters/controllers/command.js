@@ -27,7 +27,6 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
         $scope.find = function() {
             Agencies.query({}, function(users) {
                 $scope.partners = users;
-                socket.syncUpdates('users', $scope.partners);
             });
         };
 
@@ -188,9 +187,7 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
             if ($scope.query.username || $scope.query.status) $scope.startSearch = true;
         };
 
-        $scope.$on('$destroy', function() {
-            socket.unsyncUpdates('users');
-        });
+
 
     }
 ]);

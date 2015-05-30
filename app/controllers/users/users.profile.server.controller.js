@@ -18,7 +18,7 @@ exports.list = function(req, res) {
                 role: 'user'
             };
         var select = req.query.role && req.user.role !== 'admin' ? 'due -_id' : '-salt -password -created -provider';
-        User.find(query, select).exec(function(err, users) {
+        User.find(query, select).lean().exec(function(err, users) {
             if (err) {
                 return res.status(400).send({
                     message: errorHandler.getErrorMessage(err)

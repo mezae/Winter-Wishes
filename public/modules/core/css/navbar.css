@@ -21,15 +21,17 @@
   padding: 4px 15px;
 }
 
-.nav-tog {
-	float: right;
+@media (max-width: 768px) {
+	.navbar-brand {
+		padding-left: 0;
+	}
 }
 
 .nvg {
 	position: fixed;
 	top: 0;
 	right: 0;
-	height: 97.1%;
+	height: 100%;
 	z-index: 1000;
 }
 
@@ -57,7 +59,7 @@
 	background:#fbfbfb;
 	border-right:1px solid #e5e5e5;
 	position:absolute;
-	top:0;
+	top:10px;
 	bottom:0;
 	height:100%;
 	right:0;
@@ -76,6 +78,7 @@
 	position:relative;
 	display:block;
 	width:190px;
+	height: 40px;
 }
 
 .main-menu li>a {
@@ -97,7 +100,7 @@ transition:all .1s linear;
 position:relative;
 display:table-cell;
 width:60px;
-height:36px;
+height:40px;
 text-align:center;
 vertical-align:middle;
 font-size:18px;
@@ -113,7 +116,7 @@ width:150px;
 .main-menu>ul.logout {
 position:absolute;
 left:0;
-bottom:0;
+bottom:10px;
 }
 
 .no-touch .scrollable.hover {

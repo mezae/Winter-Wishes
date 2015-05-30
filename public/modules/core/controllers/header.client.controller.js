@@ -1,12 +1,17 @@
 'use strict';
 
-angular.module('core').controller('HeaderController', ['$scope', '$state', '$location', '$modal', 'Authentication',
-    function($scope, $state, $location, $modal, Authentication) {
+angular.module('core').controller('HeaderController', ['$scope', '$state', '$location', '$modal', 'Authentication', 'socket',
+    function($scope, $state, $location, $modal, Authentication, socket) {
         $scope.authentication = Authentication;
 
         $scope.isAdmin = function() {
             return $scope.authentication.user.role === 'admin';
         };
+
+        if ($scope.isAdmin()) {
+            $scope.partners = [];
+            socket.syncUpdates('users', $scope.partners);
+        }
 
         $scope.isActive = function(route) {
             return route === $location.path();
@@ -71,6 +76,10 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', '$loc
                 });
             }
         };
+
+        $scope.$on('$destroy', function() {
+            socket.unsyncUpdates('users');
+        });
 
     }
 ])

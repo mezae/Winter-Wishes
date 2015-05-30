@@ -87,13 +87,18 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
 ]);
 'use strict';
 
-angular.module('core').controller('HeaderController', ['$scope', '$state', '$location', '$modal', 'Authentication',
-    function($scope, $state, $location, $modal, Authentication) {
+angular.module('core').controller('HeaderController', ['$scope', '$state', '$location', '$modal', 'Authentication', 'socket',
+    function($scope, $state, $location, $modal, Authentication, socket) {
         $scope.authentication = Authentication;
 
         $scope.isAdmin = function() {
             return $scope.authentication.user.role === 'admin';
         };
+
+        if ($scope.isAdmin()) {
+            $scope.partners = [];
+            socket.syncUpdates('users', $scope.partners);
+        }
 
         $scope.isActive = function(route) {
             return route === $location.path();
@@ -158,6 +163,10 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', '$loc
                 });
             }
         };
+
+        $scope.$on('$destroy', function() {
+            socket.unsyncUpdates('users');
+        });
 
     }
 ])
@@ -464,7 +473,6 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
         $scope.find = function() {
             Agencies.query({}, function(users) {
                 $scope.partners = users;
-                socket.syncUpdates('users', $scope.partners);
             });
         };
 
@@ -625,9 +633,7 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
             if ($scope.query.username || $scope.query.status) $scope.startSearch = true;
         };
 
-        $scope.$on('$destroy', function() {
-            socket.unsyncUpdates('users');
-        });
+
 
     }
 ]);
@@ -883,7 +889,8 @@ angular.module('letters').controller('AgencyController', ['$scope', '$q', '$stat
 
         if (!$scope.user) $location.path('/');
 
-        $scope.adminView = $scope.user.role === 'admin';
+        $scope.adminView = $scope.user.role !== 'user';
+        $scope.userView = $scope.user.role === 'user';
         var currentIndex = 0;
 
         //Helps initialize page by finding the appropriate letters
