@@ -8,11 +8,6 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', '$loc
             return $scope.authentication.user.role === 'admin';
         };
 
-        if ($scope.isAdmin()) {
-            $scope.partners = [];
-            socket.syncUpdates('users', $scope.partners);
-        }
-
         $scope.isActive = function(route) {
             return route === $location.path();
         };
@@ -77,10 +72,6 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', '$loc
             }
         };
 
-        $scope.$on('$destroy', function() {
-            socket.unsyncUpdates('users');
-        });
-
     }
 ])
 
@@ -125,13 +116,14 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', '$loc
     }
 ])
 
-.controller('ModalInstanceCtrl', ['$state', '$scope', '$filter', '$modalInstance', 'Agencies',
-    function($state, $scope, $filter, $modalInstance, Agencies) {
+.controller('ModalInstanceCtrl', ['$state', '$scope', '$filter', '$modalInstance', 'Authentication', 'Agencies',
+    function($state, $scope, $filter, $modalInstance, Authentication, Agencies) {
+        $scope.user = Authentication.user;
         if ($state.current.name === 'agTracking') {
-            Agencies.query({
-                role: 'admin'
-            }, function(admin) {
-                $scope.dueDate = $filter('date')(admin[0].due, 'fullDate');
+            Agencies.get({
+                agencyId: $scope.user.username
+            }, function(tf) {
+                $scope.dueDate = $filter('date')(tf.due, 'fullDate');
             });
         }
 

@@ -62,9 +62,9 @@ exports.signup = function(req, res) {
 
     // Init Variables
     var user = new User(req.body);
-    var message = null;
 
     // Add missing user fields
+    user.due = req.user.due;
     user.password = process.env.USER_PW;
     if (user.children === null) user.children = 0;
     if (user.teens === null) user.teens = 0;
@@ -83,17 +83,9 @@ exports.signup = function(req, res) {
                 'S': user.seniors
             }, []);
 
-            user.salt = undefined;
-            user.password = undefined;
-            user.provider = undefined;
-            user.created = undefined;
-            user.children = undefined;
-            user.teens = undefined;
-            user.seniors = undefined;
-            user.updated = undefined;
-            user.rating = undefined;
-
-            res.json(user);
+            res.json({
+                message: user.username + '\'s tracking form created'
+            });
         }
     });
 };
@@ -114,6 +106,7 @@ exports.signups = function(req, res) {
 
                 if (!_.includes(partners, record[headers.code_col])) {
                     var newPartner = new User({
+                        due: req.user.due,
                         username: record[headers.code_col],
                         agency: record[headers.agency_col],
                         contact: record[headers.contact_col],
@@ -121,7 +114,7 @@ exports.signups = function(req, res) {
                         children: record[headers.child_col] ? parseInt(record[headers.child_col], 10) : 0,
                         teens: record[headers.teen_col] ? parseInt(record[headers.teen_col], 10) : 0,
                         seniors: record[headers.seniors_col] ? parseInt(record[headers.seniors_col], 10) : 0,
-                        password: 'volunteer87'
+                        password: process.env.USER_PW
                     });
                     newPartner.save(function(err) {
                         if (err) {

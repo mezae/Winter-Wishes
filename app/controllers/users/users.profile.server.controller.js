@@ -18,15 +18,25 @@ exports.list = function(req, res) {
                 role: 'user'
             };
         var select = req.query.role && req.user.role !== 'admin' ? 'due -_id' : '-salt -password -created -provider';
-        User.find(query, select).lean().exec(function(err, users) {
-            if (err) {
-                return res.status(400).send({
-                    message: errorHandler.getErrorMessage(err)
-                });
+        var stream = User.find(query, select).sort('username').lean().stream();
+        var first = true;
+        res.writeHead(200, {
+            'Content-Type': 'application/json'
+        });
+        res.write('[');
+        stream.on('data', function(doc) {
+            if (first) {
+                first = false;
+                res.write(JSON.stringify(doc));
             } else {
-                res.json(users);
+                res.write(',' + JSON.stringify(doc));
             }
         });
+
+        stream.on('close', function() {
+            res.write(']');
+        });
+        stream.pipe(res);
     } else {
         return res.status(403).send({
             message: 'User is not authorized'
@@ -36,8 +46,7 @@ exports.list = function(req, res) {
 
 //Allows admin access to individual community partner accounts
 exports.agencyByID = function(req, res, next, id) {
-    var fields = '';
-    // var fields = req.user.role === 'admin' ? 'agency children teens seniors' : '';
+    var fields = req.user.role === 'admin' ? 'agency children teens seniors' : '-salt -password';
     User.findOne({
         username: id
     }, fields).exec(function(err, agency) {
@@ -134,6 +143,8 @@ exports.update = function(req, res) {
 
                 user.provider = undefined;
                 user.created = undefined;
+                user.password = undefined;
+                user.salt = undefined;
                 res.json(user);
             });
         }

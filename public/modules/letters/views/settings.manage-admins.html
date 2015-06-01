@@ -1,0 +1,59 @@
+<section data-ng-controller="ManageAdminsController" data-ng-init="find()">
+
+	<div class="row">
+
+		<div class="col-md-12">
+			<h3>Manage Admin Users</h3>
+		</div>
+	</div>
+
+		<div class="col-md-8">
+				<p>Add/Remove Admin Accounts - Experimental (not quite ready)</p>
+
+				<div class="table-responsive">
+					<table class="table table-stripes">
+						<thead>
+							<th>User</th>
+							<th>Name</th>
+							<th>Email</th>
+							<th>Role</th>
+						</thead>
+						<tbody>
+							<tr ng-repeat="user in users" ng-if="user.role !== 'user'" ng-click="removeAdmin(user)">
+								<td ng-dblclick="editRole = false">{{user.username}}</td>
+								<td ng-dblclick="editRole = false">{{user.contact}}</td>
+								<td ng-dblclick="editRole = false">{{user.email}}</td>
+								<td ng-dblclick="editRole = true" ng-hide="editRole">{{user.role}}</td>
+								<td colspan="3" ng-show="editRole">
+									<select class="form-control" ng-model="user.role" ng-change="editRole = false">
+										<option value="admin">admin</option>
+										<option value="volunteer">volunteer</option>
+									</select>
+								</td>
+							</tr>
+							<tr ng-show="addNewAdmin">
+								<td><input type="text" class="form-control profile" placeholder="username" ng-model="credentials.username"></td>
+								<td><input type="text" class="form-control profile" placeholder="full name" ng-model="credentials.contact"></td>
+								<td><input type="text" class="form-control profile" placeholder="email" ng-model="credentials.email"></td>
+								<td><select class="form-control" ng-model="credentials.role">
+										<option value="admin">admin</option>
+										<option value="volunteer">volunteer</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td ng-hide="addNewAdmin" colspan="4">
+									<button class="btn btn-upload" ng-click="addNewAdmin = true">Add New User</button>
+								</td>
+								<td ng-show="addNewAdmin" colspan="4">
+									<button class="btn btn-cancel pull-left" ng-click="addNewAdmin = false">Cancel</button> 
+									<button class="btn btn-save pull-right" ng-click="saveAdmin()">Save</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+		</div>
+
+</section>

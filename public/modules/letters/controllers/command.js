@@ -1,8 +1,8 @@
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('CommandController', ['$scope', '$window', '$interval', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
-    function($scope, $window, $interval, $http, $stateParams, $location, Authentication, Agencies, socket) {
+angular.module('letters').controller('CommandController', ['$scope', '$window', '$timeout', '$interval', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
+    function($scope, $window, $timeout, $interval, $http, $stateParams, $location, Authentication, Agencies, socket) {
         $scope.user = Authentication.user;
 
         if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
@@ -25,15 +25,31 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
         };
 
         $scope.find = function() {
-            Agencies.query({}, function(users) {
-                $scope.partners = users;
+            $scope.partners = [{
+                username: 'Loading...',
+                role: 'user'
+            }];
+            socket.syncUpdates('users', $scope.partners);
+            Agencies.query(function(users) {
+                var firstBatch = 50;
+                $scope.partners = new Array(users.length);
+                for (var k = 0; k < firstBatch; k++) {
+                    $scope.partners.push(users[k]);
+                }
+
+                // start second batch via event loop to let browser repaint
+                return $timeout(function renderRest() {
+                    for (var k = firstBatch; k < users.length; k++) {
+                        $scope.partners.push(users[k]);
+                    }
+                }, 1800);
             });
         };
 
         //Allows admin to create new accounts
         function signup(credentials) {
             $http.post('/auth/signup', credentials).success(function(response) {
-                console.log('new partner added');
+                console.log(response.message);
             }).error(function(response) {
                 $scope.alert = {
                     active: true,
@@ -187,7 +203,9 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
             if ($scope.query.username || $scope.query.status) $scope.startSearch = true;
         };
 
-
+        $scope.$on('$destroy', function() {
+            socket.unsyncUpdates('users');
+        });
 
     }
 ]);

@@ -11,12 +11,12 @@ var mongoose = require('mongoose'),
     _ = require('lodash');
 
 /**
- * Create a article
+ * Create a letter
  */
 exports.create = function(req, res) {
-    var article = new Letter(req.body);
-    var user = article.track.substring(0, 4);
-    var index = Number(article.track.substring(4));
+    var letter = new Letter(req.body);
+    var user = letter.track.substring(0, 4);
+    var index = Number(letter.track.substring(4));
 
     Letter.find({
         'track': {
@@ -38,13 +38,13 @@ exports.create = function(req, res) {
                     }
                 });
             });
-            article.save(function(err) {
+            letter.save(function(err) {
                 if (err) {
                     return res.status(400).send({
                         message: errorHandler.getErrorMessage(err)
                     });
                 } else {
-                    res.json(article);
+                    res.json(letter);
                 }
             });
         }

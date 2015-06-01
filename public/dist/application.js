@@ -95,11 +95,6 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', '$loc
             return $scope.authentication.user.role === 'admin';
         };
 
-        if ($scope.isAdmin()) {
-            $scope.partners = [];
-            socket.syncUpdates('users', $scope.partners);
-        }
-
         $scope.isActive = function(route) {
             return route === $location.path();
         };
@@ -164,10 +159,6 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', '$loc
             }
         };
 
-        $scope.$on('$destroy', function() {
-            socket.unsyncUpdates('users');
-        });
-
     }
 ])
 
@@ -212,13 +203,14 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', '$loc
     }
 ])
 
-.controller('ModalInstanceCtrl', ['$state', '$scope', '$filter', '$modalInstance', 'Agencies',
-    function($state, $scope, $filter, $modalInstance, Agencies) {
+.controller('ModalInstanceCtrl', ['$state', '$scope', '$filter', '$modalInstance', 'Authentication', 'Agencies',
+    function($state, $scope, $filter, $modalInstance, Authentication, Agencies) {
+        $scope.user = Authentication.user;
         if ($state.current.name === 'agTracking') {
-            Agencies.query({
-                role: 'admin'
-            }, function(admin) {
-                $scope.dueDate = $filter('date')(admin[0].due, 'fullDate');
+            Agencies.get({
+                agencyId: $scope.user.username
+            }, function(tf) {
+                $scope.dueDate = $filter('date')(tf.due, 'fullDate');
             });
         }
 
@@ -418,6 +410,10 @@ angular.module('letters').config(['$stateProvider',
             url: '/admin/settings',
             templateUrl: 'modules/letters/views/settings.html'
         }).
+        state('manageAdmins', {
+            url: '/admin/settings/manage',
+            templateUrl: 'modules/letters/views/settings.manage-admins.html'
+        }).
         state('tracking', {
             url: '/admin/agency/:articleId',
             templateUrl: 'modules/letters/views/tracking.html'
@@ -447,8 +443,8 @@ angular.module('letters').config(['$stateProvider',
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('CommandController', ['$scope', '$window', '$interval', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
-    function($scope, $window, $interval, $http, $stateParams, $location, Authentication, Agencies, socket) {
+angular.module('letters').controller('CommandController', ['$scope', '$window', '$timeout', '$interval', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
+    function($scope, $window, $timeout, $interval, $http, $stateParams, $location, Authentication, Agencies, socket) {
         $scope.user = Authentication.user;
 
         if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
@@ -471,15 +467,31 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
         };
 
         $scope.find = function() {
-            Agencies.query({}, function(users) {
-                $scope.partners = users;
+            $scope.partners = [{
+                username: 'Loading...',
+                role: 'user'
+            }];
+            socket.syncUpdates('users', $scope.partners);
+            Agencies.query(function(users) {
+                var firstBatch = 50;
+                $scope.partners = new Array(users.length);
+                for (var k = 0; k < firstBatch; k++) {
+                    $scope.partners.push(users[k]);
+                }
+
+                // start second batch via event loop to let browser repaint
+                return $timeout(function renderRest() {
+                    for (var k = firstBatch; k < users.length; k++) {
+                        $scope.partners.push(users[k]);
+                    }
+                }, 1800);
             });
         };
 
         //Allows admin to create new accounts
         function signup(credentials) {
             $http.post('/auth/signup', credentials).success(function(response) {
-                console.log('new partner added');
+                console.log(response.message);
             }).error(function(response) {
                 $scope.alert = {
                     active: true,
@@ -633,7 +645,9 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
             if ($scope.query.username || $scope.query.status) $scope.startSearch = true;
         };
 
-
+        $scope.$on('$destroy', function() {
+            socket.unsyncUpdates('users');
+        });
 
     }
 ]);
@@ -776,6 +790,46 @@ angular.module('letters').controller('myController', ['$scope', '$window', '$loc
                 });
             }
         };
+    }
+]);
+'use strict';
+/* global _: false */
+/* global Notification: false */
+
+angular.module('letters').controller('ManageAdminsController', ['$scope', '$window', '$location', '$http', 'Authentication', 'Users', 'Agencies',
+    function($scope, $window, $location, $http, Authentication, Users, Agencies) {
+        $scope.user = Authentication.user;
+        if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
+
+        $scope.find = function() {
+            $scope.credentials = {};
+            $scope.users = Agencies.query({
+                role: 'admin'
+            });
+        };
+
+        //Allows admin to create new accounts
+        $scope.addAdmin = function() {
+            $http.post('/auth/newadmin', $scope.credentials).success(function(response) {
+                console.log('new admin added');
+                $scope.newAdmin = false;
+            }).error(function(response) {
+                $scope.alert = {
+                    active: true,
+                    type: 'danger',
+                    msg: response.message
+                };
+            });
+        };
+
+        $scope.removeAdmin = function(selected) {
+            var confirmation = $window.prompt('Are you sure?');
+            if (confirmation === 'DELETE') {
+                var oldAdmin = selected;
+                selected.$remove();
+            }
+        };
+
     }
 ]);
 'use strict';
