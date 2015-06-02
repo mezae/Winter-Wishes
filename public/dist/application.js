@@ -473,18 +473,7 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
             }];
             socket.syncUpdates('users', $scope.partners);
             Agencies.query(function(users) {
-                var firstBatch = 50;
-                $scope.partners = new Array(users.length);
-                for (var k = 0; k < firstBatch; k++) {
-                    $scope.partners.push(users[k]);
-                }
-
-                // start second batch via event loop to let browser repaint
-                return $timeout(function renderRest() {
-                    for (var k = firstBatch; k < users.length; k++) {
-                        $scope.partners.push(users[k]);
-                    }
-                }, 1800);
+                $scope.partners = users;
             });
         };
 
@@ -803,6 +792,11 @@ angular.module('letters').controller('ManageAdminsController', ['$scope', '$wind
 
         $scope.find = function() {
             $scope.credentials = {};
+            $scope.alert = {
+                active: false,
+                type: '',
+                msg: ''
+            };
             $scope.users = Agencies.query({
                 role: 'admin'
             });
@@ -811,8 +805,9 @@ angular.module('letters').controller('ManageAdminsController', ['$scope', '$wind
         //Allows admin to create new accounts
         $scope.addAdmin = function() {
             $http.post('/auth/newadmin', $scope.credentials).success(function(response) {
-                console.log('new admin added');
-                $scope.newAdmin = false;
+                $scope.users.push(response);
+                if ($scope.alert.active) $scope.alert.active = false;
+                $scope.credentials = null;
             }).error(function(response) {
                 $scope.alert = {
                     active: true,
@@ -823,10 +818,12 @@ angular.module('letters').controller('ManageAdminsController', ['$scope', '$wind
         };
 
         $scope.removeAdmin = function(selected) {
-            var confirmation = $window.prompt('Are you sure?');
+            var confirmation = $window.prompt('Type DELETE to remove ' + selected.username + '\'s account');
             if (confirmation === 'DELETE') {
                 var oldAdmin = selected;
-                selected.$remove();
+                selected.$remove(function() {
+                    $scope.users.splice(_.findIndex($scope.users, oldAdmin), 1);
+                });
             }
         };
 

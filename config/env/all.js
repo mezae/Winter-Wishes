@@ -49,6 +49,8 @@ module.exports = {
         ],
         tests: [
             'public/lib/angular-mocks/angular-mocks.js',
+            'public/lib/socket.io-client/socket.io.js',
+            'public/lib/angular-socket.io-mock/angular-socket.io-mock.js',
             'public/modules/*/tests/*.js'
         ]
     }

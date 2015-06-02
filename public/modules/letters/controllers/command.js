@@ -31,18 +31,7 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
             }];
             socket.syncUpdates('users', $scope.partners);
             Agencies.query(function(users) {
-                var firstBatch = 50;
-                $scope.partners = new Array(users.length);
-                for (var k = 0; k < firstBatch; k++) {
-                    $scope.partners.push(users[k]);
-                }
-
-                // start second batch via event loop to let browser repaint
-                return $timeout(function renderRest() {
-                    for (var k = firstBatch; k < users.length; k++) {
-                        $scope.partners.push(users[k]);
-                    }
-                }, 1800);
+                $scope.partners = users;
             });
         };
 
