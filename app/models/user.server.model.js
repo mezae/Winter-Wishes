@@ -8,17 +8,10 @@ var mongoose = require('mongoose'),
     crypto = require('crypto');
 
 /**
- * A Validation function for local strategy properties
- */
-var validateLocalStrategyProperty = function(property) {
-    return ((this.provider !== 'local' && !this.updated) || property.length);
-};
-
-/**
  * A Validation function for local strategy password
  */
 var validateLocalStrategyPassword = function(password) {
-    return (this.provider !== 'local' || (password && password.length > 6));
+    return (password && password.length > 6);
 };
 
 /**
@@ -28,25 +21,20 @@ var UserSchema = new Schema({
     email: {
         type: String,
         trim: true,
-        default: '',
-        validate: [validateLocalStrategyProperty, 'Please fill in your email'],
+        required: 'Please fill in your email',
         match: [/.+\@.+\..+/, 'Please fill a valid email address']
     },
     phone: {
-        type: String,
-        default: '',
+        type: String
     },
     address: {
-        type: String,
-        default: '',
+        type: String
     },
     city: {
-        type: String,
-        default: '',
+        type: String
     },
     zip: {
-        type: Number,
-        default: '',
+        type: Number
     },
     username: {
         type: String,
@@ -56,7 +44,6 @@ var UserSchema = new Schema({
     },
     password: {
         type: String,
-        default: '',
         validate: [validateLocalStrategyPassword, 'Password should be longer']
     },
     children: {
@@ -109,12 +96,10 @@ var UserSchema = new Schema({
         type: Date
     },
     agency: {
-        type: String,
-        trim: true
+        type: String
     },
     contact: {
-        type: String,
-        trim: true
+        type: String
     },
     due: {
         type: Date
@@ -149,28 +134,6 @@ UserSchema.methods.hashPassword = function(password) {
  */
 UserSchema.methods.authenticate = function(password) {
     return this.password === this.hashPassword(password);
-};
-
-/**
- * Find possible not used username
- */
-UserSchema.statics.findUniqueUsername = function(username, suffix, callback) {
-    var _this = this;
-    var possibleUsername = username + (suffix || '');
-
-    _this.findOne({
-        username: possibleUsername
-    }, function(err, user) {
-        if (!err) {
-            if (!user) {
-                callback(possibleUsername);
-            } else {
-                return _this.findUniqueUsername(username, (suffix || 0) + 1, callback);
-            }
-        } else {
-            callback(null);
-        }
-    });
 };
 
 module.exports = mongoose.model('User', UserSchema);

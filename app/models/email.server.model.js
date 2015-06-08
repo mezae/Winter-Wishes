@@ -16,11 +16,11 @@ var EmailSchema = new Schema({
     },
     title: {
         type: String,
-        default: ''
+        required: 'Please include a title for this template'
     },
     description: {
         type: String,
-        default: ''
+        required: 'Please include a short description'
     },
     target: {
         type: String,

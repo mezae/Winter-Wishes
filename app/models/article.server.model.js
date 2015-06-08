@@ -16,7 +16,7 @@ var ArticleSchema = new Schema({
     },
     track: {
         type: String,
-        default: ''
+        required: 'Please include a tracking number',
     },
     name: {
         type: String,
