@@ -26,9 +26,9 @@
 
 						<button type="button" class="btn btn-lg btn-link" ng-show="(currentAgency.status == 3 || currentAgency.status == 5) && adminView" ng-click="startReview()"><i class="glyphicon glyphicon-edit" tooltip="{{currentAgency.status == 5 ? 'Oops...forgot something?' : 'Review'}}" tooltip-trigger="mouseenter"></i></button>
 
-						<button type="button" class="btn btn-lg btn-link" ng-show="(!adminView && currentAgency.status < 3) || (adminView && currentAgency.status == 4)" ng-click="confirmCompletion()"><i class="glyphicon glyphicon-ok-sign" tooltip="Submit" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></button>
+						<button type="button" class="btn btn-lg btn-link" ng-show="(userView && currentAgency.status < 3) || (adminView && currentAgency.status == 4)" ng-click="confirmCompletion()"><i class="glyphicon glyphicon-ok-sign" tooltip="Submit" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></button>
 
-						<a class="btn btn-lg btn-link" role="button" href="{{url}}" download="{{fileName}}" ng-show="(!adminView && currentAgency.status >= 3) || (adminView && currentAgency.status == 5)"><i class="glyphicon glyphicon-download" tooltip="Download" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></a>
+						<a class="btn btn-lg btn-link" role="button" href="{{url}}" download="{{fileName}}" ng-show="(userView && currentAgency.status >= 3) || (adminView && currentAgency.status == 5)"><i class="glyphicon glyphicon-download" tooltip="Download" tooltip-trigger="mouseenter" tooltip-append-to-body="true"></i></a>
 					</div>
 				</div>
 			</div>
@@ -36,8 +36,8 @@
 
 	<div class="row">
 		<aside class="addbar" ng-class="adminView ? 'saddbar' : 'laddbar'">
-		<div class="col-md-3 pull-right col-sm-12 col-xs-12 hidden-print" ng-hide="(adminView && currentAgency.status != 4) || (!adminView && currentAgency.status >= 3)">
-			<alert ng-show="!adminView && alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false"><i class="glyphicon glyphicon-warning-sign"></i> {{alert.msg}}</alert>
+		<div class="col-md-3 pull-right col-sm-12 col-xs-12 hidden-print" ng-hide="(adminView && currentAgency.status != 4) || (userView && currentAgency.status >= 3)">
+			<alert ng-show="userView && alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false"><i class="glyphicon glyphicon-warning-sign"></i> {{alert.msg}}</alert>
 
 			<div class="input-group">
 				<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
@@ -52,7 +52,7 @@
 				</span> 
 				<input type="text" class="profile form-control" ng-model="current.track" value="{{current.track}}" readonly>
 				<span class="input-group-btn" tooltip="{{adminView ? 'Delete letter and shift everything up' : 'Remove recipient from this slot'}}" tooltip-trigger="mouseenter" tooltip-append-to-body="true">
-					<button type="button" class="btn btn-cancel" ng-disabled="!adminView && !current.updated" ng-click="clearForm(current)"><i ng-class="adminView ? 'glyphicon glyphicon-minus' : 'glyphicon glyphicon-trash'"></i></button>
+					<button type="button" class="btn btn-cancel" ng-disabled="userView && !current.updated" ng-click="clearForm(current)"><i ng-class="adminView ? 'glyphicon glyphicon-minus' : 'glyphicon glyphicon-trash'"></i></button>
 				</span> 
 			</div>
 
@@ -79,7 +79,7 @@
 		</div>
 		</aside>
 
-		<div ng-class="(adminView && currentAgency.status != 4) || (!adminView && currentAgency.status >= 3) ? 'col-md-12' : 'col-md-9 pull-left col-sm-12 col-xs-12'">
+		<div ng-class="(adminView && currentAgency.status != 4) || (userView && currentAgency.status >= 3) ? 'col-md-12' : 'col-md-9 pull-left col-sm-12 col-xs-12'">
 			<div class="table-responsive">
 				<table class="table table-stripes">
 					<thead>

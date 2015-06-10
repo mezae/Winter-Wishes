@@ -46,7 +46,7 @@ exports.list = function(req, res) {
 
 //Allows admin access to individual community partner accounts
 exports.agencyByID = function(req, res, next, id) {
-    var fields = req.user.role === 'admin' ? 'agency children teens seniors' : '-salt -password';
+    var fields = '-salt -password -provider';
     User.findOne({
         username: id
     }, fields).exec(function(err, agency) {
