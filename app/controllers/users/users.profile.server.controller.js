@@ -17,8 +17,10 @@ exports.list = function(req, res) {
             req.query.role ? req.query : {
                 role: 'user'
             };
+        var offset = req.query.offset > 1 ? req.query.offset : '';
+        var limit = req.query.limit ? req.query.limit : '';
         var select = req.query.role && req.user.role !== 'admin' ? 'due -_id' : '-salt -password -created -provider';
-        var stream = User.find(query, select).sort('username').lean().stream();
+        var stream = User.find(query, select).skip(offset).limit(limit).sort('username').lean().stream();
         var first = true;
         res.writeHead(200, {
             'Content-Type': 'application/json'

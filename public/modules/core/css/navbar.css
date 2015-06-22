@@ -65,8 +65,14 @@
 	right:0;
 	width:190px;
 	-webkit-transition:width .05s linear;
+	-moz-transition:width .05s linear;
+	-o-transition:width .05s linear;
 	transition:width .05s linear;
-	-webkit-transform:translateZ(0) scale(1,1);
+	-webkit-transform: translateZ(0) scale(1,1);
+	-moz-transform: translateZ(0) scale(1,1);
+	-o-transform: translateZ(0) scale(1,1);
+	-ms-transform: translateZ(0) scale(1,1);
+	transform: translateZ(0) scale(1,1);
 	z-index:1000;
 }
 
@@ -89,11 +95,16 @@ border-spacing:0;
 color:#999;
  font-family: arial;
 font-size: 14px;
-text-decoration:none;
--webkit-transform:translateZ(0) scale(1,1);
--webkit-transition:all .1s linear;
-transition:all .1s linear;
-  
+text-decoration: none;
+-webkit-transform: translateZ(0) scale(1,1);
+-moz-transform: translateZ(0) scale(1,1);
+-o-transform: translateZ(0) scale(1,1);
+-ms-transform: translateZ(0) scale(1,1);
+transform: translateZ(0) scale(1,1);
+-webkit-transition: all .1s linear;
+-moz-transition: all .1s linear;
+-o-transition: all .1s linear;
+transition: all .1s linear;
 }
 
 .main-menu .nav-icon {

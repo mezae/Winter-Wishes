@@ -40,6 +40,7 @@
   transition: border .2s ease-in-out;
   -o-transition: border .2s ease-in-out;
   -webkit-transition: border .2s ease-in-out;
+  -moz-transition: border .2s ease-in-out;
 }
 
 .btn {

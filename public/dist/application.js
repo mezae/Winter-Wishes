@@ -4,7 +4,7 @@
 var ApplicationConfiguration = (function() {
     // Init module configuration options
     var applicationModuleName = 'meanww';
-    var applicationModuleVendorDependencies = ['ngResource', 'ngCookies', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ui.utils', 'btford.socket-io', 'textAngular', 'ngFileUpload'];
+    var applicationModuleVendorDependencies = ['ngResource', 'ngCookies', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ui.utils', 'btford.socket-io', 'textAngular', 'ngFileUpload', 'vs-repeat'];
 
     // Add a new vertical module
     var registerModule = function(moduleName, dependencies) {
@@ -443,8 +443,8 @@ angular.module('letters').config(['$stateProvider',
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('CommandController', ['$scope', '$window', '$timeout', '$interval', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
-    function($scope, $window, $timeout, $interval, $http, $stateParams, $location, Authentication, Agencies, socket) {
+angular.module('letters').controller('CommandController', ['$scope', '$q', '$window', '$timeout', '$interval', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
+    function($scope, $q, $window, $timeout, $interval, $http, $stateParams, $location, Authentication, Agencies, socket) {
         $scope.user = Authentication.user;
 
         if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
@@ -476,6 +476,7 @@ angular.module('letters').controller('CommandController', ['$scope', '$window', 
                 $scope.partners = users;
             });
         };
+
 
         //Allows admin to create new accounts
         function signup(credentials) {
