@@ -19,11 +19,11 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat="admin in users" ng-if="admin.role !== 'user'" ng-click="removeAdmin(admin)" ng-mouseenter="hover = true" ng-mouseleave="hover = false">
-							<td colspan="4" class="text-center" ng-if="hover && user.username !== admin.username">click here to delete this account</div>
-							<td ng-if="!hover || user.username === admin.username">{{admin.username}}</td>
-							<td ng-if="!hover || user.username === admin.username">{{admin.contact}}</td>
-							<td ng-if="!hover || user.username === admin.username">{{admin.email}}</td>
-							<td ng-if="!hover || user.username === admin.username">{{admin.role}}</td>
+							<td colspan="4" class="text-center" ng-if="hover && user.username !== admin.username && !addNewAdmin">click here to delete this account</div>
+							<td ng-if="(!hover || user.username === admin.username) || addNewAdmin" class="col-md-2">{{admin.username}}</td>
+							<td ng-if="!hover || user.username === admin.username || addNewAdmin" class="col-md-3">{{admin.contact}}</td>
+							<td ng-if="!hover || user.username === admin.username || addNewAdmin" class="col-md-3">{{admin.email}}</td>
+							<td ng-if="!hover || user.username === admin.username || addNewAdmin" class="col-md-2">{{admin.role}}</td>
 						</tr>
 						<tr ng-show="addNewAdmin">
 							<td>
@@ -43,7 +43,7 @@
 						</tr>
 						<tr>
 							<td ng-hide="addNewAdmin" colspan="4">
-								<button class="btn btn-upload" ng-click="addNewAdmin = true">Add New User</button>
+								<button class="btn btn-upload" ng-click="addNewAdmin = true">Add New Users</button>
 							</td>
 							<td ng-show="addNewAdmin" colspan="4">
 								<button class="btn btn-cancel pull-left" ng-click="addNewAdmin = false">Cancel</button> 
