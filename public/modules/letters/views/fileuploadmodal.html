@@ -1,0 +1,59 @@
+<div class="modal-header">
+  <h4 class="modal-title">Add Field Mapping</h4>
+</div>
+<div class="modal-body">
+	<div class="row">
+		<div class="col-md-12" ng-show="model.lists.A.length && !isSavedMapping">
+			<p>Drag column names across matching required fields</p>
+			<ul dnd-list="model.lists.A" dnd-horizontal-list="true">
+				<li	class="csvheaders"
+					ng-repeat="item in model.lists.A"
+					dnd-draggable="item"
+		        	dnd-moved="model.lists.A.splice($index, 1)"
+		        	dnd-effect-allowed="move"
+			        dnd-selected="model.selected = item"
+		    		ng-class="{'selected': model.selected === item}"
+		        >
+		        {{item.label}}
+		    	</li>
+			</ul>
+		</div>
+	</div>
+	<div class="row">
+			<div class="col-md-6">
+				<h5>Required Fields</h5>
+				<ul class="reqlist">
+					<li class="required" ng-repeat="field in required_fields">{{field}}</li>
+				</ul>
+			</div>
+		
+			<div class="col-md-6">
+				<h5>Matching Column Name</h5>
+				<ul dnd-list="model.lists.B" dnd-disable-if="model.lists.B.length >= required_fields.length">
+				    <li ng-repeat="item in model.lists.B"
+				        dnd-draggable="item"
+				        dnd-moved="model.lists.B.splice($index, 1)"
+				        dnd-effect-allowed="move"
+				        dnd-selected="models.selected = item"
+				        ng-class="{'selected': models.selected === item}"
+				        >
+				        {{item.label}}
+				    </li>
+				</ul>
+			</div>
+	</div>
+
+<!-- 	<div class="text-center">
+		<button type="button" class="btn btn-save" ng-show="model.lists.B.length === required_fields.length && !isSavedMapping" ng-click="create()">Save Mapping</button>
+		<button type="button" class="btn btn-upload" ng-show="model.lists.B.length < required_fields.length" ng-click="getMapping()">Use Saved Mapping</button>
+	</div>
+ -->
+	
+
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn" ng-class="model.lists.B.length === required_fields.length ? 'btn-upload' : 'btn-cancel'" 
+		ng-click="exitModal()">
+		{{model.lists.B.length === required_fields.length ? 'Continue' : 'Cancel'}}
+	</button>
+</div>

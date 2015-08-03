@@ -19,7 +19,8 @@ module.exports = {
                 'public/lib/angular-socket-io/socket.min.js',
                 'public/lib/textAngular/dist/textAngular.min.js',
                 'public/lib/textAngular/dist/textAngular-rangy.min.js',
-                'public/lib/ng-file-upload/ng-file-upload.min.js'
+                'public/lib/ng-file-upload/ng-file-upload.min.js',
+                'public/lib/angular-drag-and-drop-lists/angular-drag-and-drop-lists.min.js'
             ]
         },
         css: 'public/dist/application.min.css',

@@ -1,8 +1,8 @@
 'use strict';
 /* global _: false */
 
-angular.module('letters').controller('CommandController', ['$scope', '$q', '$window', '$timeout', '$interval', '$http', '$stateParams', '$location', 'Authentication', 'Agencies', 'socket',
-    function($scope, $q, $window, $timeout, $interval, $http, $stateParams, $location, Authentication, Agencies, socket) {
+angular.module('letters').controller('CommandController', ['$scope', '$q', '$window', '$timeout', '$interval', '$http', '$stateParams', '$location', '$modal', 'Authentication', 'Agencies', 'socket',
+    function($scope, $q, $window, $timeout, $interval, $http, $stateParams, $location, $modal, Authentication, Agencies, socket) {
         $scope.user = Authentication.user;
 
         if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
@@ -29,9 +29,10 @@ angular.module('letters').controller('CommandController', ['$scope', '$q', '$win
                 username: 'Loading...',
                 role: 'user'
             }];
-            socket.syncUpdates('users', $scope.partners);
+            
             Agencies.query(function(users) {
                 $scope.partners = users;
+                socket.syncUpdates('users', $scope.partners);
             });
         };
 
@@ -66,17 +67,6 @@ angular.module('letters').controller('CommandController', ['$scope', '$q', '$win
             });
         }
 
-        function findMissingFields(headers) {
-            var required_fields = ['Agency Code', 'Agency Name', 'Contact Name', 'Contact E-mail', 'Accepted Children', 'Accepted Teens', 'Accepted Seniors'];
-            var missing_fields = [];
-            _.forEach(required_fields, function(field) {
-                if (!_.includes(headers, field)) {
-                    missing_fields.push(field);
-                }
-            });
-            return missing_fields;
-        }
-
         function processBatch(rows, headers) {
             var rowCount = rows.length;
             if (rowCount > 0) {
@@ -92,60 +82,74 @@ angular.module('letters').controller('CommandController', ['$scope', '$q', '$win
             return rows;
         }
 
+        function proccessFile(headers, rows) {
+            var required_fields = ['Agency Code', 'Agency Name', 'Contact Name', 'Contact E-mail', 'Accepted Children', 'Accepted Teens', 'Accepted Seniors'];
+            var modal = $modal.open({
+                templateUrl: 'modules/letters/views/fileuploadmodal.html',
+                controller: 'MappingModalCtrl',
+                backdrop: 'static',
+                size: 'lg',
+                resolve: {
+                    arrays: function() {
+                        return {
+                            type: 'Accepted',
+                            required_fields: required_fields,
+                            headers: headers
+                        };
+                    }
+                }
+            });
+
+            modal.result.then(function(csvheaders) {
+
+                headers = {
+                    code_col: headers.indexOf(csvheaders[0].label),
+                    agency_col: headers.indexOf(csvheaders[1].label),
+                    contact_col: headers.indexOf(csvheaders[2].label),
+                    email_col: headers.indexOf(csvheaders[3].label),
+                    child_col: headers.indexOf(csvheaders[4].label),
+                    teen_col: headers.indexOf(csvheaders[5].label),
+                    seniors_col: headers.indexOf(csvheaders[6].label)
+                };
+
+                $scope.alert = {
+                    active: true,
+                    type: 'info',
+                    msg: 'Great! Your tracking forms will appear shortly...'
+                };
+                $scope.oldUsers = $scope.partners.length;
+                $scope.newUsers = rows.length;
+
+                rows = processBatch(rows, headers);
+                $scope.needToUpdate = false;
+                $interval(function() {
+                    rows = processBatch(rows, headers);
+                }, 15000, Math.ceil($scope.newUsers / 50));
+
+            });
+        }
+
         //Allow user to upload file to add accounts in bulk
         //Makes sure CSV file includes required fields, otherwise lets user which fields are missing
-        $scope.handleFileSelect = function() {
-            if ($scope.file.length) {
-                if ($scope.file[0].type !== 'text/csv') {
-                    $scope.alert = {
-                        active: true,
-                        type: 'danger',
-                        msg: 'Must be a csv file!'
-                    };
-                } else {
-                    var file = $scope.file[0];
-                    var reader = new FileReader();
-                    reader.onload = function(file) {
-                        var content = file.target.result;
-                        var rows = content.split(/[\r\n|\n]+/);
-                        var headers = rows.shift();
-                        var missing_fields = findMissingFields(headers);
-                        if (missing_fields.length) {
-                            $scope.alert = {
-                                active: true,
-                                type: 'danger',
-                                msg: 'Your csv file could not be uploaded. It is missing the following columns: ' + missing_fields.join(', ') + '.'
-                            };
-                        } else {
-                            headers = headers.split(',');
-                            headers = {
-                                code_col: headers.indexOf('Agency Code'),
-                                agency_col: headers.indexOf('Agency Name'),
-                                contact_col: headers.indexOf('Contact Name'),
-                                email_col: headers.indexOf('Contact E-mail'),
-                                child_col: headers.indexOf('Accepted Children'),
-                                teen_col: headers.indexOf('Accepted Teens'),
-                                seniors_col: headers.indexOf('Accepted Seniors')
-                            };
-
-                            $scope.alert = {
-                                active: true,
-                                type: 'info',
-                                msg: 'Great! Your tracking forms will appear shortly...'
-                            };
-                            $scope.oldUsers = $scope.partners.length;
-                            $scope.newUsers = rows.length;
-
-                            rows = processBatch(rows, headers);
-                            $interval(function() {
-                                rows = processBatch(rows, headers);
-                            }, 28000, Math.ceil($scope.newUsers / 50));
-                        }
-                    };
-                    reader.readAsText(file);
-                    $scope.needToUpdate = false;
-                }
-                $scope.file[0] = undefined;
+        $scope.handleFileSelect = function(files) {
+            if (files.length === 0) {
+                $scope.alert = {
+                    active: true,
+                    type: 'danger',
+                    msg: 'Must be a csv file!'
+                };
+            } else {
+                var file = files[0];
+                var reader = new FileReader();
+                reader.onload = function(file) {
+                    var content = file.target.result;
+                    var rows = content.split(/[\r\n|\n]+/);
+                    var headers = rows.shift();
+                    headers = headers.split(',');
+                    proccessFile(headers, rows);
+                };
+                reader.readAsText(file);
+                files[0] = undefined;
             }
         };
 

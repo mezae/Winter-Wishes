@@ -59,7 +59,8 @@
 
 		<div class="row">
 			<div class="col-md-12">
-				<alert ng-show="alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false">		{{alert.msg}}
+				<alert ng-show="alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false">
+					{{alert.msg}}
 				</alert>
 
 				<progressbar class="progress-striped active" max="newUsers" value="partners.length - oldUsers" type="success" ng-if="(newUsers > 0 && partners.length - oldUsers < newUsers && partners.length - oldUsers > 1)" ng-hide="fileDone">
@@ -108,7 +109,7 @@
 		<div class="row hidden-xs">
 		<!-- File Dropzone -->
 			<div class="col-md-12" ng-show="user.status === 0 || partners.length === 0 || needToUpdate">
-				<div ngf-select ngf-drop ng-model="file" ng-model-rejected="reject" class="drop-box" ng-show="!partner" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-change="handleFileSelect()" ngf-accept="'text/csv'" accept=".csv">
+				<div ngf-select ngf-drop class="drop-box" ng-show="!partner" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-change="handleFileSelect($files)" ngf-accept="'application/vnd.ms-excel,text/csv'" accept="application/vnd.ms-excel,text/csv">
 					<p class="lead">drop csv file here or <br/>click to browse<p>
 			    </div>
 		    </div>
@@ -119,7 +120,7 @@
 		    <!-- Community Partner Boxes -->
 			<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="cp in partners">
 
-				<div class="agency-box" ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': cp.status == 5, 'btn-review': cp.status == 4, 'btn-complete': cp.status == 3, 'btn-started': cp.status == 1, 'btn-empty': cp.status == 0}">
+				<div class="agency-box" ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': cp.status == 5, 'btn-review': cp.status == 4, 'btn-complete': cp.status == 3, 'btn-started': cp.status == 1, 'btn-empty': cp.status == 0}" ng-if="cp.role !== 'admin'">
 
 					<div class="text-center">
 						<strong>{{cp.username}}</strong>

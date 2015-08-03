@@ -21,7 +21,8 @@
     "ng-file-upload": "~4.2.0",
     "angular-socket.io-mock": "~1.0.0",
     "socket.io-client": "~1.3.5",
-    "angular-vs-repeat": "~1.0.0-rc9"
+    "angular-vs-repeat": "~1.0.0-rc9",
+    "angular-drag-and-drop-lists": "~1.2.0"
   },
   "resolutions": {
     "angular": "1.3.15"
