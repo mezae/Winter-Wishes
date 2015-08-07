@@ -34,13 +34,16 @@ angular.module('letters').controller('ManageAdminsController', ['$scope', '$wind
             });
         };
 
+        //Allow admin to delete other accounts as long as there is at least one left
         $scope.removeAdmin = function(selected) {
-            var confirmation = $window.prompt('Type DELETE to remove ' + selected.username + '\'s account');
-            if (confirmation === 'DELETE') {
-                var oldAdmin = selected;
-                selected.$remove(function() {
-                    $scope.users.splice(_.findIndex($scope.users, oldAdmin), 1);
-                });
+            if ($scope.users.length > 1) {
+                var confirmation = $window.prompt('Type DELETE to remove ' + selected.username + '\'s account');
+                if (confirmation === 'DELETE') {
+                    var oldAdmin = selected;
+                    selected.$remove(function() {
+                        $scope.users.splice(_.findIndex($scope.users, oldAdmin), 1);
+                    });
+                }
             }
         };
 

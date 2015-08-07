@@ -118,9 +118,9 @@
 		<div class="row inline" ng-show="!needToUpdate || (needToUpdate && partner)">
 
 		    <!-- Community Partner Boxes -->
-			<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="cp in partners">
+			<div class="col-xs-6 col-sm-3 nga-default nga-stagger nga-slide-right" ng-class="needToUpdate ? 'col-md-3' : 'col-md-2'" ng-repeat="cp in partners" ng-if="cp.role !== 'admin'">
 
-				<div class="agency-box" ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': cp.status == 5, 'btn-review': cp.status == 4, 'btn-complete': cp.status == 3, 'btn-started': cp.status == 1, 'btn-empty': cp.status == 0}" ng-if="cp.role !== 'admin'">
+				<div class="agency-box" ng-mouseenter="turn = true" ng-mouseleave="turn = false" ng-class="{'btn-ready': cp.status == 5, 'btn-review': cp.status == 4, 'btn-complete': cp.status == 3, 'btn-started': cp.status == 1, 'btn-empty': cp.status == 0}">
 
 					<div class="text-center">
 						<strong>{{cp.username}}</strong>

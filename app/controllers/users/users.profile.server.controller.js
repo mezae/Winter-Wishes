@@ -9,6 +9,32 @@ var _ = require('lodash'),
     passport = require('passport'),
     User = mongoose.model('User'),
     Article = mongoose.model('Article');
+var fs = require('fs');
+var pdf = require('html-pdf');
+
+
+
+exports.topdf = function(req, res) {
+    var options = {
+        filename: './pfpletter.pdf',
+        format: 'Letter',
+        border: {
+            top: '0.5in',
+            right: '0.2in',
+            bottom: '0in',
+            left: '0.2in'
+        }
+    };
+
+    res.render('templates/pfp-letter', {}, function(err, html) {
+        html = html + req.body.content + '</body></html>';
+        pdf.create(html, options).toFile(function(err, file) {
+            if (err) return console.log(err);
+            res.download(file.filename, 'file://' + file.filename);
+        });
+    });
+
+};
 
 //Allows admin access to all community partner accounts
 exports.list = function(req, res) {

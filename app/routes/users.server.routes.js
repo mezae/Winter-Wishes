@@ -21,6 +21,9 @@ module.exports = function(app) {
         .put(users.update)
         .delete(users.delete);
 
+    app.route('/users/pdf')
+        .post(users.requiresLogin, users.topdf);
+
     // Setting up the users password api
     app.route('/users/password').post(users.changePassword);
     app.route('/auth/forgot').post(users.forgot);

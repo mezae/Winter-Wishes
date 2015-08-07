@@ -33,6 +33,7 @@
     "glob": "3.2.11",
     "grunt-cli": "~0.1.13",
     "helmet": "^0.6.0",
+    "html-pdf": "^1.2.2",
     "lodash": "^3.1.0",
     "method-override": "^2.3.1",
     "mongoose": "3.8.23",
