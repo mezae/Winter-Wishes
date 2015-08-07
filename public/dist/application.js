@@ -732,8 +732,9 @@ angular.module('letters').controller('LabelController', ['$scope', '$q', '$windo
 
         function initRecs(code, types) {
 		    var lame = '<td class="lame"></td>';
+            var contents = '';
 		    for (var type in types) {
-		    	var contents = '<table><tr>';
+		    	contents += '<table><tr>';
 		        _.forEach(_.range(1, types[type] + 1), function(num) {
 		            var letter = code + type + _.padLeft(num, 3, '0');
 		            contents += '<td>'+ letter + '</td>';
