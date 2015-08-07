@@ -1,7 +1,7 @@
-<section class="page-wrap" data-ng-controller="LabelController" data-ng-init="find()">
+<section class="page-wrap" data-ng-controller="LabelController">
 	<div class="row hidden-xs">
 		<!-- File Dropzone -->
-		<div class="col-md-12" ng-show="user.status === 0 || partners.length === 0 || needToUpdate">
+		<div class="col-md-12">
 			<div ngf-select ngf-drop class="drop-box" ng-show="!partner" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-change="handleFileSelect($files)" ngf-accept="'application/vnd.ms-excel,text/csv'" accept="application/vnd.ms-excel,text/csv">
 				<p class="lead">drop csv file here or <br/>click to browse<p>
 		    </div>
