@@ -2,8 +2,8 @@
 /* global _: false */
 /* global LZString: false */
 
-angular.module('letters').controller('LabelController', ['$scope', '$q', '$window', '$timeout', '$interval', '$http', '$stateParams', '$location', '$modal', 'Authentication', 'Agencies',
-    function($scope, $q, $window, $timeout, $interval, $http, $stateParams, $location, $modal, Authentication, Agencies) {
+angular.module('letters').controller('LabelController', ['$scope', '$window', '$interval', '$http', '$location', '$modal', 'Authentication',
+    function($scope, $window, $interval, $http, $location, $modal, Authentication) {
         $scope.user = Authentication.user;
 
         if (!$scope.user || $scope.user.role === 'user') $location.path('/').replace();
@@ -16,6 +16,7 @@ angular.module('letters').controller('LabelController', ['$scope', '$q', '$windo
             msg: ''
         };
 
+        //send HTML, receive PDF file
         $scope.writeServiceLetter = function(file) {
             $http.post('/users/pdf', file, {
                 responseType: 'arraybuffer'
@@ -24,10 +25,10 @@ angular.module('letters').controller('LabelController', ['$scope', '$q', '$windo
                     type: 'application/pdf'
                 });
                 $scope.fileURLs.push($window.URL.createObjectURL(file));
-                //$window.open($scope.fileURL);
             });
         };
 
+        //create HTML for labels
         function initRecs(code, types, last) {
             var contents = '';
             for (var type in types) {
@@ -45,12 +46,13 @@ angular.module('letters').controller('LabelController', ['$scope', '$q', '$windo
                         if (num !== types[type] && num % 80 === 0) contents += '</table><p></p><table><tr>';
                     });
                     contents += '</table>';
-                //avoid adding extra page
+                //continue on next page; avoid adding extra page at the end
                 if (!last) contents += '<p></p>';
             }
             return contents;
         }
 
+        //use modal to map fields, then process
         function proccessFile(headers, rows) {
             var required_fields = ['Agency Code', 'Accepted Children', 'Accepted Teens', 'Accepted Seniors'];
             var modal = $modal.open({
@@ -88,16 +90,19 @@ angular.module('letters').controller('LabelController', ['$scope', '$q', '$windo
                 var content = '';
                 var page = 1;
                 var i = 0;
+                //best estimate to limit size of request
+                var magicNumber = 40;
+                $scope.totalPages = Math.ceil(rows.length/magicNumber);
                 $interval(function() {
                     $scope.alert.active = false;
-                    var limit = page * 40 < rows.length ? page * 40 : rows.length - 1;
+                    var limit = page * magicNumber < rows.length ? page * magicNumber : rows.length - 1;
                     for (i; i <= limit; i++) {
                         var record = rows[i].split(',');
                         var code = record[headers.code_col];
                         var children = record[headers.child_col] ? parseInt(record[headers.child_col], 10) : 0;
                         var teens = record[headers.teen_col] ? parseInt(record[headers.teen_col], 10) : 0;
                         var seniors = record[headers.seniors_col] ? parseInt(record[headers.seniors_col], 10) : 0;
-                        var last = i === limit || (i > 0 && i % 40 === 0);
+                        var last = i === limit || (i > 0 && i % magicNumber === 0);
                         var types = {};
                         if (children) types['C'] = children;
                         if (teens) types['T'] = teens;
@@ -109,14 +114,13 @@ angular.module('letters').controller('LabelController', ['$scope', '$q', '$windo
                             page++;
                         }
                     }
-                }, 7000, Math.ceil(rows.length/40));
+                }, 1000, $scope.totalPages);
                 
 
             });
         }
 
-        //Allow user to upload file to add accounts in bulk
-        //Makes sure CSV file includes required fields, otherwise lets user which fields are missing
+        //Allow user to upload file to make labels
         $scope.handleFileSelect = function(files) {
             if (files.length === 0) {
                 $scope.alert = {
