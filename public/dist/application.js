@@ -755,20 +755,20 @@ angular.module('letters').controller('LabelController', ['$scope', '$window', '$
         function initRecs(code, types, last) {
             var contents = '';
             for (var type in types) {
-                    contents += '<table><tr>';
-                    _.forEach(_.range(1, types[type] + 1), function(num) {
-                        var letter = code + type + _.padLeft(num, 3, '0');
-                        contents += '<td>'+ letter + '</td>';
-                        //complete the table row if total number is not divisible by four
-                        if (num % 4 === 0 || num === types[type]) {
-                            contents += '</tr>';
-                            if (num !== types[type]) {
-                                contents += '<tr>';
-                            }
+                contents += '<table><tr>';
+                _.forEach(_.range(1, types[type] + 1), function(num) {
+                    var letter = code + type + _.padLeft(num, 3, '0');
+                    contents += '<td>'+ letter + '</td>';
+                    //complete the table row if total number is not divisible by four
+                    if (num % 4 === 0 || num === types[type]) {
+                        contents += '</tr>';
+                        if (num !== types[type]) {
+                            contents += '<tr>';
                         }
-                        if (num !== types[type] && num % 80 === 0) contents += '</table><p></p><table><tr>';
-                    });
-                    contents += '</table>';
+                    }
+                    if (num !== types[type] && num % 80 === 0) contents += '</table><p></p><table><tr>';
+                });
+                contents += '</table>';
                 //continue on next page; avoid adding extra page at the end
                 if (!last) contents += '<p></p>';
             }
@@ -837,7 +837,7 @@ angular.module('letters').controller('LabelController', ['$scope', '$window', '$
                             page++;
                         }
                     }
-                }, 1000, $scope.totalPages);
+                }, 5000, $scope.totalPages);
                 
 
             });
