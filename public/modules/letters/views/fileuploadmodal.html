@@ -5,6 +5,7 @@
 	<div class="row">
 		<div class="col-md-12" ng-show="model.lists.A.length && !isSavedMapping">
 			<p>Drag column names across matching required fields</p>
+			<p>Column names that matched a required field exactly are moved automatically</p>
 			<ul dnd-list="model.lists.A" dnd-horizontal-list="true">
 				<li	class="csvheaders"
 					ng-repeat="item in model.lists.A"

@@ -1,10 +1,30 @@
 <section class="page-wrap" data-ng-controller="LabelController">
-	<div class="row hidden-xs">
+
+	<div class="row">
+		<div class="col-md-12">
+			<ol class="breadcrumb">
+				<li><a href="#!/admin"><i class="glyphicon glyphicon-home"></i></a></li>
+				<li class="active">Labelmaker</li>
+			</ol>
+		</div>
+	</div>
+		
+	<div class="row">
 		<!-- File Dropzone -->
 		<div class="col-md-12">
-			<div ngf-select ngf-drop class="drop-box" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-change="handleFileSelect($files)" ngf-accept="'application/vnd.ms-excel,text/csv'" accept="application/vnd.ms-excel,text/csv">
+			<alert ng-show="alert.active" type="{{alert.type}}" ng-model="alert" close="alert.active = false">
+				{{alert.msg}}
+			</alert>
+			<div ngf-select ngf-drop class="drop-box" ng-show="!hideDropzone" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-change="handleFileSelect($files)" ngf-accept="'application/vnd.ms-excel,text/csv'" accept="application/vnd.ms-excel,text/csv">
 				<p class="lead">drop csv file here or <br/>click to browse<p>
 		    </div>
+
+		    <div ng-show="fileURLs">
+		    	<div ng-repeat="fileURL in fileURLs">
+		    		<a href="{{fileURL}}" target="_blank">Labels {{$index + 1}}</a>
+		    	</div>
+		    </div>
 	    </div>
+
 	</div>
 </section>

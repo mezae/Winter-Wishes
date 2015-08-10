@@ -11,26 +11,27 @@ var _ = require('lodash'),
     Article = mongoose.model('Article');
 var fs = require('fs');
 var pdf = require('html-pdf');
-
+var azip = require('jszip');
+var lz = require('lz-string');
 
 
 exports.topdf = function(req, res) {
     var options = {
-        filename: './pfpletter.pdf',
+        filename: './pfpletter' + req.body.page + '.pdf',
         format: 'Letter',
         border: {
-            top: '0.5in',
-            right: '0.2in',
+            top: '0.47in',
+            right: '0in',
             bottom: '0in',
-            left: '0.2in'
+            left: '0in'
         }
     };
 
     res.render('templates/pfp-letter', {}, function(err, html) {
-        html = html + req.body.content + '</body></html>';
-        pdf.create(html, options).toFile(function(err, file) {
+        html = html + lz.decompressFromEncodedURIComponent(req.body.content) + '</body></html>';
+        pdf.create(html, options).toBuffer(function(err, buffer) {
             if (err) return console.log(err);
-            res.download(file.filename, 'file://' + file.filename);
+            res.send(buffer);
         });
     });
 
