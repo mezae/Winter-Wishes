@@ -8,3 +8,18 @@
 	margin-top: 3px;
 	margin-bottom: 10px;
 }
+
+input[type="radio"] {
+	height: 23px;
+}
+
+.radio-inline {
+	width: 47%;
+	height: 34px;
+	line-height: 34px;
+}
+
+.radio-inline:hover {
+	background-color: #F2FAF2;
+	border-radius: 4px;
+}

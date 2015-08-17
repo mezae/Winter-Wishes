@@ -46,6 +46,7 @@
 			<br/>
 
 			<!-- tracking number -->
+			<div class="form-group">
 			<div class="input-group">
 				<span class="input-group-btn" ng-show="adminView" tooltip="Add blank slot and shift everything down" tooltip-trigger="mouseenter" tooltip-append-to-body="false">
 					<button type="button" class="btn btn-cancel" ng-click="addBlank(current)"><i class="glyphicon glyphicon-plus"></i></button>
@@ -55,21 +56,37 @@
 					<button type="button" class="btn btn-cancel" ng-disabled="userView && !current.updated" ng-click="clearForm(current)"><i ng-class="adminView ? 'glyphicon glyphicon-minus' : 'glyphicon glyphicon-trash'"></i></button>
 				</span> 
 			</div>
+			</div>
 
 			<form name="tform" class="letter-form" ng-class="current.updated ? 'old' : 'new'">
 
 				<!-- recipient's name -->
-				<input type="text" class="profile form-control" ng-model="current.name" ng-change="isUsed(tform)" placeholder="full name" name="fname">
-				<span class="error text-danger" ng-show="blankName">Must include recipient's full name</span>
+				<div class="form-group">
+					<label class="control-label">Name</label>
+					<input type="text" class="profile form-control" ng-model="current.name" ng-change="isUsed(tform)" placeholder="first and last" name="fname">
+					<span class="error text-danger" ng-show="blankName">Must include recipient's full name</span>
+				</div>
 
-				<input type="number" class="profile form-control dependent" ng-model="current.age" ng-change="isWithinRange(tform.age)" placeholder="age - between {{minAge}} and {{maxAge}}" name="age">
+				<div class="form-group">
+				<label class="control-label">Age</label>
+				<input type="number" class="profile form-control dependent" ng-model="current.age" ng-change="isWithinRange(tform.age)" placeholder="must be between {{minAge}} and {{maxAge}}" name="age">
 				<span class="error text-danger" ng-show="tform.age.$error.inRange">The value must be in range {{minAge}} to {{maxAge}}!</span>
+			</div>
 
-				<input type="text" class="profile form-control dependent" ng-model="current.gender" ng-pattern="/^[fmFM]$/" placeholder="gender - enter F or M" name="gender">
-				<span class="error text-danger" ng-show="tform.gender.$error.pattern">Enter F for female or M for male</span>
-
-				<textarea class="profile form-control dependent" ng-model="current.gift" ng-minlength="3" rows="2" placeholder="gift requested (if clothing, include size)  - must be under $40" name="gift"></textarea>
+				<div class="form-group">
+				<label class="control-label">Gender</label><br>
+				<label class="radio-inline">
+				  <input type="radio" ng-model="current.gender" name="gender" id="gender1" value="F"> Female
+				</label>
+				<label class="radio-inline">
+				  <input type="radio" ng-model="current.gender" name="gender" id="gender2" value="M"> Male
+				</label><br>
+			</div>
+			<div class="form-group">
+				<label class="control-label">Gift Request</label>
+				<textarea class="profile form-control dependent" ng-model="current.gift" ng-minlength="3" rows="2" placeholder="must be under $40 (if clothing, include size)" name="gift"></textarea>
 				<span class="error text-danger" ng-show="tform.gift.$error.minlength">Written letter must include a gift request</span>
+			</div>
 
 			</form>
 			<input type="submit" class="btn btn-save btn-block btn-space" ng-disabled="tform.$invalid" ng-click="goToNext(tform)" value="Save & Continue">
